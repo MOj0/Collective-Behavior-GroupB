@@ -4,6 +4,15 @@ import constants
 
 
 class Boid:
+    boid_width, boid_height = 10, 6
+    boid_shape = pg.Surface((boid_width, boid_height), pg.SRCALPHA)
+    # Draw a triangle onto the boid_shape surface
+    pg.draw.polygon(
+        boid_shape,
+        (0, 0, 255),
+        [(boid_width, boid_height / 2), (0, 0), (0, boid_height)],
+    )
+
     debug = False
     can_wrap = False
     min_speed = 100
@@ -14,9 +23,9 @@ class Boid:
     separation_distance = 25
 
     def __init__(self):
-        max_x, max_y = 800, 600
-
-        start_position = pg.Vector2(random.uniform(0, max_x), random.uniform(0, max_y))
+        start_position = pg.Vector2(
+            random.uniform(0, constants.WIDTH), random.uniform(0, constants.HEIGHT)
+        )
 
         random_velocity = pg.Vector2(
             random.uniform(-10, 10),
@@ -80,7 +89,12 @@ class Boid:
                 width=1,
             )
 
-        pg.draw.circle(screen, (0, 0, 255), self.position, 5)
+        _, heading = self.velocity.as_polar()
+
+        shape_rotated = pg.transform.rotate(Boid.boid_shape, -heading)
+        screen.blit(
+            shape_rotated, self.position - (Boid.boid_width / 2, Boid.boid_height / 2)
+        )
 
     def get_neighbors(self, boids):
         neighbors = []
