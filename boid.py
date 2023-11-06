@@ -62,6 +62,24 @@ class Boid:
         # self.position += self.velocity
 
     def draw(self, screen):
+        if Boid.debug:
+            pg.draw.line(
+                screen,
+                (255, 0, 0),
+                self.position,
+                self.position + self.velocity.normalize() * 50,
+            )
+            pg.draw.circle(
+                screen, (100, 100, 100), self.position, self.perception_radius, width=1
+            )
+            pg.draw.circle(
+                screen,
+                (255, 100, 100),
+                self.position,
+                self.separation_distance,
+                width=1,
+            )
+
         pg.draw.circle(screen, (0, 0, 255), self.position, 5)
 
     def get_neighbors(self, boids):

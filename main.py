@@ -26,6 +26,8 @@ while running:
                 boids = init_boids(constants.N_BOIDS)
             elif event.key == pg.K_ESCAPE:
                 running = False
+            elif event.key == pg.K_d:
+                boid_class.Boid.debug = not boid_class.Boid.debug
 
     # Fill (background)
     screen.fill((0, 0, 0))
