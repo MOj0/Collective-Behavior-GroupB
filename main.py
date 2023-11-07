@@ -11,8 +11,8 @@ pg.init()
 screen = pg.display.set_mode([constants.WIDTH, constants.HEIGHT])
 clock = pg.time.Clock()
 
-fps = 60
-dt = 1 / fps
+FPS = 60
+DT = 1 / FPS
 boids = init_boids(constants.N_BOIDS)
 running = True
 
@@ -33,14 +33,14 @@ while running:
     screen.fill((0, 0, 0))
 
     for boid in boids:
-        boid.update(boids, dt)
+        boid.update(boids, DT)
     for boid in boids:
         boid.draw(screen)
 
     # Update the entire display
     pg.display.flip()
 
-    clock.tick(fps)
+    clock.tick(FPS)
 
 
 pg.quit()

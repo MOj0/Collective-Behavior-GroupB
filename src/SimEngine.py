@@ -1,10 +1,9 @@
-from Boid import Boid, BoidDrawMode
+from Boid import Boid
 from Behaviours.Behaviour import Behaviour
-import time
 from pygame import Surface
 
-class SimEngine:
 
+class SimEngine:
     def __init__(self, preyBehaviour: Behaviour, predatorBehaviour: Behaviour) -> None:
         self._preyBehaviour: Behaviour = preyBehaviour
         self._predatorBehaviour: Behaviour = predatorBehaviour
@@ -13,11 +12,17 @@ class SimEngine:
 
     def addPrey(self, object: Boid) -> None:
         self._prey.append(object)
+
     def addPredator(self, object: Boid) -> None:
         self._predators.append(object)
 
+    def clear(self) -> None:
+        self.clearPrey()
+        self.clearPredators()
+
     def clearPrey(self) -> None:
         self._prey.clear()
+
     def clearPredators(self) -> None:
         self._predators.clear()
 
@@ -32,11 +37,11 @@ class SimEngine:
             p.update(dt)
             p.rolloverAcc()
 
-    def draw(self, surface: Surface, drawMode: BoidDrawMode = BoidDrawMode.BASIC):
+    def draw(self, surface: Surface, debug_draw: bool):
         for p in self._prey:
-            p.draw(surface, drawMode)
+            p.draw(surface, debug_draw)
         for p in self._predators:
-            p.draw(surface, drawMode)
-
-
-    
+            p.draw(surface, debug_draw)
+        if debug_draw:
+            self._preyBehaviour.debug_draw(surface, self._prey)
+            self._predatorBehaviour.debug_draw(surface, self._predators)

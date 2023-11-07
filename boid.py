@@ -40,8 +40,6 @@ class Boid:
 
         self.position = start_position
         self.velocity = start_velocity
-        self.acceleration = pg.Vector2(0, 0)
-        self.steer_direction = pg.Vector2(0, 0)
         self.debug = Boid.debug
 
     def update(self, boids, dt):
@@ -54,12 +52,6 @@ class Boid:
 
         self.velocity += direction
 
-        # if direction.length_squared() > 0:
-        #     self.acceleration = direction
-        # # TODO: Enforce turn limits
-
-        # self.velocity += self.acceleration
-
         # Speed limit
         speed = self.velocity.length()
         if speed < self.min_speed:
@@ -68,7 +60,6 @@ class Boid:
             self.velocity.scale_to_length(self.max_speed)
 
         self.position += self.velocity * dt
-        # self.position += self.velocity
 
     def draw(self, screen):
         if Boid.debug:
@@ -139,13 +130,13 @@ class Boid:
     def bound_position(self):
         direction = pg.Vector2(0, 0)
         if self.position.x <= constants.DISTANCE_TO_BOUNDS:
-            direction.x = 10
+            direction.x = 1
         elif self.position.x >= constants.WIDTH - constants.DISTANCE_TO_BOUNDS:
-            direction.x = -10
+            direction.x = -1
 
         if self.position.y <= constants.DISTANCE_TO_BOUNDS:
-            direction.y = 10
+            direction.y = 1
         elif self.position.y >= constants.HEIGHT - constants.DISTANCE_TO_BOUNDS:
-            direction.y = -10
+            direction.y = -1
 
-        return direction
+        return direction * 10

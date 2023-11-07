@@ -1,24 +1,26 @@
 from abc import ABC
 from enum import Enum
-from pygame import Vector2, Surface, draw
+from pygame import Vector2, Surface, draw, SRCALPHA, transform
 
-class BoidDrawMode(Enum):
-    BASIC = 0
-    PRETTY = 1
-    DEBUG = 2
 
 class Boid(ABC):
-
-    MIN_VELOCITY: float = 100.0
+    (BOID_WIDTH, BOID_HEIGHT) = (10, 6)
+    BOID_SHAPE: Surface = Surface((BOID_WIDTH, BOID_HEIGHT), SRCALPHA)
+    # Draw a triangle onto the boid_shape surface
+    draw.polygon(
+        BOID_SHAPE,
+        (0, 0, 255),
+        [(BOID_WIDTH, BOID_HEIGHT / 2), (0, 0), (0, BOID_HEIGHT)],
+    )
+    MIN_VELOCITY: float = 200.0
     MAX_VELOCITY: float = 500.0
 
-    MAX_ACCELERATION: float = 100.0
+    MAX_ACCELERATION: float = 2000.0
     MAX_TORQUE: float = 1.0
 
-    def __init__(self, 
-                 position = Vector2(0, 0), 
-                 velocity = Vector2(0, 0), 
-                 acceleration = Vector2(0,0)) -> None:
+    def __init__(
+        self, position=Vector2(0, 0), velocity=Vector2(0, 0), acceleration=Vector2(0, 0)
+    ) -> None:
         super().__init__()
         self._pos: Vector2 = position
         self._vel: Vector2 = velocity
@@ -26,9 +28,10 @@ class Boid(ABC):
 
     def getPosition(self) -> Vector2:
         return self._pos
+
     def getVelocity(self) -> Vector2:
         return self._vel
-    
+
     def setDesiredDir(self, value: Vector2) -> None:
         if value.length() > self.MAX_ACCELERATION:
             value.scale_to_length(self.MAX_ACCELERATION)
@@ -52,27 +55,18 @@ class Boid(ABC):
 
         self._pos += initialVelocity * dt + (self._acc[1] * dt**2) / 2
 
-    def drawBasic(self, surface: Surface):
-        draw.circle(surface, (0, 0, 255), self.getPosition(), 5)
-
-    def drawDebug(self, surface: Surface):
-        draw.line(
-            surface,
-            (255, 0, 0),
-            self.getPosition(),
-            self.getPosition() + self.getVelocity().normalize() * 50,
+    def draw(self, surface: Surface, debug_draw: bool) -> None:
+        _, heading = self._vel.as_polar()
+        shape_rotated = transform.rotate(Boid.BOID_SHAPE, -heading)
+        surface.blit(
+            shape_rotated,
+            self.getPosition() - (Boid.BOID_WIDTH / 2, Boid.BOID_HEIGHT / 2),
         )
-        draw.circle(surface, (0, 0, 255), self.getPosition(), 5)
 
-    def drawPretty(self, surface: Surface):
-        pass
-
-    def draw(self, surface: Surface, drawMode: BoidDrawMode = BoidDrawMode.BASIC) -> None:
-        if drawMode == BoidDrawMode.BASIC:
-            self.drawBasic(surface)
-        elif drawMode == BoidDrawMode.DEBUG:
-            self.drawDebug(surface)
-        elif drawMode == BoidDrawMode.PRETTY:
-            self.drawPretty(surface)
-        else:
-            raise Exception("Undefined draw mode!")
+        if debug_draw:
+            draw.line(
+                surface,
+                (255, 0, 0),
+                self.getPosition(),
+                self.getPosition() + self.getVelocity().normalize() * 50,
+            )
