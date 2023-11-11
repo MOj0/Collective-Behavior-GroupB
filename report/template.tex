@@ -83,69 +83,70 @@ ToDo: Add abstract.
 
 % If your first paragraph (i.e. with the \dropcap) contains a list environment (quote, quotation, theorem, definition, enumerate, itemize...), the line after the list may have some extra indentation. If this is the case, add \parshape=0 to the end of the list environment.
 \dropcap{I}n 1987, Reynolds \cite{reynolds1987flocks} proposed a simple algorithm to model the
-flocking behavior of birds, herding of sheep, and similar phenomena, known as the Boids model.
-The idea is relatively simple.
+flocking behavior of birds, herding of sheep, and similar phenomena, known as the Boids (Bird-oid objects) model.
+Instead of controlling the interactions of the flock as a whole, the Boids simulation only specifies the behavior of each individual boid (much like how it works in nature).
+Even though the algorithm is comprised of only a few simple rules, it generates a complex and realistic behaviour, similar to those found in nature.
 
-\noindent Every boid object abides by three simple rules:
+\noindent Every boid abides by three simple rules:
 \begin{enumerate}
-    \item Avoid collisions.
-    \begin{center}
-		\begin{tikzpicture}
-			% Draw a semi-transparent blue circle with a dark border
-			\draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			% Define a triangle shape
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t1) at (0,0) {};
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
-			% Outside,rotated
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, draw, rotate=30] (rotated) at (2.5,0) {};
-			
-			\draw[green,thick] (t1) -- (t2);
-			\draw[green,thick] (t1) -- (t3);
-			
-			\draw[red,thick,->] (t1) -- (-.125,-.75);
-		\end{tikzpicture}
-	\end{center}
-    \item Maintain the same heading and speed as the neighboring boids.
-	\begin{center}
-		\begin{tikzpicture}
-			% Draw a semi-transparent blue circle with a dark border
-			\draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			% Define a triangle shape
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green,rotate=-30] (t1) at (0,0) {};
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t2) at (-1.5, 0) {};
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t3) at (1.5, 0) {};
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t4) at (0, -1.5) {};
-			
-			\draw[green,thick,->] (t1) -- ++(.5, 1);
-			\draw[black,thick,->] (t2) -- ++(.5, 1);
-			\draw[black,thick,->] (t3) -- ++(.5, 1);
-			\draw[black,thick,->] (t4) -- ++(.5, 1);
-		\end{tikzpicture}
-	\end{center}
-    \item Gravitate toward the center of the flock.
-	\begin{center}
-		\begin{tikzpicture}
-			% Draw a semi-transparent blue circle with a dark border
-			\draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			% Define a triangle shape
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t1) at (0,0) {};
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
+	\item Avoid collisions.
+	      \begin{center}
+		      \begin{tikzpicture}
+			      % Draw a semi-transparent blue circle with a dark border
+			      \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+			      % Define a triangle shape
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t1) at (0,0) {};
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
+			      % Outside,rotated
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, draw, rotate=30] (rotated) at (2.5,0) {};
 
-			\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t4) at (1.2, -1.1) {};
+			      \draw[green,thick] (t1) -- (t2);
+			      \draw[green,thick] (t1) -- (t3);
 
-			\draw[green, thick] (t1) -- (-.125,.75);
-			\fill[green, thick] (-.125,.75) circle (2pt);
-			\draw[green,thick] (t2) -- (t3);
+			      \draw[red,thick,->] (t1) -- (-.125,-.75);
+		      \end{tikzpicture}
+	      \end{center}
+	\item Maintain the same heading and speed as the neighboring boids.
+	      \begin{center}
+		      \begin{tikzpicture}
+			      % Draw a semi-transparent blue circle with a dark border
+			      \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+			      % Define a triangle shape
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green,rotate=-30] (t1) at (0,0) {};
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t2) at (-1.5, 0) {};
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t3) at (1.5, 0) {};
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t4) at (0, -1.5) {};
 
-			\draw[red,thick,->] (t4) -- (.75,-.3);
-		\end{tikzpicture}
-	\end{center}
+			      \draw[green,thick,->] (t1) -- ++(.5, 1);
+			      \draw[black,thick,->] (t2) -- ++(.5, 1);
+			      \draw[black,thick,->] (t3) -- ++(.5, 1);
+			      \draw[black,thick,->] (t4) -- ++(.5, 1);
+		      \end{tikzpicture}
+	      \end{center}
+	\item Gravitate toward the center of the flock.
+	      \begin{center}
+		      \begin{tikzpicture}
+			      % Draw a semi-transparent blue circle with a dark border
+			      \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+			      % Define a triangle shape
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t1) at (0,0) {};
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
+
+			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t4) at (1.2, -1.1) {};
+
+			      \draw[green, thick] (t1) -- (-.125,.75);
+			      \fill[green, thick] (-.125,.75) circle (2pt);
+			      \draw[green,thick] (t2) -- (t3);
+
+			      \draw[red,thick,->] (t4) -- (.75,-.3);
+		      \end{tikzpicture}
+	      \end{center}
 \end{enumerate}
 
-% ToDo
-% Explain how basic boids relates to our work.
+We will present how we implemented such Boid simulation, with an additional step which will make simulating different Boids (prey, predator) easier.
+% TODO: We should also include logic for predator (if we implement it for this milestone)
 
 \section*{Methods}
 ToDo: Add Methods.
@@ -162,9 +163,9 @@ ToDo: Conclusion/Discussion.
 %\pnasbreak
 
 \begin{multicols}{2}
-\section*{\bibname}
-% Bibliography
-\bibliography{./bib/bibliography}
+	\section*{\bibname}
+	% Bibliography
+	\bibliography{./bib/bibliography}
 \end{multicols}
 
 \end{document}
