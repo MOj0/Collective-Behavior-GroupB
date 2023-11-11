@@ -370,7 +370,7 @@ THE ABSTRACT\vskip12pt}\let\go\relax\fi
 	\begin{minipage}{2in}
 	\@ifundefined{@dates}{}{{\sffamily\footnotesize{\@dates}}\par
 	\vskip6pt}
-	{\sffamily\footnotesize{Iztok Lebar Bajec | izredni professor | mentor}}\par
+	{\sffamily\footnotesize{Iztok Lebar Bajec | Associate Professor | mentor}}\par
 	%{\sffamily\footnotesize{\textbf{\textsuperscript{a}Mentor:} izr. prof. dr. Iztok Lebar Bajec}}\par
 	%{\sffamily\footnotesize{\textsuperscript{b}\textbf{Somentor:} as. Jure Demšar}}\par 
 	\vskip24pt
