@@ -7,6 +7,7 @@ from Boid import *
 from Behaviours.BasicPreyBehaviour import BasicPreyBehaviour
 
 pg.init()
+pg.display.set_caption("Predator and Prey boid simulation")
 screen = pg.display.set_mode([WIDTH, HEIGHT], pg.DOUBLEBUF)
 clock = pg.time.Clock()
 
