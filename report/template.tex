@@ -151,45 +151,60 @@ three simple rules:
 	      \end{center}
 \end{enumerate}
 
+\subsection*{Basic boids implementation}
+
 Each boid $B$ has the following properties:
 \begin{enumerate}
-	\item position - a vector in $ R^2 $, denoted by $position(B)$
-	\item velocity - a vector in $ R^2 $, denoted by $velocity(B)$
-	\item acceleration - a vector in $ R^2 $, is not used by the behaviour logic, but only for (correct) internal computation of the boid's velocity
+	\item position - a vector in $ \mathbb{R}^2 $, denoted by $position(B)$,
+	\item velocity - a vector in $ \mathbb{R}^2 $, denoted by $velocity(B)$,
+	\item acceleration - a vector in $\mathbb{R}^2$; used exclusively
+	for the internal \\ computation of the boid's velocity and not for behavioral logic.
 \end{enumerate}
 
-With regards to behaviour logic, each boid has:
+\noindent With regards to behavioral logic, we also assign the following
+attributes to all boids:
 \begin{enumerate}
 	\item perception radius (denoted by $r_P$)
 	\item separation radius (denoted by $r_S$, also note that $ r_S < r_P $)
 \end{enumerate}
 
-For computing the distance between boids, the {\em Euclidean distance} is used:
-$ d(p, q) = \sqrt{(p_1-q_1)^2 + (p_2 - q_2)^2} $
-where $p, q \in R^2$.
-In order to avoid computing the (expensive) square root of a real number, an equivalent formula is used:
-$ d(p, q)^2 = (p_1-q_1)^2 + (p_2 - q_2)^2 $
+\noindent The {\em Euclidean distance} (\ref{eq:eucl_dst}) is used for computing the distance between boids.
+\begin{equation} \label{eq:eucl_dst}
+    d(p, q) = \sqrt{(p_1-q_1)^2 + (p_2 - q_2)^2};\  p, q \in \mathbb{R}^2
+\end{equation}
+To avoid the computation of the costly square root of a real number, we utilize an equivalent formula
+(\ref{eq:eucl_dst_sq}):
+\begin{equation} \label{eq:eucl_dst_sq}
+    d(p, q)^2 = (p_1-q_1)^2 + (p_2 - q_2)^2;\  p, q \in \mathbb{R}^2
+\end{equation}
 
-Each of the rules explained above is implemented such that it computes a {\em direction} where the boid should move.
-This direction is then applied to the boid's acceleration, which is then used for computing the actual velocity of the boid.
+Each tick of the simulation loop updates the direction of a boid, which is then applied to its acceleration,
+determining the actual velocity for all boids.
 
-The direction for collision avoidance (1), also known as {\em separation} for boid $B$ is computed by the following formula:
-$direction = \sum_{i=1}^{n} position(B) - position(B_i) $
-where i-th boid ($B_i$) is a boid such that: $ d(position(B), position(B_i))^2 < r_S^2 $.
-This forumla effectively means, that boid $B$ will move away (in the opposite direction) from the boids which are too near (closer than the specified $r_S$).
+The direction for collision avoidance, also known as {\em separation}, for boid $B$ is computed by the
+following formula (\ref{eq:sum_dir_vectors}):
+\begin{equation} \label{eq:sum_dir_vectors}
+	direction = \sum_{i=1}^{n} position(B) - position(B_i)
+\end{equation}
+where $i$-th boid $B_i$ is a boid such that: $ d(position(B), position(B_i))^2 < r_S^2 $.
+This effectively means that boid $B$ will move away (in the opposite direction) from the boids which are too near (closer than the specified $r_S$).
 
-The direction for {\em alignment} (2) for boid $B$ is computed as:
-$direction = (\frac{\sum_{i=1}^{n} velocity(B_i)}{n} - velocity(B)) / 8 $
-where i-th boid ($B_i$) is a boid such that: $ d(position(B), position(B_i)^2 < r_P^2) $ (ie. $B$'s neighbour).
+The direction for {\em alignment} for boid $B$ is computed as (\ref{eq:sum_align}):
+\begin{equation} \label{eq:sum_align}
+	direction = \left( \frac{\sum_{i=1}^{n} velocity(B_i)}{n} - velocity(B) \right) \mathbin{/} 8
+\end{equation}
+where $i$-th boid $B_i$ is a boid such that: $ d(position(B), position(B_i)^2 < r_P^2) $ (i.e., $B_i$ is $B$'s neighbour).
 First, the average velocity of all neighboring boids is computed (denoted $v_{avg}$).
 The velocity of current boid $B$ is then subtracted from $v_{avg}$, such that a vector in the direction
-from current velocity to the $v_{avg}$ is obtained.
+from $velocity(B)$ to $v_{avg}$ is obtained.
 Adding such a vector to the $velocity(B)$ would result in $velocity(B)$ being equal to the $v_{avg}$.
-Since this result is not desired, direction is lastly divided by an arbitrary $8$.
+Since this result is not desired, direction is lastly divided by a constant $8$.
 
-The direction for {\em cohesion} (3), for boid $B$ is computed as such:
-$direction = (\frac{\sum{i=1}^{n} position(B_i) - position(B)}{n}) / 100 $
-where i-th boid ($B_i$) is a boid such that: $ d(position(B), position(B_i)^2 < r_P^2) $ (ie. $B$'s neighbour).
+The direction for {\em cohesion} for boid $B$ is computed like so (\ref{eq:sum_coh}):
+\begin{equation} \label{eq:sum_coh}
+	direction = \left( \frac{\sum_{i=1}^{n} \left(position(B_i) - position(B)\right)}{n} \right) \mathbin{/} 100
+\end{equation}
+where $i$-th boid $B_i$ is a boid such that: $ d(position(B), position(B_i)^2 < r_P^2) $ (i.e., $B_i$ is $B$'s neighbour).
 In this formula a centroid to the neighboring boids is computed, which is then divided by $100$.
 The reasoning behind the constant $100$ is that on every update, each boid would move $1\%$ towards the centroid.
 
