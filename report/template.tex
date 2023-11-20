@@ -58,7 +58,9 @@
 \keywords{Collective Behaviour | Boids | Simulation | Prey-Predator | Escape patterns } 
 
 \begin{abstract}
-% TODO
+In this research paper we present the simulation of bird behaviour in nature.
+Namely, we simulate how they behave (move) in a flock.
+This simulation will serve as a foundation for the more complex simulations in the future.
 \nocite{papadopoulou2022emergence}
 ToDo: Add abstract.
 \end{abstract}
@@ -89,7 +91,6 @@ dictating the behavior of each individual boid. Despite consisting of a few simp
 algorithm produces complex and lifelike behaviors similar to those observed in nature.
 
 Our paper centers on the implementation of a predator-prey behavior utilizing a Boids simulation.
-% TODO: We should also include logic for predator (if we implement it for this milestone)
 
 \section*{Methods}
 As a starting point, a basic boids model has been implemented, which is based on
@@ -158,7 +159,7 @@ Each boid $B$ has the following properties:
 	\item position - a vector in $ \mathbb{R}^2 $, denoted by $position(B)$,
 	\item velocity - a vector in $ \mathbb{R}^2 $, denoted by $velocity(B)$,
 	\item acceleration - a vector in $\mathbb{R}^2$; used exclusively
-	for the internal \\ computation of the boid's velocity and not for behavioral logic.
+	      for the internal \\ computation of the boid's velocity and not for behavioral logic.
 \end{enumerate}
 
 \noindent With regards to behavioral logic, we also assign the following
@@ -170,12 +171,12 @@ attributes to all boids:
 
 \noindent The {\em Euclidean distance} (\ref{eq:eucl_dst}) is used for computing the distance between boids.
 \begin{equation} \label{eq:eucl_dst}
-    d(p, q) = \sqrt{(p_1-q_1)^2 + (p_2 - q_2)^2};\  p, q \in \mathbb{R}^2
+	d(p, q) = \sqrt{(p_1-q_1)^2 + (p_2 - q_2)^2};\  p, q \in \mathbb{R}^2
 \end{equation}
 To avoid the computation of the costly square root of a real number, we utilize an equivalent formula
 (\ref{eq:eucl_dst_sq}):
 \begin{equation} \label{eq:eucl_dst_sq}
-    d(p, q)^2 = (p_1-q_1)^2 + (p_2 - q_2)^2;\  p, q \in \mathbb{R}^2
+	d(p, q)^2 = (p_1-q_1)^2 + (p_2 - q_2)^2;\  p, q \in \mathbb{R}^2
 \end{equation}
 
 Each tick of the simulation loop updates the direction of a boid, which is then applied to its acceleration,
@@ -210,11 +211,21 @@ The reasoning behind the constant $100$ is that on every update, each boid would
 
 \section*{Results}
 We have successfully implemented the model described in the previous section. Correct behaviour was confirmed
-with the help of special debug draw commands on top of the boids. Performance of the model was also evaluated with a 
+with the help of special debug draw commands on top of the boids. Performance of the model was also evaluated with a
 different number of boids. Initial tests indicate, that we can smoothly run simulations of up to 200 boids on weaker computer systems.
 \section*{Discussion}
-ToDo: Conclusion/Discussion.
-\acknow{ToDo: division of work.}
+This concludes the initial implementation of boids flocking simulation.
+The following aspects remain to be implemented:
+\begin{enumerate}
+	\item take boid turn speed into account in computation
+	\item take information propagation into account
+	\item add predators
+	\item implement escape manuevers
+	\item implement logic for determining success of predators
+\end{enumerate}
+
+\acknow{Matija Ojo: Initial boid implementation and report fixes, Miha Krajnc: Refactor boid implementation and report, Janez Kuhar: Initial report, Marko Adžaga: Report}
+
 \showacknow % Display the acknowledgments section
 
 % \pnasbreak splits and balances the columns before the references.
@@ -225,7 +236,7 @@ ToDo: Conclusion/Discussion.
 \begin{multicols}{2}
 	\section*{\bibname}
 	% Bibliography
-	\bibliography{./bib/bibliography}
+	\bibliography{bibliography}
 \end{multicols}
 
 \end{document}
