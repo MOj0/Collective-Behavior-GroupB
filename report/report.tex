@@ -36,7 +36,7 @@
 \author{Marko Adžaga}
 \author{Janez Kuhar}
 
-\affil{Collective behaviour course research seminar report} 
+\affil{Collective behaviour course research seminar report}
 
 % Please give the surname of the lead author for the running footer
 \leadauthor{Ojo} 
@@ -44,7 +44,7 @@
 \selectlanguage{english}
 
 % Please add here a significance statement to explain the relevance of your work
-\significancestatement{Procedural generation of a tropic island and \\coral reef}{In computer graphics there is frequent need for displaying large vistas of natural looking terrain. Designing such terrain by hand is typically time consuming. With procedural generation, on the other hand, larger areas of natural looking terrain can be generated with or without minimal intervention in a relatively short time. In this work we present a process of procedural generation of a tropical island with the associated corral reef. We start by generating a heightmap for the base terrain. The heightmap is then transformed by simulating the processes of hydraulic and thermal erosion to achieve a more natural look of the terrain. As coral reefs often grow around tropical islands, we also simulate their growth as part of the last step. Real-time visualization is enabled during the simulation, so that one can observe the evolution of the terrain. Here we dynamically apply textures to the terrain based on its local characteristics. The result is a natural looking model of the textured tropical island and corral reef.}{Procedural generation | Terrain generation | Thermal and hydraulic erosion | Coral reef | Simulation | GPU}
+\significancestatement{Collective behaviour course research seminar report}{Predator-prey interactions is of significant importance in biology and nature itself. The insights gleaned from this research can offer more than a theoretical understanding; they pave the way for the design and optimization of autonomous agents capable of adaptive and context-aware behaviors. The applications range from research in biology to simulations of large amounts of boids found in computer graphics.}{Collective Behaviour | Boids | Simulation | Prey-Predator | Escape patterns}
 
 \selectlanguage{english}
 
@@ -58,11 +58,13 @@
 \keywords{Collective Behaviour | Boids | Simulation | Prey-Predator | Escape patterns } 
 
 \begin{abstract}
-In this research paper we present the simulation of bird behaviour in nature.
-Namely, we simulate how they behave (move) in a flock.
+The collective behaviours observed in nature, such as flocking, herding, or schooling, often serve as adaptive strategies that enhance the survival chances of individuals within a group.
+Understanding these natural behaviors serves as inspiration for designing autonomous agents capable of sophisticated interactions within a simulated environment.
+Our goal is to simulate prey and predator with different predator tactics (attack center, attack nearest, attack isolated, attacks from various directions, constant bearing hunting), escape manuevers (split, hourglass, herd, vacuole, flash expansion, fountain) and parameters (perception radius, moving speed, turning speed) in order to conclude how different escape manuevers affect predator's success.
+
+This research paper however, will only focus on the basic boid (bird-oid object) simulation.
 This simulation will serve as a foundation for the more complex simulations in the future.
 \nocite{papadopoulou2022emergence}
-ToDo: Add abstract.
 \end{abstract}
 
 \dates{\textbf{\today}}
@@ -84,7 +86,17 @@ ToDo: Add abstract.
 \section*{Introduction}
 
 % If your first paragraph (i.e. with the \dropcap) contains a list environment (quote, quotation, theorem, definition, enumerate, itemize...), the line after the list may have some extra indentation. If this is the case, add \parshape=0 to the end of the list environment.
-\dropcap{I}n 1987, Reynolds \cite{reynolds1987flocks} proposed a simple algorithm to model the
+\dropcap{O}ne of the most striking patterns in biology is the formation of animal aggregations.
+Classically, aggregation has been viewed as an evolutionarily advantageous state, in which members derive the benefits of protection, mate choice, and centralized information, balanced by the costs of limiting resources \cite{complexity_pattern}.
+We will presume the most common hypotheses, which is that flocking evolved in order to provide defense against predators, and conclude with which flocking behaviour is the most effective for prey and predator.
+Our research is based on Emergence of splits and collective turns in pigeon flocks under predation \cite{papadopoulou2022emergence}, which we will extend by providing concrete results in the predator and prey simulation.
+This research is similar to Jure Demšar and Iztok Lebar Bajec's Comparison of (predator) tactics \cite{JDemsar_predator_attacks}.
+The main difference between the mentioned research ours is the use of boids algorithm instead of fuzzy logic.
+
+The flocking behaviour can be simulated in different ways.
+For example Heppner and Grenader \cite{Heppner_nonlinear_model} were modeling bird's behaviour with stohastic nonlinear differential equations.
+Oweis, Ganesan and Cheok \cite{centralized_flocking} took a different approach and modeled birds with a centralized logic (as in the server-client architecture).
+In 1987, Reynolds \cite{reynolds1987flocks} proposed a simple algorithm, which was groundbreaking at the time, to model the
 flocking behavior of birds, herding of sheep, and similar phenomena, known as the Boids (Bird-oid objects) model.
 In contrast to controlling the interactions of the entire flock, the Boids simulation focuses on
 dictating the behavior of each individual boid. Despite consisting of a few simple rules, this
@@ -179,7 +191,7 @@ To avoid the computation of the costly square root of a real number, we utilize 
 	d(p, q)^2 = (p_1-q_1)^2 + (p_2 - q_2)^2;\  p, q \in \mathbb{R}^2
 \end{equation}
 
-Each tick of the simulation loop updates the direction of a boid, which is then applied to its acceleration,
+Each step of the simulation loop updates the direction of a boid, which is then applied to its acceleration,
 determining the actual velocity for all boids.
 
 The direction for collision avoidance, also known as {\em separation}, for boid $B$ is computed by the
@@ -210,21 +222,43 @@ In this formula a centroid to the neighboring boids is computed, which is then d
 The reasoning behind the constant $100$ is that on every update, each boid would move $1\%$ towards the centroid.
 
 \section*{Results}
-We have successfully implemented the model described in the previous section. Correct behaviour was confirmed
-with the help of special debug draw commands on top of the boids. Performance of the model was also evaluated with a
-different number of boids. Initial tests indicate, that we can smoothly run simulations of up to 200 boids on weaker computer systems.
+We have successfully implemented the model described in the previous section.
+Correct behaviour was confirmed with the help of special debug draw commands on top of the boids.
+We present 3 screenshots of the simulation at steps $0, 50$ and $100$.
+We can see that at first boids are in random positions, but as the simulation progresses, they start forming groups (\textbf{cohesion}) which generally go in the same direction (\textbf{alignment}).
+Eventually, a single group is formed.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{boids_step_0.jpg}
+	\caption{Boids simulation at step $0$}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{boids_step_50.jpg}
+	\caption{Boids simulation at step $50$}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{boids_step_100.jpg}
+	\caption{Boids simulation at step $100$}
+\end{figure}
+
+\newpage
+
 \section*{Discussion}
 This concludes the initial implementation of boids flocking simulation.
 The following aspects remain to be implemented:
 \begin{enumerate}
+	\item use a more realistic perception (300 degrees instead of 360)
 	\item take boid turn speed into account in computation
 	\item take information propagation into account
-	\item add predators
+	\item implement predators
 	\item implement escape manuevers
 	\item implement logic for determining success of predators
 \end{enumerate}
 
-\acknow{Matija Ojo: Initial boid implementation and report fixes, Miha Krajnc: Refactor boid implementation and report, Janez Kuhar: Initial report, Marko Adžaga: Report}
+\acknow{Matija Ojo: Initial boid implementation and report fixes, Miha Krajnc: Refactor boid implementation and report, Janez Kuhar: Initial version of report, Marko Adžaga: Report}
 
 \showacknow % Display the acknowledgments section
 

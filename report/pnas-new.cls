@@ -48,7 +48,7 @@
     \def\pgfsysdriver{pgfsys-dvipdfm.def}
     \pdfpagewidth=\paperwidth
     \pdfpageheight=\paperheight
-\fi\fi
+  \fi\fi
 \RequirePackage{xcolor}
 \RequirePackage{tikz}
 \RequirePackage[framemethod=tikz]{mdframed}
@@ -118,20 +118,20 @@
 \RequirePackage[noend]{algpseudocode}
 \RequirePackage{changepage}
 \RequirePackage[asymmetric,%
-				a4paper,includeheadfoot,%
-				%layoutsize={8.125in,10.875in},%
-                %layouthoffset=0.1875in,%
-                %layoutvoffset=0.0625in,%
-                left=2.25in+38.5pt,%
-                right=43pt,%
-                top=43pt,% 10pt provided by headsep
-                bottom=32pt,%
-                headheight=0pt,% No Header
-                headsep=10pt,%
-                footskip=25pt]{geometry}
+  a4paper,includeheadfoot,%
+  %layoutsize={8.125in,10.875in},%
+  %layouthoffset=0.1875in,%
+  %layoutvoffset=0.0625in,%
+  left=2.25in+38.5pt,%
+  right=43pt,%
+  top=43pt,% 10pt provided by headsep
+  bottom=32pt,%
+  headheight=0pt,% No Header
+  headsep=10pt,%
+  footskip=25pt]{geometry}
 \RequirePackage[labelfont={bf,sf},%
-                labelsep=period,%
-                justification=RaggedRight,singlelinecheck=false]{caption}
+  labelsep=period,%
+  justification=RaggedRight,singlelinecheck=false]{caption}
 \RequirePackage{multicol}
 \setlength{\columnsep}{13.5pt} % Distance between the two columns of text
 \setlength{\parindent}{12pt} % Paragraph indent
@@ -158,7 +158,7 @@
 \renewcommand{\bibsection}{} % Remove header
 \renewcommand\bibfont{\normalfont\sffamily\fontsize{6}{8}\selectfont} % set font to be sans serif
 
-\makeatletter 
+\makeatletter
 \renewcommand\@biblabel[1]{ #1.} % Remove brackets from label
 \def\tagform@#1{\maketag@@@{\bfseries(\ignorespaces#1\unskip\@@italiccorr)}}
 \renewcommand{\eqref}[1]{\textup{{\normalfont (\ref{#1}}\normalfont)}}
@@ -178,7 +178,7 @@
 \setlength{\belowrulesep}{1.5pt}
 \setlength{\belowbottomsep}{10pt}
 \AtBeginEnvironment{tabular}{
-\sffamily\fontsize{7.5}{10}\selectfont
+  \sffamily\fontsize{7.5}{10}\selectfont
 }
 \newcommand{\addtabletext}[1]{{\setlength{\leftskip}{9pt}\fontsize{7}{9}\selectfont#1}}
 
@@ -208,9 +208,9 @@
 
 \makeatletter
 \fancypagestyle{firststyle}{
-%   \fancyfoot[R]{\footerfont \teza@program\hspace{7pt}|\hspace{7pt}\textbf{FRI}teza\hspace{7pt}|\hspace{7pt}vol. \teza@vol\hspace{7pt}|\hspace{7pt}no. \teza@no\hspace{7pt}|\hspace{7pt}\textbf{\thepage\textendash\pageref{LastPage}}}
-   \fancyfoot[R]{\footerfont \teza@program\hspace{7pt}|\hspace{7pt}\color{P1797}\textbf{FRI}\color{color0}teza\hspace{7pt}|\hspace{7pt}\teza@vol\hspace{7pt}|\hspace{7pt}\teza@no\hspace{7pt}|\hspace{7pt}\textbf{\thepage\textendash\pageref{LastPage}}}
-   \fancyfoot[L]{\hspace*{-2.25in}\footerfont\@ifundefined{@doi}{}{\@doi}}
+  %   \fancyfoot[R]{\footerfont \teza@program\hspace{7pt}|\hspace{7pt}\textbf{FRI}teza\hspace{7pt}|\hspace{7pt}vol. \teza@vol\hspace{7pt}|\hspace{7pt}no. \teza@no\hspace{7pt}|\hspace{7pt}\textbf{\thepage\textendash\pageref{LastPage}}}
+  \fancyfoot[R]{\footerfont \teza@program\hspace{7pt}|\hspace{7pt}\color{P1797}\textbf{FRI}\color{color0}teza\hspace{7pt}|\hspace{7pt}\teza@vol\hspace{7pt}|\hspace{7pt}\teza@no\hspace{7pt}|\hspace{7pt}\textbf{\thepage\textendash\pageref{LastPage}}}
+  \fancyfoot[L]{\hspace*{-2.25in}\footerfont\@ifundefined{@doi}{}{\@doi}}
 }
 \makeatother
 
@@ -236,10 +236,10 @@
       \RequirePackage{lineno}
       \linenumbers
     }{% use tikz if twocolumn
-    \fancyfoot[C]{\begin{tikzpicture}[remember picture,overlay]
-    \node at([xshift=1.5em,yshift=\dimexpr -0.0625in-53pt] current page.north west)[anchor=north west,text width=3em,font=\rmfamily,align=right] {\leftlinenos};%
-    \node at([xshift=-1.5em,yshift=\dimexpr -0.0625in-53pt] current page.north east)[anchor=north east,text width=3em,font=\rmfamily,align=left] {\rightlinenos};%
-    \end{tikzpicture}}
+      \fancyfoot[C]{\begin{tikzpicture}[remember picture,overlay]
+          \node at([xshift=1.5em,yshift=\dimexpr -0.0625in-53pt] current page.north west)[anchor=north west,text width=3em,font=\rmfamily,align=right] {\leftlinenos};%
+          \node at([xshift=-1.5em,yshift=\dimexpr -0.0625in-53pt] current page.north east)[anchor=north east,text width=3em,font=\rmfamily,align=left] {\rightlinenos};%
+        \end{tikzpicture}}
     }
   \fi
 }
@@ -252,34 +252,34 @@
 \renewcommand{\thesubsection}{\Alph{subsection}}
 
 \titleformat{\section}
-  {\large\sffamily\bfseries}
-  {\thesection.}
-  {0.5em}
-  {#1}
-  []
+{\large\sffamily\bfseries}
+{\thesection.}
+{0.5em}
+{#1}
+[]
 \titleformat{name=\section,numberless}
-  {\large\sffamily\bfseries}
-  {}
-  {0em}
-  {#1}
-  []  
+{\large\sffamily\bfseries}
+{}
+{0em}
+{#1}
+[]
 \titleformat{\subsection}[runin]
-  {\sffamily\bfseries}
-  {\thesubsection.}
-  {0.5em}
-  {#1. }
-  []
+{\sffamily\bfseries}
+{\thesubsection.}
+{0.5em}
+{#1. }
+[]
 \titleformat{\subsubsection}[runin]
-  {\sffamily\small\bfseries\itshape}
-  {\thesubsubsection.}
-  {0.5em}
-  {#1. }
-  []    
+{\sffamily\small\bfseries\itshape}
+{\thesubsubsection.}
+{0.5em}
+{#1. }
+[]
 \titleformat{\paragraph}[runin]
-  {\sffamily\small\bfseries}
-  {}
-  {0em}
-  {#1} 
+{\sffamily\small\bfseries}
+{}
+{0em}
+{#1}
 \titlespacing*{\section}{0pc}{3ex \@plus4pt \@minus3pt}{5pt}
 \titlespacing*{\subsection}{0pc}{2.5ex \@plus3pt \@minus2pt}{2pt}
 \titlespacing*{\subsubsection}{0pc}{2ex \@plus2.5pt \@minus1.5pt}{2pt}
@@ -312,37 +312,37 @@
 
 %% Abstract formatting
 \def\xabstract{abstract}
-\long\def\abstract#1\end#2{\def\two{#2}\ifx\two\xabstract 
-\long\gdef\theabstract{\ignorespaces#1}
-\def\go{\end{abstract}}\else
-\typeout{^^J^^J PLEASE DO NOT USE ANY \string\begin\space \string\end^^J
-COMMANDS WITHIN ABSTRACT^^J^^J}#1\end{#2}
-\gdef\theabstract{\vskip12pt BADLY FORMED ABSTRACT: PLEASE DO
-NOT USE {\tt\string\begin...\string\end} COMMANDS WITHIN
-THE ABSTRACT\vskip12pt}\let\go\relax\fi
-\go}
+\long\def\abstract#1\end#2{\def\two{#2}\ifx\two\xabstract
+    \long\gdef\theabstract{\ignorespaces#1}
+    \def\go{\end{abstract}}\else
+    \typeout{^^J^^J PLEASE DO NOT USE ANY \string\begin\space \string\end^^J
+      COMMANDS WITHIN ABSTRACT^^J^^J}#1\end{#2}
+    \gdef\theabstract{\vskip12pt BADLY FORMED ABSTRACT: PLEASE DO
+      NOT USE {\tt\string\begin...\string\end} COMMANDS WITHIN
+      THE ABSTRACT\vskip12pt}\let\go\relax\fi
+  \go}
 
 % Define an environment with abstract content and styling
 \newcommand{\abscontent}{
-\noindent
-{%
-\parbox{\dimexpr\linewidth}{%
-    \vskip3pt%
-	\absfont \theabstract
-}%
-}%
-\vskip10pt%
-\noindent
-{\parbox{\dimexpr\linewidth}{%
-{
- \keywordsfont \@ifundefined{@keywords}{}{\@keywords}}%
-}}%
-\vskip12pt%
+  \noindent
+  {%
+    \parbox{\dimexpr\linewidth}{%
+      \vskip3pt%
+      \absfont \theabstract
+    }%
+  }%
+  \vskip10pt%
+  \noindent
+  {\parbox{\dimexpr\linewidth}{%
+      {
+          \keywordsfont \@ifundefined{@keywords}{}{\@keywords}}%
+    }}%
+  \vskip12pt%
 }
 
 % Option to format abstract differently for certain layouts (not used)
 \newcommand{\abscontentformatted}{
-\abscontent
+  \abscontent
 }
 
 %% Manual adjustment to line up main content with line numbers
@@ -351,73 +351,73 @@ THE ABSTRACT\vskip12pt}\let\go\relax\fi
 
 %% Custom title page 
 \renewcommand{\@maketitle}{%
-{%
-\ifthenelse{\boolean{shortarticle}}
-{\ifthenelse{\boolean{singlecolumn}}{}{%\begin{adjustwidth}{-2.25in}{0in}
-{\raggedright\baselineskip= 24pt\titlefont \@title\par}%
-\vskip10pt% 21pts between base of title and base of author line
-{\raggedright \sffamily\bfseries \@author\par}
-%{\raggedright \sffamily\bfseries Oskar Korošec* in Iztok Lebar Bajec\textsuperscript{a,1}\par}
-%\vskip6pt% 21pts between base of title and base of author line
-%{\raggedright \footnotesize\sffamily Laboratorij za računalniške strukture in sisteme\par}
-%{\raggedright \footnotesize\sffamily \textsuperscript{1}Laboratorij za računalniške strukture in sisteme\par}
-%\vskip8pt% 16pts between base of affiliations and base of dates line 
-%{\raggedright \datesfont \@ifundefined{@dates}{}{\@dates}\par}
-\vskip12pt%
-%\end{adjustwidth}
-\noindent\begin{tikzpicture}[overlay, remember picture]
-\node[anchor=north west] at (-2.25in,0pt) {%
-	\begin{minipage}{2in}
-	\@ifundefined{@dates}{}{{\sffamily\footnotesize{\@dates}}\par
-	\vskip6pt}
-	{\sffamily\footnotesize{Iztok Lebar Bajec | Associate Professor | mentor}}\par
-	%{\sffamily\footnotesize{\textbf{\textsuperscript{a}Mentor:} izr. prof. dr. Iztok Lebar Bajec}}\par
-	%{\sffamily\footnotesize{\textsuperscript{b}\textbf{Somentor:} as. Jure Demšar}}\par 
-	\vskip24pt
-	%{\sffamily\footnotesize{\textbf{Copyright:} \textcopyright\,\the\year\ Rezultati diplomskega dela so intelektualna lastnina avtorja ter Fakultete za računalništvo in informatiko Univerze v Ljubljani. Za objavljanje ali izkoriščanje rezultatov diplomskega dela je potrebno pisno soglasje avtorja, Fakultete za računalništvo in informatiko ter mentorja.}}\par 
-	\vskip24pt
-	%{\sffamily\footnotesize{\textbf{Citiranje:} Korošec O (2016) \@title. frača: FRIteza/201516.130.}}\par 
-	%{\sffamily\footnotesize{\textsuperscript{a}Mentor | izredni profesor}}\par
-	%{\sffamily\footnotesize{\textsuperscript{b}Somentor | asistent}}\par
-	\end{minipage}};
-\end{tikzpicture}
-}}
-{% else
-%
-\vskip10pt%
-{\raggedright\baselineskip= 24pt\titlefont \@title\par}%
-\vskip10pt% 21pts between base of title and base of author line
-{\raggedright \@author\par}
-\vskip8pt% 16pts between base of affiliations and base of dates line 
-{\raggedright \datesfont \@ifundefined{@dates}{}{\@dates}\par}
-\vskip12pt
-{%
-\abscontent
-}%
-\vskip25pt%
-}%
-%%%
-%\@additionalelement
-\begin{tikzpicture}[overlay, remember picture]
-\path (current page.south west) ++(38.5pt,32pt+25pt+2pt) node[anchor=south west] {\begin{minipage}{2in}
-	{\sffamily \@significancestatement}
-	\end{minipage}};
-\node[anchor=north west] at ([shift={(38.5pt,-32pt-25pt)}]current page.north west) {\includegraphics{FRIteza_logo.pdf}};
-%\path[fill=P1797] ([shift={(38.5pt,-32pt-25pt)}]current page.north west) rectangle ([shift={(38.5pt+13mm,-32pt-25pt-13mm)}]current page.north west);
-%\node[white,anchor=east] at ([shift={(38.5pt+13mm+1.4mm,-32pt-25pt-13mm/2)}]current page.north west) {\sffamily\bfseries FRI};
-%\node[anchor=west] at ([shift={(38.5pt+13mm-1.4mm,-32pt-25pt-13mm/2)}]current page.north west) {\sffamily teza};
-\end{tikzpicture}
-}%
-\vskip\pnas@vertadjust
+  {%
+      \ifthenelse{\boolean{shortarticle}}
+      {\ifthenelse{\boolean{singlecolumn}}{}{%\begin{adjustwidth}{-2.25in}{0in}
+          {\raggedright\baselineskip= 24pt\titlefont \@title\par}%
+          \vskip10pt% 21pts between base of title and base of author line
+          {\raggedright \sffamily\bfseries \@author\par}
+          %{\raggedright \sffamily\bfseries Oskar Korošec* in Iztok Lebar Bajec\textsuperscript{a,1}\par}
+          %\vskip6pt% 21pts between base of title and base of author line
+          %{\raggedright \footnotesize\sffamily Laboratorij za računalniške strukture in sisteme\par}
+          %{\raggedright \footnotesize\sffamily \textsuperscript{1}Laboratorij za računalniške strukture in sisteme\par}
+          %\vskip8pt% 16pts between base of affiliations and base of dates line 
+          %{\raggedright \datesfont \@ifundefined{@dates}{}{\@dates}\par}
+          \vskip12pt%
+          %\end{adjustwidth}
+          \noindent\begin{tikzpicture}[overlay, remember picture]
+            \node[anchor=north west] at (-2.25in,0pt) {%
+              \begin{minipage}{2in}
+                \@ifundefined{@dates}{}{{\sffamily\footnotesize{\@dates}}\par
+                  \vskip6pt}
+                % {\sffamily\footnotesize{Iztok Lebar Bajec | Associate Professor | mentor}}\par
+                %{\sffamily\footnotesize{\textbf{\textsuperscript{a}Mentor:} izr. prof. dr. Iztok Lebar Bajec}}\par
+                %{\sffamily\footnotesize{\textsuperscript{b}\textbf{Somentor:} as. Jure Demšar}}\par 
+                \vskip24pt
+                %{\sffamily\footnotesize{\textbf{Copyright:} \textcopyright\,\the\year\ Rezultati diplomskega dela so intelektualna lastnina avtorja ter Fakultete za računalništvo in informatiko Univerze v Ljubljani. Za objavljanje ali izkoriščanje rezultatov diplomskega dela je potrebno pisno soglasje avtorja, Fakultete za računalništvo in informatiko ter mentorja.}}\par 
+                \vskip24pt
+                %{\sffamily\footnotesize{\textbf{Citiranje:} Korošec O (2016) \@title. frača: FRIteza/201516.130.}}\par 
+                %{\sffamily\footnotesize{\textsuperscript{a}Mentor | izredni profesor}}\par
+                %{\sffamily\footnotesize{\textsuperscript{b}Somentor | asistent}}\par
+              \end{minipage}};
+          \end{tikzpicture}
+        }}
+      {% else
+        %
+        \vskip10pt%
+        {\raggedright\baselineskip= 24pt\titlefont \@title\par}%
+        \vskip10pt% 21pts between base of title and base of author line
+        {\raggedright \@author\par}
+        \vskip8pt% 16pts between base of affiliations and base of dates line 
+        {\raggedright \datesfont \@ifundefined{@dates}{}{\@dates}\par}
+        \vskip12pt
+        {%
+          \abscontent
+        }%
+        \vskip25pt%
+      }%
+      %%%
+      %\@additionalelement
+      \begin{tikzpicture}[overlay, remember picture]
+        \path (current page.south west) ++(38.5pt,32pt+25pt+2pt) node[anchor=south west] {\begin{minipage}{2in}
+            {\sffamily \@significancestatement}
+          \end{minipage}};
+        \node[anchor=north west] at ([shift={(38.5pt,-32pt-25pt)}]current page.north west) {\includegraphics{FRIteza_logo.pdf}};
+        %\path[fill=P1797] ([shift={(38.5pt,-32pt-25pt)}]current page.north west) rectangle ([shift={(38.5pt+13mm,-32pt-25pt-13mm)}]current page.north west);
+        %\node[white,anchor=east] at ([shift={(38.5pt+13mm+1.4mm,-32pt-25pt-13mm/2)}]current page.north west) {\sffamily\bfseries FRI};
+        %\node[anchor=west] at ([shift={(38.5pt+13mm-1.4mm,-32pt-25pt-13mm/2)}]current page.north west) {\sffamily teza};
+      \end{tikzpicture}
+    }%
+  \vskip\pnas@vertadjust
 }%
 
 %% Footnotes set up
 \RequirePackage[flushmargin,ragged]{footmisc}
 \renewcommand*{\footnotelayout}{\normalfont\sffamily\fontsize{6}{8}\selectfont} % set the footnote font
 \renewcommand{\footnoterule}{% Set the footnote hrule style
-  \kern -3pt
-  {\color{black50} \hrule width 72pt height 0.25pt}
-  \kern 2.5pt
+\kern -3pt
+{\color{black50} \hrule width 72pt height 0.25pt}
+\kern 2.5pt
 }
 
 %% Set up the acknowledgments field
@@ -426,17 +426,17 @@ THE ABSTRACT\vskip12pt}\let\go\relax\fi
 \providecommand*{\toclevel@acknow@section}{0}
 % Format is set for research articles by default
 \titleformat{\acknow@section}[runin]
-   {\sffamily\normalsize\bfseries}
-   {}
-   {0em}
-   {#1.}
-   []
+{\sffamily\normalsize\bfseries}
+{}
+{0em}
+{#1.}
+[]
 \titlespacing{\acknow@section}
-	{0pt}
-	{3.25ex plus 1ex minus .2ex}
-	{1.5ex plus .2ex}
+{0pt}
+{3.25ex plus 1ex minus .2ex}
+{1.5ex plus .2ex}
 \newcommand{\showacknow}{% Display acknowledgments section
-\@ifundefined{@acknow}{}{\acknow@section{\iflanguage{slovene}{\textsc{doprinosi}}{\textsc{contributions}}}\small\@acknow}
+  \@ifundefined{@acknow}{}{\acknow@section{\iflanguage{slovene}{\textsc{doprinosi}}{\textsc{contributions}}}\small\@acknow}
 }
 
 %% Set up the materials&methods field
@@ -445,17 +445,17 @@ THE ABSTRACT\vskip12pt}\let\go\relax\fi
 \providecommand*{\toclevel@matmethods@section}{0}
 % Format is set for research articles by default
 \titleformat{\matmethods@section}
-   {\sffamily\normalsize\bfseries}
-   {}
-   {0em}
-   {#1}
-   []
+{\sffamily\normalsize\bfseries}
+{}
+{0em}
+{#1}
+[]
 \titlespacing{\matmethods@section}
-	{0pt}
-	{3.25ex plus 1ex minus .2ex}
-	{1.5ex plus .2ex}
+{0pt}
+{3.25ex plus 1ex minus .2ex}
+{1.5ex plus .2ex}
 \newcommand{\showmatmethods}{% Display materials&methods section
-\@ifundefined{@matmethods}{}{\matmethods@section{\mathmethods@name}{\small\noindent\@matmethods}}
+  \@ifundefined{@matmethods}{}{\matmethods@section{\mathmethods@name}{\small\noindent\@matmethods}}
 }
 
 %% Other packages
