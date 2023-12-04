@@ -2,6 +2,7 @@ from Behaviours.Behaviour import Behaviour
 from Boid import Boid
 from pygame import Vector2, Surface, draw
 import Constants
+from math import radians
 
 
 class BasicPreyBehaviour(Behaviour):
@@ -9,17 +10,26 @@ class BasicPreyBehaviour(Behaviour):
         self,
         perceptionRadius: float = Constants.PREY_PERCEPTION_RADIUS,
         separationDistance: float = Constants.PREY_SEPARATION_DISTANCE,
+        angle_of_view: float = Constants.PREY_FOV,
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
         self._separationDistance: float = separationDistance
+        self._angle_of_view: float = angle_of_view
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
         for boid in boids:
             if boid is not curBoid:
                 dist_sq = curBoid.getPosition().distance_squared_to(boid.getPosition())
-                if dist_sq < self._perceptionRadius**2:
+                diff = boid.getPosition() - curBoid.getPosition()
+                angle = curBoid.getVelocity().angle_to(diff) % 360
+                angle_between_boids = min(angle, 360 - angle)
+
+                if (
+                    dist_sq < self._perceptionRadius**2
+                    and angle_between_boids <= self._angle_of_view
+                ):
                     neighbors.append(boid)
 
         return neighbors
@@ -80,12 +90,22 @@ class BasicPreyBehaviour(Behaviour):
 
     def debug_draw(self, surface: Surface, boids: list[Boid]):
         for boid in boids:
-            draw.circle(
+            _, heading = boid.getVelocity().as_polar()
+            heading = radians(heading)
+
+            draw.arc(
                 surface,
-                (100, 100, 100),
-                boid.getPosition(),
-                self._perceptionRadius,
-                width=1,
+                (150, 150, 150),
+                (
+                    *(
+                        boid.getPosition()
+                        - Vector2(self._perceptionRadius, self._perceptionRadius)
+                    ),
+                    2 * self._perceptionRadius,
+                    2 * self._perceptionRadius,
+                ),
+                -heading - radians(self._angle_of_view),
+                -heading + radians(self._angle_of_view),
             )
             draw.circle(
                 surface,
