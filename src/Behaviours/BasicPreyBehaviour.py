@@ -21,16 +21,28 @@ class BasicPreyBehaviour(Behaviour):
         neighbors: list[Boid] = []
         for boid in boids:
             if boid is not curBoid:
-                dist_sq = curBoid.getPosition().distance_squared_to(boid.getPosition())
-                diff = boid.getPosition() - curBoid.getPosition()
-                angle = curBoid.getVelocity().angle_to(diff) % 360
-                angle_between_boids = min(angle, 360 - angle)
+                dist_sq = curBoid.distance_sq_to(boid)
+                angle_between_boids = curBoid.angle_between(boid)
 
                 if (
                     dist_sq < self._perceptionRadius**2
                     and angle_between_boids <= self._angle_of_view
                 ):
-                    neighbors.append(boid)
+                    # Boid occlusion
+                    occluded_neighbors_idx = curBoid.occludes_neighbors(
+                        angle_between_boids, dist_sq, neighbors
+                    )
+                    if len(occluded_neighbors_idx) > 0:
+                        # Boid is in front of the neighbors
+                        # Neighbors should be replaced by the boid
+                        for i in reversed(occluded_neighbors_idx):
+                            del neighbors[i]
+                        neighbors.append(boid)
+                    elif not curBoid.is_occluded_by_neighbor(
+                        angle_between_boids, dist_sq, neighbors
+                    ):
+                        # Boid is not occluded by any neighbor
+                        neighbors.append(boid)
 
         return neighbors
 

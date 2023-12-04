@@ -2,6 +2,8 @@ from abc import ABC
 from enum import Enum
 from pygame import Vector2, Surface, draw, SRCALPHA, transform
 
+OCCLUSION_ANGLE = 2  # deg
+
 
 class Boid(ABC):
     (BOID_WIDTH, BOID_HEIGHT) = (10, 6)
@@ -31,6 +33,40 @@ class Boid(ABC):
 
     def getVelocity(self) -> Vector2:
         return self._vel
+
+    def distance_sq_to(self, other) -> float:
+        return self.getPosition().distance_squared_to(other.getPosition())
+
+    def angle_between(self, other) -> float:
+        diff = other.getPosition() - self.getPosition()
+        angle = self.getVelocity().angle_to(diff) % 360
+        return min(angle, 360 - angle)
+
+    # Returns True if there is a neighbor between the `self` and `other` boid (potential neighbor)
+    def is_occluded_by_neighbor(
+        self, angle_between_other, dist_other_sq, neighbors
+    ) -> bool:
+        for neighbor in neighbors:
+            if (
+                abs(angle_between_other - self.angle_between(neighbor))
+                < OCCLUSION_ANGLE
+                and self.distance_sq_to(neighbor) < dist_other_sq
+            ):
+                return True
+        return False
+
+    # Returns indices of all neighbors which are occluded by the `other` boid
+    def occludes_neighbors(
+        self, angle_between_other, dist_other_sq, neighbors
+    ) -> list[int]:
+        out = []
+        for i, n in enumerate(neighbors):
+            if (
+                abs(angle_between_other - self.angle_between(n)) < OCCLUSION_ANGLE
+                and self.distance_sq_to(n) > dist_other_sq
+            ):
+                out.append(i)
+        return out
 
     def setDesiredDir(self, value: Vector2) -> None:
         if value.length() > self.MAX_ACCELERATION:
