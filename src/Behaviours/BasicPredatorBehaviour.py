@@ -10,40 +10,41 @@ class BasicPredatorBehaviour(Behaviour):
         self,
         perceptionRadius: float = Constants.PREDATOR_PERCEPTION_RADIUS,
         separationDistance: float = Constants.PREDATOR_SEPARATION_DISTANCE,
-        angle_of_view: float = Constants.PREDATOR_FOV,
+        angleOfView: float = Constants.PREDATOR_FOV,
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
         self._separationDistance: float = separationDistance
-        self._angle_of_view: float = angle_of_view
+        self._angleOfview: float = angleOfView
 
     def get_neighbor_prey(self, predator: Boid, prey: list[Boid]):
-        neihg_prey: list[Boid] = []
+        neigh_prey: list[Boid] = []
         for p in prey:
             dist_sq = predator.distance_sq_to(p)
-            angle_between_boids = predator.angle_between(p)
 
             if (
                 dist_sq < self._perceptionRadius**2
-                and angle_between_boids <= self._angle_of_view
+                and predator.angle_between(p) <= self._angleOfview
             ):
+                angle_between_boids = predator.angle_between(p)
+
                 # Boid occlusion
                 occluded_neighbors_idx = predator.occludes_neighbors(
-                    angle_between_boids, dist_sq, neihg_prey
+                    angle_between_boids, dist_sq, neigh_prey
                 )
                 if len(occluded_neighbors_idx) > 0:
                     # Boid is in front of the neighbors
                     # Neighbors should be replaced by the boid
                     for i in reversed(occluded_neighbors_idx):
-                        del neihg_prey[i]
-                    neihg_prey.append(p)
+                        del neigh_prey[i]
+                    neigh_prey.append(p)
                 elif not predator.is_occluded_by_neighbor(
-                    angle_between_boids, dist_sq, neihg_prey
+                    angle_between_boids, dist_sq, neigh_prey
                 ):
                     # Boid is not occluded by any neighbor
-                    neihg_prey.append(p)
+                    neigh_prey.append(p)
 
-        return neihg_prey
+        return neigh_prey
 
     def _bound_position(self, curBoid: Boid):
         direction = Vector2(0, 0)
@@ -91,8 +92,8 @@ class BasicPredatorBehaviour(Behaviour):
                     2 * self._perceptionRadius,
                     2 * self._perceptionRadius,
                 ),
-                -heading - radians(self._angle_of_view),
-                -heading + radians(self._angle_of_view),
+                -heading - radians(self._angleOfview),
+                -heading + radians(self._angleOfview),
             )
             draw.circle(
                 surface,

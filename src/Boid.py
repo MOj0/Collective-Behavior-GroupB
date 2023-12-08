@@ -6,8 +6,6 @@ OCCLUSION_ANGLE = 2  # deg
 
 
 class Boid(ABC):
-    # MAX_TORQUE: float = 1.0 # TODO: Use this parameter
-
     def __init__(
         self,
         size=(10, 6),
@@ -15,9 +13,11 @@ class Boid(ABC):
         position=Vector2(0, 0),
         velocity=Vector2(0, 0),
         acceleration=Vector2(0, 0),
-        min_velocity=200.0,
+        cruise_velocity=200.0,
         max_velocity=500.0,
         max_acceleration=2000.0,
+        base_acceleration=1200,
+        max_rotation_angle=8,
     ) -> None:
         super().__init__()
         self._width, self._height = size
@@ -32,9 +32,12 @@ class Boid(ABC):
         self._vel: Vector2 = velocity
         self._acc: tuple[Vector2, Vector2] = (acceleration, Vector2(0, 0))
 
-        self.min_velocity = min_velocity
+        self.cruising_velocity = cruise_velocity
         self.max_velocity = max_velocity
         self.max_acceleration = max_acceleration
+        self.base_acceleration = base_acceleration
+
+        self.max_rotation_angle = max_rotation_angle
 
     def getPosition(self) -> Vector2:
         return self._pos
@@ -42,17 +45,17 @@ class Boid(ABC):
     def getVelocity(self) -> Vector2:
         return self._vel
 
-    def distance_sq_to(self, other) -> float:
+    def distance_sq_to(self, other: "Boid") -> float:
         return self.getPosition().distance_squared_to(other.getPosition())
 
-    def angle_between(self, other) -> float:
+    def angle_between(self, other: "Boid") -> float:
         diff = other.getPosition() - self.getPosition()
         angle = self.getVelocity().angle_to(diff) % 360
         return min(angle, 360 - angle)
 
     # Returns True if there is a neighbor between the `self` and `other` boid (potential neighbor)
     def is_occluded_by_neighbor(
-        self, angle_between_other, dist_other_sq, neighbors
+        self, angle_between_other: float, dist_other_sq: float, neighbors: list["Boid"]
     ) -> bool:
         for neighbor in neighbors:
             if (
@@ -66,7 +69,7 @@ class Boid(ABC):
 
     # Returns indices of all neighbors which are occluded by the `other` boid
     def occludes_neighbors(
-        self, angle_between_other, dist_other_sq, neighbors
+        self, angle_between_other: float, dist_other_sq: float, neighbors: list["Boid"]
     ) -> list[int]:
         occluded_neighbors_idx = []
 
@@ -79,15 +82,24 @@ class Boid(ABC):
 
         return occluded_neighbors_idx
 
-    def setDesiredDir(self, value: Vector2) -> None:
-        if value.length() > self.max_acceleration:
-            value.scale_to_length(self.max_acceleration)
-        self._acc = (self._acc[0], value)
+    def setDesiredDir(self, dir: Vector2) -> None:
+        new_acceleration = (
+            dir.normalize() * self.base_acceleration
+            if dir.length_squared() != 0
+            else dir
+        )
+
+        angle = new_acceleration.angle_to(self._acc[0])
+        if angle % 360 > self.max_rotation_angle:
+            sign = 1 if angle > 0 and angle < 180 or angle < -180 else -1
+            new_acceleration = new_acceleration.rotate(self.max_rotation_angle * sign)
+
+        self._acc = (self._acc[0], new_acceleration)
 
     def _velocityCheck(self) -> None:
         speed: float = self._vel.length()
-        if speed < self.min_velocity:
-            self._vel.scale_to_length(self.min_velocity)
+        if speed < self.cruising_velocity:
+            self._vel.scale_to_length(self.cruising_velocity)
         elif speed > self.max_velocity:
             self._vel.scale_to_length(self.max_velocity)
 

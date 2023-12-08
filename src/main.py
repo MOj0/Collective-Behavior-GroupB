@@ -26,24 +26,18 @@ def add_prey(n_prey):
             random.uniform(-1, 1),
             random.uniform(-1, 1),
         )
-        min_velocity = 200.0
-        max_velocity = 500.0
-        max_acceleration = 2000.0
-        start_velocity = (
-            (min_velocity + max_velocity)
-            / 2
-            * random_velocity
-            / random_velocity.length()
-        )
+        start_velocity = PREY_CRUISE_VELOCITY * random_velocity.normalize()
         simEngine.addPrey(
             Boid(
                 size=(10, 6),
                 color=(0, 0, 255),
                 position=Vector2(random.uniform(0, WIDTH), random.uniform(0, HEIGHT)),
                 velocity=start_velocity,
-                min_velocity=min_velocity,
-                max_velocity=max_velocity,
-                max_acceleration=max_acceleration,
+                cruise_velocity=PREY_CRUISE_VELOCITY,
+                max_velocity=PREY_MAX_VELOCITY,
+                max_acceleration=PREY_MAX_ACCELERATION,
+                base_acceleration=PREY_BASE_ACCELERATION,
+                max_rotation_angle=PREY_MAX_ROTATION_ANGLE,
             )
         )
 
@@ -68,6 +62,11 @@ def add_predators(n_predators):
                 color=(255, 0, 0),
                 position=Vector2(random.uniform(0, WIDTH), random.uniform(0, HEIGHT)),
                 velocity=start_velocity,
+                cruise_velocity=PREDATOR_CRUISE_VELOCITY,
+                max_velocity=PREDATOR_MAX_VELOCITY,
+                max_acceleration=PREDATOR_MAX_ACCELERATION,
+                base_acceleration=PREDATOR_BASE_ACCELERATION,
+                max_rotation_angle=PREDATOR_MAX_ROTATION_ANGLE,
             )
         )
 
