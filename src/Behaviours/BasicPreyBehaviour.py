@@ -11,11 +11,18 @@ class BasicPreyBehaviour(Behaviour):
         perceptionRadius: float = Constants.PREY_PERCEPTION_RADIUS,
         separationDistance: float = Constants.PREY_SEPARATION_DISTANCE,
         angleOfView: float = Constants.PREY_FOV,
+        separationCoef: float = Constants.PREY_SEPARATION_COEFFICIENT,
+        cohesionCoef: float = Constants.PREY_COHESION_COEFFICIENT,
+        alignmentCoef: float = Constants.PREY_ALIGNMENT_COEFFICIENT,
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
         self._separationDistance: float = separationDistance
         self._angleOfView: float = angleOfView
+
+        self._separationCoef: float = separationCoef
+        self._cohesionCoef: float = cohesionCoef
+        self._alignmentCoef: float = alignmentCoef
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
@@ -33,22 +40,28 @@ class BasicPreyBehaviour(Behaviour):
 
     def _separation(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
         direction = Vector2(0, 0)
+        if len(neighbors) == 0:
+            return direction
+
         for boid in neighbors:
             if (
                 boid.getPosition() - curBoid.getPosition()
             ).length_squared() < self._separationDistance**2:
                 direction -= boid.getPosition() - curBoid.getPosition()
 
-        return direction
+        return direction * self._separationCoef
 
     def _cohesion(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
         if len(neighbors) == 0:
             return Vector2(0, 0)
+
         direction = Vector2()
         for boid in neighbors:
-            direction += boid.getPosition() - curBoid.getPosition()
+            direction += boid.getPosition()
         direction /= len(neighbors)
-        return direction / 100  # Move 1% to the center
+        direction -= curBoid.getPosition()
+
+        return direction * self._cohesionCoef
 
     def _alignment(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
         if len(neighbors) == 0:
@@ -59,7 +72,8 @@ class BasicPreyBehaviour(Behaviour):
 
         direction /= len(neighbors)
         direction -= curBoid.getVelocity()
-        return direction / 8
+
+        return direction * self._alignmentCoef
 
     def _bound_position(self, curBoid: Boid):
         direction = Vector2(0, 0)
@@ -82,7 +96,7 @@ class BasicPreyBehaviour(Behaviour):
             c = self._cohesion(boid, neighbors)
             a = self._alignment(boid, neighbors)
             b = self._bound_position(boid)
-            boid.setDesiredDir(s + c + a + b)
+            boid.setDesiredAcceleration(s + c + a + b)
 
     def debug_draw(self, surface: Surface, boids: list[Boid]):
         for boid in boids:

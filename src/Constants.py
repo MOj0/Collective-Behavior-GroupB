@@ -1,24 +1,30 @@
-HEIGHT, WIDTH = (600, 800)
+HEIGHT, WIDTH = (900, 1200)
 
 N_PREY = 50
 N_PREDATORS = 1
 
-PREY_CRUISE_VELOCITY = 200.0  # Effectively mininmum velocity
-PREY_MAX_VELOCITY = 400.0
+
+# Boid parameters
+PREY_CRUISE_VELOCITY = 400.0  # Effectively mininmum velocity
+PREY_MAX_VELOCITY = 600.0
 PREY_BASE_ACCELERATION = 1200.0
 PREY_MAX_ACCELERATION = 2000.0
-PREY_MAX_ROTATION_ANGLE = 2  # NOTE: This parameter depends on the acceleration...
-PREY_PERCEPTION_RADIUS = 50
+PREY_MAX_ROTATION_ANGLE = 40  # NOTE: This parameter depends on the acceleration...
+PREY_PERCEPTION_RADIUS = 100
 PREY_SEPARATION_DISTANCE = 25
 # NOTE: FOV has to be halved, because we have FOV/2 on each of the 2 sides
 PREY_FOV = 300 // 2
 
+# Behaviour parameters
+PREY_SEPARATION_COEFFICIENT = 1
+PREY_COHESION_COEFFICIENT = 0.01
+PREY_ALIGNMENT_COEFFICIENT = 0.12
 
-PREDATOR_CRUISE_VELOCITY = 400.0  # Effectively minimum velocity
+PREDATOR_CRUISE_VELOCITY = 300.0  # Effectively minimum velocity
 PREDATOR_MAX_VELOCITY = 800.0
-PREDATOR_BASE_ACCELERATION = 2000.0
+PREDATOR_BASE_ACCELERATION = 1600.0
 PREDATOR_MAX_ACCELERATION = 3000.0
-PREDATOR_MAX_ROTATION_ANGLE = 25  # NOTE: This parameter depends on the acceleration...
+PREDATOR_MAX_ROTATION_ANGLE = 100  # NOTE: This parameter depends on the acceleration...
 PREDATOR_PERCEPTION_RADIUS = 400
 PREDATOR_SEPARATION_DISTANCE = 50
 # NOTE: Has to be halved, because we have FOV/2 on each of the 2 sides

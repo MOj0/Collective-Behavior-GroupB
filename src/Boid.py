@@ -1,6 +1,8 @@
 from abc import ABC
 from enum import Enum
 from pygame import Vector2, Surface, draw, SRCALPHA, transform
+import Constants
+import math
 
 OCCLUSION_ANGLE = 2  # deg
 
@@ -8,16 +10,16 @@ OCCLUSION_ANGLE = 2  # deg
 class Boid(ABC):
     def __init__(
         self,
+        cruise_velocity: float,
+        max_velocity: float,
+        max_acceleration: float,
+        base_acceleration: float,
+        max_rotation_angle: float,
         size=(10, 6),
         color=(0, 0, 255),
         position=Vector2(0, 0),
         velocity=Vector2(0, 0),
         acceleration=Vector2(0, 0),
-        cruise_velocity=200.0,
-        max_velocity=500.0,
-        max_acceleration=2000.0,
-        base_acceleration=1200,
-        max_rotation_angle=8,
     ) -> None:
         super().__init__()
         self._width, self._height = size
@@ -44,6 +46,9 @@ class Boid(ABC):
 
     def getVelocity(self) -> Vector2:
         return self._vel
+
+    def getAcceleration(self) -> Vector2:
+        return self._acc[0]
 
     def distance_sq_to(self, other: "Boid") -> float:
         return self.getPosition().distance_squared_to(other.getPosition())
@@ -82,19 +87,31 @@ class Boid(ABC):
 
         return occluded_neighbors_idx
 
-    def setDesiredDir(self, dir: Vector2) -> None:
-        new_acceleration = (
-            dir.normalize() * self.base_acceleration
-            if dir.length_squared() != 0
-            else dir
+    def setDesiredAcceleration(self, new_acc: Vector2) -> None:
+        if new_acc.length_squared() == 0:
+            self._acc = (self._acc[0], new_acc)
+            return
+
+        new_acc.scale_to_length(self.base_acceleration)
+        heading_vec = self._acc[0] if self._acc[0].length_squared() != 0 else self._vel
+        new_acc = self._limit_rotation_angle(heading_vec, new_acc)
+
+        self._acc = (self._acc[0], new_acc)
+
+    def _limit_rotation_angle(self, curr_heading: Vector2, new_dir: Vector2) -> Vector2:
+        angle = math.degrees(
+            math.atan2(new_dir.y, new_dir.x)
+            - math.atan2(curr_heading.y, curr_heading.x)
         )
 
-        angle = new_acceleration.angle_to(self._acc[0])
-        if angle % 360 > self.max_rotation_angle:
-            sign = 1 if angle > 0 and angle < 180 or angle < -180 else -1
-            new_acceleration = new_acceleration.rotate(self.max_rotation_angle * sign)
+        if angle % 360 <= self.max_rotation_angle:
+            return new_dir
 
-        self._acc = (self._acc[0], new_acceleration)
+        min_angle = min(angle % 360, 360 - (angle % 360))
+        sign = 1 if -180 <= angle <= 0 or angle > 180 else -1
+        angle_diff = sign * math.radians(min_angle - self.max_rotation_angle)
+
+        return new_dir.rotate(angle_diff)
 
     def _velocityCheck(self) -> None:
         speed: float = self._vel.length()
@@ -126,7 +143,13 @@ class Boid(ABC):
         if debug_draw:
             draw.line(
                 surface,
+                (0, 255, 0),
+                self.getPosition(),
+                self.getPosition() + self.getVelocity() / 10,
+            )
+            draw.line(
+                surface,
                 (255, 0, 0),
                 self.getPosition(),
-                self.getPosition() + self.getVelocity().normalize() * 50,
+                self.getPosition() + self.getAcceleration() / 10,
             )

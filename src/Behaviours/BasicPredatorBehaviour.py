@@ -74,7 +74,7 @@ class BasicPredatorBehaviour(Behaviour):
             c = self.find_centroid(predator, self.get_neighbor_prey(predator, prey))
             b = self._bound_position(predator)
             direction = c + b
-            predator.setDesiredDir(direction * 5)
+            predator.setDesiredAcceleration(direction * 5)
 
     def debug_draw(self, surface: Surface, boids: list[Boid]):
         for boid in boids:
