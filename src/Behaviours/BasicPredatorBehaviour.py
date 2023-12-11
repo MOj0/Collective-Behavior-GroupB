@@ -1,6 +1,7 @@
 from Behaviours.Behaviour import Behaviour
 from Boid import Boid
 from pygame import Vector2, Surface, draw
+from Camera import Camera
 import Constants
 from math import radians
 
@@ -71,24 +72,30 @@ class BasicPredatorBehaviour(Behaviour):
 
     def update(self, friendlies: list[Boid], prey: list[Boid]) -> None:
         for predator in friendlies:
-            c = self.find_centroid(predator, self.get_neighbor_prey(predator, prey))
-            b = self._bound_position(predator)
-            direction = c + b
-            predator.setDesiredAcceleration(direction * 5)
+            prey = self.get_neighbor_prey(predator, prey)
+            predator.setPredation(len(prey) > 0)
 
-    def debug_draw(self, surface: Surface, boids: list[Boid]):
+            c = self.find_centroid(predator, prey)
+            b = self._bound_position(predator)
+
+            direction = c + b
+            predator.setDesiredAcceleration(direction)
+
+    def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:
             _, heading = boid.getVelocity().as_polar()
             heading = radians(heading)
+
+            arcCenter = camera.apply(
+                boid.getPosition()
+                - Vector2(self._perceptionRadius, self._perceptionRadius)
+            )
 
             draw.arc(
                 surface,
                 (150, 150, 150),
                 (
-                    *(
-                        boid.getPosition()
-                        - Vector2(self._perceptionRadius, self._perceptionRadius)
-                    ),
+                    *arcCenter,
                     2 * self._perceptionRadius,
                     2 * self._perceptionRadius,
                 ),
@@ -98,7 +105,7 @@ class BasicPredatorBehaviour(Behaviour):
             draw.circle(
                 surface,
                 (255, 100, 100),
-                boid.getPosition(),
+                camera.apply(boid.getPosition()),
                 self._separationDistance,
                 width=1,
             )

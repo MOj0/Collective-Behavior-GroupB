@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from Boid import Boid
 from pygame import Vector2, Surface
 from Constants import *
+from Camera import Camera
 
 
 class Behaviour(ABC):
@@ -19,5 +20,5 @@ class Behaviour(ABC):
         raise Exception("Missing implementation!")
 
     @abstractmethod
-    def debug_draw(self, surface: Surface, boids: list[Boid]) -> None:
+    def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]) -> None:
         raise Exception("Missing implementation!")
