@@ -6,6 +6,7 @@ from SimEngine import SimEngine
 from Boid import *
 from Behaviours.BasicPreyBehaviour import BasicPreyBehaviour
 from Behaviours.BasicPredatorBehaviour import BasicPredatorBehaviour
+import Camera
 
 pg.init()
 pg.display.set_caption("Predator and Prey boid simulation")
@@ -71,14 +72,48 @@ def add_predators(n_predators):
         )
 
 
-add_prey(N_PREY)
-add_predators(N_PREDATORS)
+def init():
+    # add_prey(N_PREY)
+    # add_(N_PREY)
+    simEngine.addPrey(
+        Boid(
+            size=(10, 6),
+            color=(0, 0, 255),
+            position=Vector2(WIDTH // 2, HEIGHT - 100),
+            velocity=Vector2(0, -2),
+            cruise_velocity=PREY_CRUISE_VELOCITY,
+            max_velocity=PREY_MAX_VELOCITY,
+            max_acceleration=PREY_MAX_ACCELERATION,
+            base_acceleration=PREY_BASE_ACCELERATION,
+            max_rotation_angle=PREY_MAX_ROTATION_ANGLE,
+        )
+    )
+
+    simEngine.addPredator(
+        Boid(
+            size=(20, 12),
+            color=(255, 0, 0),
+            position=Vector2(WIDTH // 2, 100),
+            # velocity=start_velocity,
+            cruise_velocity=PREDATOR_CRUISE_VELOCITY,
+            max_velocity=PREDATOR_MAX_VELOCITY,
+            max_acceleration=PREDATOR_MAX_ACCELERATION,
+            base_acceleration=PREDATOR_BASE_ACCELERATION,
+            max_rotation_angle=PREDATOR_MAX_ROTATION_ANGLE,
+        )
+    )
+
+
+init()
 
 running: bool = True
 debug_draw: bool = False
 is_update_on: bool = True
 do_single_update: bool = True
+follow_predator: bool = False
 steps = 0
+
+camera = Camera.Camera(Camera.simple_camera, WIDTH, HEIGHT)
 
 while running:
     for event in pg.event.get():
@@ -91,8 +126,9 @@ while running:
                 debug_draw = not debug_draw
             elif event.key == pg.K_r:
                 simEngine.clear()
-                add_prey(N_PREY)
-                add_predators(N_PREDATORS)
+                # add_prey(N_PREY)
+                # add_predators(N_PREDATORS)
+                init()
                 steps = 0
             elif event.key == pg.K_SPACE:
                 is_update_on = not is_update_on
@@ -100,6 +136,8 @@ while running:
                 do_single_update = True
             elif event.key == pg.K_s:
                 pg.image.save(screen, f"boids_step_{steps-1}.jpg")
+            elif event.key == pg.K_p:
+                follow_predator = not follow_predator
 
     if is_update_on or do_single_update:
         simEngine.update(DT)
@@ -107,7 +145,11 @@ while running:
         steps += 1
 
     screen.fill((0, 0, 0))
-    simEngine.draw(screen, debug_draw)
+
+    if follow_predator and len(simEngine._predators) > 0:
+        camera.update(simEngine._predators[0])
+
+    simEngine.draw(camera, screen, debug_draw)
     if debug_draw:
         screen.blit(
             font.render(f"FPS: {int(clock.get_fps())}", 1, (0, 255, 255)), (20, 20)

@@ -2,6 +2,7 @@ from Behaviours.Behaviour import Behaviour
 from Boid import Boid
 from pygame import Vector2, Surface, draw
 import Constants
+from Camera import Camera
 from math import radians
 
 
@@ -14,6 +15,7 @@ class BasicPreyBehaviour(Behaviour):
         separationCoef: float = Constants.PREY_SEPARATION_COEFFICIENT,
         cohesionCoef: float = Constants.PREY_COHESION_COEFFICIENT,
         alignmentCoef: float = Constants.PREY_ALIGNMENT_COEFFICIENT,
+        escapeCoef: float = Constants.PREY_ESCAPE_COEFFICIENT,
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
@@ -23,6 +25,8 @@ class BasicPreyBehaviour(Behaviour):
         self._separationCoef: float = separationCoef
         self._cohesionCoef: float = cohesionCoef
         self._alignmentCoef: float = alignmentCoef
+
+        self._escapeCoef: float = escapeCoef
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
@@ -89,28 +93,41 @@ class BasicPreyBehaviour(Behaviour):
 
         return direction * 10
 
+    def _escape(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
+        direction = Vector2(0, 0)
+        for predator in predators:
+            direction -= predator.getPosition() - curBoid.getPosition()
+        return direction * self._escapeCoef
+
     def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:
         for boid in friendlies:
             neighbors = self._get_neighbors(boid, friendlies)
+            predators = self._get_neighbors(boid, enemies)
+            boid.setPredation(len(predators) > 0)
+
             s = self._separation(boid, neighbors)
             c = self._cohesion(boid, neighbors)
             a = self._alignment(boid, neighbors)
             b = self._bound_position(boid)
-            boid.setDesiredAcceleration(s + c + a + b)
+            e = self._escape(boid, predators)
 
-    def debug_draw(self, surface: Surface, boids: list[Boid]):
+            boid.setDesiredAcceleration(s + c + a + e + b)
+
+    def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:
             _, heading = boid.getVelocity().as_polar()
             heading = radians(heading)
+
+            arcCenter = camera.apply(
+                boid.getPosition()
+                - Vector2(self._perceptionRadius, self._perceptionRadius)
+            )
 
             draw.arc(
                 surface,
                 (150, 150, 150),
                 (
-                    *(
-                        boid.getPosition()
-                        - Vector2(self._perceptionRadius, self._perceptionRadius)
-                    ),
+                    *arcCenter,
                     2 * self._perceptionRadius,
                     2 * self._perceptionRadius,
                 ),
@@ -120,7 +137,7 @@ class BasicPreyBehaviour(Behaviour):
             draw.circle(
                 surface,
                 (255, 100, 100),
-                boid.getPosition(),
+                camera.apply(boid.getPosition()),
                 self._separationDistance,
                 width=1,
             )

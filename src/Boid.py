@@ -1,7 +1,7 @@
 from abc import ABC
 from enum import Enum
 from pygame import Vector2, Surface, draw, SRCALPHA, transform
-import Constants
+from Camera import Camera
 import math
 
 OCCLUSION_ANGLE = 2  # deg
@@ -20,6 +20,7 @@ class Boid(ABC):
         position=Vector2(0, 0),
         velocity=Vector2(0, 0),
         acceleration=Vector2(0, 0),
+        predation=False,
     ) -> None:
         super().__init__()
         self._width, self._height = size
@@ -41,6 +42,9 @@ class Boid(ABC):
 
         self.max_rotation_angle = max_rotation_angle
 
+        # True if under predation (prey) or hunting (predator), False otherwise
+        self._predation = predation
+
     def getPosition(self) -> Vector2:
         return self._pos
 
@@ -49,6 +53,12 @@ class Boid(ABC):
 
     def getAcceleration(self) -> Vector2:
         return self._acc[0]
+
+    def getPredation(self) -> bool:
+        return self._predation
+
+    def setPredation(self, predation):
+        self._predation = predation
 
     def distance_sq_to(self, other: "Boid") -> float:
         return self.getPosition().distance_squared_to(other.getPosition())
@@ -92,9 +102,16 @@ class Boid(ABC):
             self._acc = (self._acc[0], new_acc)
             return
 
-        new_acc.scale_to_length(self.base_acceleration)
+        new_acc.scale_to_length(
+            self.base_acceleration if not self._predation else self.max_acceleration
+        )
+
         heading_vec = self._acc[0] if self._acc[0].length_squared() != 0 else self._vel
-        new_acc = self._limit_rotation_angle(heading_vec, new_acc)
+        if heading_vec.length_squared() != 0:
+            new_acc = (
+                self._limit_rotation_angle(heading_vec.normalize(), new_acc.normalize())
+                * new_acc.magnitude()
+            )
 
         self._acc = (self._acc[0], new_acc)
 
@@ -104,52 +121,59 @@ class Boid(ABC):
             - math.atan2(curr_heading.y, curr_heading.x)
         )
 
-        if angle % 360 <= self.max_rotation_angle:
+        min_angle = min(angle % 360, 360 - (angle % 360))
+        if min_angle <= self.max_rotation_angle:
             return new_dir
 
-        min_angle = min(angle % 360, 360 - (angle % 360))
-        sign = 1 if -180 <= angle <= 0 or angle > 180 else -1
-        angle_diff = sign * math.radians(min_angle - self.max_rotation_angle)
-
-        return new_dir.rotate(angle_diff)
+        sign = -1 if -180.0 <= angle <= 0.0 or angle > 180 else 1
+        return curr_heading.rotate(sign * self.max_rotation_angle)
 
     def _velocityCheck(self) -> None:
-        speed: float = self._vel.length()
-        if speed < self.cruising_velocity:
+        speed = self._vel.length()
+        if speed == 0:
+            return
+
+        if (
+            speed < self.cruising_velocity
+            or not self._predation
+            and speed > self.cruising_velocity
+        ):
             self._vel.scale_to_length(self.cruising_velocity)
-        elif speed > self.max_velocity:
+        elif self._predation and speed > self.max_velocity:
             self._vel.scale_to_length(self.max_velocity)
 
     def rolloverAcc(self) -> None:
         self._acc = (self._acc[1], Vector2(0, 0))
 
     def update(self, dt: float) -> None:
-        initialVelocity: float = self._vel
+        initialVelocity = self._vel
 
         self._vel += self._acc[1] * dt
         self._velocityCheck()
 
         self._pos += initialVelocity * dt + (self._acc[1] * dt**2) / 2
 
-    def draw(self, surface: Surface, debug_draw: bool) -> None:
+    def draw(self, camera: Camera, surface: Surface, debug_draw: bool) -> None:
         _, heading = self._vel.as_polar()
         shape_rotated = transform.rotate(self._boid_shape, -heading)
 
         surface.blit(
             shape_rotated,
-            self.getPosition() - (self._width / 2, self._height / 2),
+            camera.apply(
+                self.getPosition() - (self._width / 2, self._height / 2),
+            ),
         )
 
         if debug_draw:
             draw.line(
                 surface,
                 (0, 255, 0),
-                self.getPosition(),
-                self.getPosition() + self.getVelocity() / 10,
+                camera.apply(self.getPosition()),
+                camera.apply(self.getPosition() + self.getVelocity() / 10),
             )
             draw.line(
                 surface,
                 (255, 0, 0),
-                self.getPosition(),
-                self.getPosition() + self.getAcceleration() / 10,
+                camera.apply(self.getPosition()),
+                camera.apply(self.getPosition() + self.getAcceleration() / 10),
             )

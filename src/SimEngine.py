@@ -1,5 +1,6 @@
 from Boid import Boid
 from Behaviours.Behaviour import Behaviour
+from Camera import Camera
 from pygame import Surface
 
 
@@ -37,11 +38,11 @@ class SimEngine:
             p.update(dt)
             p.rolloverAcc()
 
-    def draw(self, surface: Surface, debug_draw: bool):
+    def draw(self, camera: Camera, surface: Surface, debug_draw: bool):
         for p in self._prey:
-            p.draw(surface, debug_draw)
+            p.draw(camera, surface, debug_draw)
         for p in self._predators:
-            p.draw(surface, debug_draw)
+            p.draw(camera, surface, debug_draw)
         if debug_draw:
-            self._preyBehaviour.debug_draw(surface, self._prey)
-            self._predatorBehaviour.debug_draw(surface, self._predators)
+            self._preyBehaviour.debug_draw(camera, surface, self._prey)
+            self._predatorBehaviour.debug_draw(camera, surface, self._predators)
