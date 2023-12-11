@@ -10,60 +10,58 @@ class BasicPreyBehaviour(Behaviour):
         self,
         perceptionRadius: float = Constants.PREY_PERCEPTION_RADIUS,
         separationDistance: float = Constants.PREY_SEPARATION_DISTANCE,
-        angle_of_view: float = Constants.PREY_FOV,
+        angleOfView: float = Constants.PREY_FOV,
+        separationCoef: float = Constants.PREY_SEPARATION_COEFFICIENT,
+        cohesionCoef: float = Constants.PREY_COHESION_COEFFICIENT,
+        alignmentCoef: float = Constants.PREY_ALIGNMENT_COEFFICIENT,
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
         self._separationDistance: float = separationDistance
-        self._angle_of_view: float = angle_of_view
+        self._angleOfView: float = angleOfView
+
+        self._separationCoef: float = separationCoef
+        self._cohesionCoef: float = cohesionCoef
+        self._alignmentCoef: float = alignmentCoef
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
         for boid in boids:
             if boid is not curBoid:
                 dist_sq = curBoid.distance_sq_to(boid)
-                angle_between_boids = curBoid.angle_between(boid)
 
                 if (
                     dist_sq < self._perceptionRadius**2
-                    and angle_between_boids <= self._angle_of_view
+                    and curBoid.angle_between(boid) <= self._angleOfView
                 ):
-                    # Boid occlusion
-                    occluded_neighbors_idx = curBoid.occludes_neighbors(
-                        angle_between_boids, dist_sq, neighbors
-                    )
-                    if len(occluded_neighbors_idx) > 0:
-                        # Boid is in front of the neighbors
-                        # Neighbors should be replaced by the boid
-                        for i in reversed(occluded_neighbors_idx):
-                            del neighbors[i]
-                        neighbors.append(boid)
-                    elif not curBoid.is_occluded_by_neighbor(
-                        angle_between_boids, dist_sq, neighbors
-                    ):
-                        # Boid is not occluded by any neighbor
-                        neighbors.append(boid)
+                    neighbors.append(boid)
 
         return neighbors
 
     def _separation(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
         direction = Vector2(0, 0)
+        if len(neighbors) == 0:
+            return direction
+
         for boid in neighbors:
             if (
                 boid.getPosition() - curBoid.getPosition()
             ).length_squared() < self._separationDistance**2:
                 direction -= boid.getPosition() - curBoid.getPosition()
 
-        return direction
+        return direction * self._separationCoef
 
     def _cohesion(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
         if len(neighbors) == 0:
             return Vector2(0, 0)
+
         direction = Vector2()
         for boid in neighbors:
-            direction += boid.getPosition() - curBoid.getPosition()
+            direction += boid.getPosition()
         direction /= len(neighbors)
-        return direction / 100  # Move 1% to the center
+        direction -= curBoid.getPosition()
+
+        return direction * self._cohesionCoef
 
     def _alignment(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
         if len(neighbors) == 0:
@@ -74,7 +72,8 @@ class BasicPreyBehaviour(Behaviour):
 
         direction /= len(neighbors)
         direction -= curBoid.getVelocity()
-        return direction / 8
+
+        return direction * self._alignmentCoef
 
     def _bound_position(self, curBoid: Boid):
         direction = Vector2(0, 0)
@@ -97,8 +96,7 @@ class BasicPreyBehaviour(Behaviour):
             c = self._cohesion(boid, neighbors)
             a = self._alignment(boid, neighbors)
             b = self._bound_position(boid)
-            direction = s + c + a + b
-            boid.setDesiredDir(direction * 60 * 2)
+            boid.setDesiredAcceleration(s + c + a + b)
 
     def debug_draw(self, surface: Surface, boids: list[Boid]):
         for boid in boids:
@@ -116,8 +114,8 @@ class BasicPreyBehaviour(Behaviour):
                     2 * self._perceptionRadius,
                     2 * self._perceptionRadius,
                 ),
-                -heading - radians(self._angle_of_view),
-                -heading + radians(self._angle_of_view),
+                -heading - radians(self._angleOfView),
+                -heading + radians(self._angleOfView),
             )
             draw.circle(
                 surface,
