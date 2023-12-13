@@ -28,6 +28,12 @@ class SimEngine:
         self._predators.clear()
 
     def update(self, dt: float):
+        remove_prey_indices = set()
+        for predator in self._predators:
+            remove_prey_indices.update(predator.collide_with_others(self._prey))
+        for remove_prey_idx in sorted(remove_prey_indices, reverse=True):
+            del self._prey[remove_prey_idx]
+
         self._preyBehaviour.update(self._prey, self._predators)
         self._predatorBehaviour.update(self._predators, self._prey)
 

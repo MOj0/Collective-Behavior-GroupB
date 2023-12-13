@@ -31,6 +31,16 @@ class Boid(ABC):
             [(self._width, self._height / 2), (0, 0), (0, self._height)],
         )
 
+        # Radius of circumcircle used for collision detection
+        a = Vector2(self._width, self._height / 2).magnitude()
+        b = Vector2(0, self._height).magnitude()
+        c = (
+            Vector2(self._width, self._height / 2) - Vector2(0, self._height)
+        ).magnitude()
+        self._r = (
+            a * b * c / math.sqrt((a + b + c) * (b + c - a) * (c + a - b) * (a + b - c))
+        )
+
         self._pos: Vector2 = position
         self._vel: Vector2 = velocity
         self._acc: tuple[Vector2, Vector2] = (acceleration, Vector2(0, 0))
@@ -59,6 +69,9 @@ class Boid(ABC):
 
     def setPredation(self, predation):
         self._predation = predation
+
+    def getCollisionRadius(self) -> float:
+        return self._r
 
     def distance_sq_to(self, other: "Boid") -> float:
         return self.getPosition().distance_squared_to(other.getPosition())
@@ -96,6 +109,14 @@ class Boid(ABC):
                 occluded_neighbors_idx.append(i)
 
         return occluded_neighbors_idx
+
+    def collide_with_others(self, others: list["Boid"]) -> list[int]:
+        return [
+            i
+            for i, boid in enumerate(others)
+            if (boid.getPosition() - self._pos).length_squared()
+            <= (boid.getCollisionRadius() + self._r) ** 2
+        ]
 
     def setDesiredAcceleration(self, new_acc: Vector2) -> None:
         if new_acc.length_squared() == 0:

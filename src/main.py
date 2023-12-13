@@ -73,35 +73,35 @@ def add_predators(n_predators):
 
 
 def init():
-    # add_prey(N_PREY)
-    # add_(N_PREY)
-    simEngine.addPrey(
-        Boid(
-            size=(10, 6),
-            color=(0, 0, 255),
-            position=Vector2(WIDTH // 2, HEIGHT - 100),
-            velocity=Vector2(0, -2),
-            cruise_velocity=PREY_CRUISE_VELOCITY,
-            max_velocity=PREY_MAX_VELOCITY,
-            max_acceleration=PREY_MAX_ACCELERATION,
-            base_acceleration=PREY_BASE_ACCELERATION,
-            max_rotation_angle=PREY_MAX_ROTATION_ANGLE,
-        )
-    )
+    add_prey(N_PREY)
+    add_predators(N_PREDATORS)
+    # simEngine.addPrey(
+    #     Boid(
+    #         size=(10, 6),
+    #         color=(0, 0, 255),
+    #         position=Vector2(WIDTH // 2, HEIGHT - 100),
+    #         velocity=Vector2(0, -2),
+    #         cruise_velocity=PREY_CRUISE_VELOCITY,
+    #         max_velocity=PREY_MAX_VELOCITY,
+    #         max_acceleration=PREY_MAX_ACCELERATION,
+    #         base_acceleration=PREY_BASE_ACCELERATION,
+    #         max_rotation_angle=PREY_MAX_ROTATION_ANGLE,
+    #     )
+    # )
 
-    simEngine.addPredator(
-        Boid(
-            size=(20, 12),
-            color=(255, 0, 0),
-            position=Vector2(WIDTH // 2, 100),
-            # velocity=start_velocity,
-            cruise_velocity=PREDATOR_CRUISE_VELOCITY,
-            max_velocity=PREDATOR_MAX_VELOCITY,
-            max_acceleration=PREDATOR_MAX_ACCELERATION,
-            base_acceleration=PREDATOR_BASE_ACCELERATION,
-            max_rotation_angle=PREDATOR_MAX_ROTATION_ANGLE,
-        )
-    )
+    # simEngine.addPredator(
+    #     Boid(
+    #         size=(20, 12),
+    #         color=(255, 0, 0),
+    #         position=Vector2(WIDTH // 2, 100),
+    #         # velocity=start_velocity,
+    #         cruise_velocity=PREDATOR_CRUISE_VELOCITY,
+    #         max_velocity=PREDATOR_MAX_VELOCITY,
+    #         max_acceleration=PREDATOR_MAX_ACCELERATION,
+    #         base_acceleration=PREDATOR_BASE_ACCELERATION,
+    #         max_rotation_angle=PREDATOR_MAX_ROTATION_ANGLE,
+    #     )
+    # )
 
 
 init()
@@ -110,7 +110,7 @@ running: bool = True
 debug_draw: bool = False
 is_update_on: bool = True
 do_single_update: bool = True
-follow_predator: bool = False
+follow_predator: bool = True
 steps = 0
 
 camera = Camera.Camera(Camera.simple_camera, WIDTH, HEIGHT)
@@ -126,8 +126,6 @@ while running:
                 debug_draw = not debug_draw
             elif event.key == pg.K_r:
                 simEngine.clear()
-                # add_prey(N_PREY)
-                # add_predators(N_PREDATORS)
                 init()
                 steps = 0
             elif event.key == pg.K_SPACE:
