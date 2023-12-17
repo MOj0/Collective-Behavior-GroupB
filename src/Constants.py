@@ -1,6 +1,6 @@
 HEIGHT, WIDTH = (900, 1200)
 
-N_PREY = 20
+N_PREY = 1
 N_PREDATORS = 1
 
 
