@@ -4,7 +4,7 @@ import random
 from Constants import *
 from SimEngine import SimEngine
 from Boid import *
-from Behaviours.BasicPreyBehaviour import BasicPreyBehaviour
+from Behaviours.HoPePreyBehaviour import HoPePreyBehaviour
 from Behaviours.BasicPredatorBehaviour import BasicPredatorBehaviour
 import Camera
 
@@ -17,7 +17,7 @@ font = pg.font.SysFont("monospace", 22)
 FPS = 60
 DT = 1 / FPS
 
-simEngine: SimEngine = SimEngine(BasicPreyBehaviour(), BasicPredatorBehaviour())
+simEngine: SimEngine = SimEngine(HoPePreyBehaviour(), BasicPredatorBehaviour())
 
 
 # NOTE: `add_prey` and `add_predator` needs to be refactored to something more apropriate when necessary
