@@ -229,6 +229,29 @@ and the distance to the potential neighbor exceeds a certain threshold, then the
 This mechanism enhances the realism of the preys perception, a phenomenon observed in biological systems 
 where obstacles or other agents may temporarily obscure the line of sight between individuals within a group.
 
+\begin{center}
+	\begin{tikzpicture}
+		% Draw a semi-transparent blue circle with a dark border
+		\draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+		
+		% Define a triangle shape for the top boid
+		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (boid1) at (0,1.5) {};
+		
+		% Define a triangle shape for the middle boid
+		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid2) at (0,0) {};
+		
+		% Define a triangle shape for the bottom boid
+		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,red] (boid3) at (0,-1.5) {};
+		
+		% Draw arrows indicating occlusion
+		\draw[green,thick,<-] (boid2) -- (boid1);
+		\draw[blue,thick,->] (boid2) -- (boid3);
+		
+		% Label for occlusion
+		\node[blue, below] at (0, -0.5) {Occlusion};
+	\end{tikzpicture}
+  \end{center}
+
 The collision mechanism embedded within the boids encapsulates essential features for simulating interactions among agents. These features include:
 \begin{enumerate}
 	\item \textbf{Proximity evaluation:}
