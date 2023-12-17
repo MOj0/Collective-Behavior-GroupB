@@ -105,8 +105,8 @@ algorithm produces complex and lifelike behaviors similar to those observed in n
 Our paper centers on the implementation of a predator-prey behavior utilizing a Boids simulation.
 
 \section*{Methods}
-As a starting point, a basic boids model has been implemented, which is based on
-three simple rules:
+A boids model is implemented, along with some additional checks to add more realism.
+Boids model has 3 rules:
 \begin{enumerate}
 	\item Avoid collisions.
 	      \begin{center}
@@ -164,7 +164,7 @@ three simple rules:
 	      \end{center}
 \end{enumerate}
 
-\subsection*{Basic boids implementation}
+\subsection*{Boids implementation}
 
 Each boid $B$ has the following properties:
 \begin{enumerate}
@@ -179,6 +179,7 @@ attributes to all boids:
 \begin{enumerate}
 	\item perception radius (denoted by $r_P$)
 	\item separation radius (denoted by $r_S$, also note that $ r_S < r_P $)
+	\item perception angle (denoted by $fov$)
 \end{enumerate}
 
 \noindent The {\em Euclidean distance} (\ref{eq:eucl_dst}) is used for computing the distance between boids.
@@ -194,144 +195,119 @@ To avoid the computation of the costly square root of a real number, we utilize 
 Each step of the simulation loop updates the direction of a boid, which is then applied to its acceleration,
 determining the actual velocity for all boids.
 
+Before applying the 3 mentioned rules, the neighbours of a boid.
+Neighbours (\ref{eq:neighbor_predicate}) of boid $ B $ are all $B_i$ for which the following formula holds:
+
+\begin{equation} \label{eq:neighbor_predicate}
+	d(B, B_i)^2 < r_P^2 \land angle\ between(B, B_i) <= fov
+\end{equation}
+
+Taking perception angle ($fov$) into account adds more realism, especially when interacting with predators.
+
 The direction for collision avoidance, also known as {\em separation}, for boid $B$ is computed by the
 following formula (\ref{eq:sum_dir_vectors}):
 \begin{equation} \label{eq:sum_dir_vectors}
 	direction = \sum_{i=1}^{n} position(B) - position(B_i)
 \end{equation}
-where $i$-th boid $B_i$ is a boid such that: $ d(position(B), position(B_i))^2 < r_S^2 $.
+where $i$-th boid $B_i$ is a neighbor of $B$ and: $ d(position(B), position(B_i))^2 < r_S^2 $.
 This effectively means that boid $B$ will move away (in the opposite direction) from the boids which are too near (closer than the specified $r_S$).
 
 The direction for {\em alignment} for boid $B$ is computed as (\ref{eq:sum_align}):
 \begin{equation} \label{eq:sum_align}
-	direction = \left( \frac{\sum_{i=1}^{n} velocity(B_i)}{n} - velocity(B) \right) \mathbin{/} 8
+	direction = \frac{\sum_{i=1}^{n} velocity(B_i)}{n} - velocity(B)
 \end{equation}
 where $i$-th boid $B_i$ is a boid such that: $ d(position(B), position(B_i)^2 < r_P^2) $ (i.e., $B_i$ is $B$'s neighbour).
-First, the average velocity of all neighboring boids is computed (denoted $v_{avg}$).
-The velocity of current boid $B$ is then subtracted from $v_{avg}$, such that a vector in the direction
-from $velocity(B)$ to $v_{avg}$ is obtained.
-Adding such a vector to the $velocity(B)$ would result in $velocity(B)$ being equal to the $v_{avg}$.
-Since this result is not desired, direction is lastly divided by a constant $8$.
 
 The direction for {\em cohesion} for boid $B$ is computed like so (\ref{eq:sum_coh}):
 \begin{equation} \label{eq:sum_coh}
-	direction = \left( \frac{\sum_{i=1}^{n} \left(position(B_i) - position(B)\right)}{n} \right) \mathbin{/} 100
+	direction =  \frac{\sum_{i=1}^{n} \left(position(B_i) - position(B)\right)}{n}
 \end{equation}
-where $i$-th boid $B_i$ is a boid such that: $ d(position(B), position(B_i)^2 < r_P^2) $ (i.e., $B_i$ is $B$'s neighbour).
-In this formula a centroid to the neighboring boids is computed, which is then divided by $100$.
-The reasoning behind the constant $100$ is that on every update, each boid would move $1\%$ towards the centroid.
-\bigskip
 
-The occlusion algorithm aims to determine whether a potential neighbor (other prey) is obstructed or hidden from the view of a 
-focal prey based on the angle between their relative positions. Occlusion is assessed by comparing the angle between the velocity 
-vector of the focal prey and the vector pointing to the potential neighbor. If this angle falls within a specified occlusion threshold
-and the distance to the potential neighbor exceeds a certain threshold, then the neighbor is considered occluded. 
-This mechanism enhances the realism of the preys perception, a phenomenon observed in biological systems 
-where obstacles or other agents may temporarily obscure the line of sight between individuals within a group.
+\subsection*{Occlusion algorithm}
+
+In order to add more realism, the occlusion algorithm was implemented.
+Because the algorithm is quite long with some edge cases, we will only explain the idea of the algorithm, which is quite simple.
+Given a list of potential neighboring boids, we must determine which are occluded and in turn take only the nearest (non-occluded) boids as neighbours.
+This is done by iterating through the list of neighboring boids (of boid $B$) and computing the angle between i-th ($B_i$) boid and all the others (in j-th step $B_j$).
+If the angle difference is below a threshold, boids $B_i$ and $B_j$ are considered occluded.
+To determine which boid occludes the other (is the actual neighbor), minimum distance is computed: $ min(d(B, B_i), d(B, B_j)) $.
 
 \begin{center}
 	\begin{tikzpicture}
 		% Draw a semi-transparent blue circle with a dark border
 		\draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-		
+
 		% Define a triangle shape for the top boid
 		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (boid1) at (0,1.5) {};
-		
+
 		% Define a triangle shape for the middle boid
 		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid2) at (0,0) {};
-		
+
 		% Define a triangle shape for the bottom boid
 		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,red] (boid3) at (0,-1.5) {};
-		
+
 		% Draw arrows indicating occlusion
 		\draw[green,thick,<-] (boid2) -- (boid1);
 		\draw[blue,thick,->] (boid2) -- (boid3);
-		
+
 		% Label for occlusion
 		\node[blue, below] at (0, -0.5) {Occlusion};
 	\end{tikzpicture}
-  \end{center}
+\end{center}
 
-The collision mechanism embedded within the boids encapsulates essential features for simulating interactions among agents. These features include:
-\begin{enumerate}
-	\item \textbf{Proximity evaluation:}
-	The mechanism begins with a calculation of the squared distance between the focal boid and its neighboring agents. 
-	This evaluation forms the foundation for assessing proximity in the simulated environment.
-	\item \textbf{Angular separation:}
-	To refine the proximity assessment, the mechanism considers the angular separation between the velocities of the focal boid and its neighbors. 
-	This angular comparison contributes to a more comprehensive understanding of the spatial relationships between agents.
-	\item \textbf{Visibility determination:} 
-	Usage of the occlusion algorithm.
-	\item \textbf{Dynamic response:}
-	The collision mechanism plays a crucial role in influencing the boid's behavior by dynamically adjusting its desired acceleration in response to the presence of neighboring agents. 
-	This ensures that the boid navigates the environment in a responsive and realistic manner.
-\end{enumerate}
+\subsection*{Turn speed}
 
-\subsection*{Basic predator implementation}
+In order to add even more realism, the \textbf{turn speed} of a boid is limited.
+Whenever the acceleration of a boid is computed, the angle between the acceleration vector and the current heading vector is checked.
+If it exceedes a threshold, the old heading is rotated by the maximum amount in the given direction and scaled by the magnitude of the acceleration.
+Therefore boids have a maximum value in which they can turn at each step of the simulation.
 
-The basic predator implementation provides a foundation for simulating predator behavior in a multi-agent system.
-\begin{enumerate}
-	\item \textbf{Perception and interaction:}
-	Predators exhibit a limited perception range and field of view, as determined by the perception radius and angle of view parameters. 
-	This constrains their ability to detect and interact with potential prey within a specified region.
-	\item \textbf{Occlusion handling:}
-	The behavior incorporates an occlusion mechanism that considers the angle between the predator and potential prey, as well as the distance between them. 
-	This feature accounts for scenarios where prey may be temporarily obstructed by other prey, adding realism to predator-prey interactions.
-	\item \textbf{Centroid-based movement:}
-	Predators dynamically adjust their movement based on the calculated centroid of detected prey. 
-	This strategy influences the predators directional movement, guiding it toward the central position of its perceived prey.
-\end{enumerate}
+\subsection*{Escape maneuvers}
 
+The 2 simplest escape maneuvers are implemented: escape based on position and based on velocity (direction) of the predator.
+
+The position based escape maneuver works exactly the same way as separation, except the position of predator is taken into account.
+
+The direction based escape maneuver works such that it determines on which side of prey lies the predator, and going into a perpendicular direction in the opposite side.
+
+\subsection*{Predators}
+
+2 simple predator behaviours (strategies) are implemented: attack centroid, attack random prey.
 
 \section*{Results}
-We have successfully implemented the model described in the previous section.
-Correct behaviour was confirmed with the help of special debug draw commands on top of the boids.
-We present 4 screenshots of the simulation at steps $0, 50$, $100$ and at $100$ with a 300 degree field of view.
-We can see that at first boids are in random positions, but as the simulation progresses, they start forming groups (\textbf{cohesion}) which generally go in the same direction (\textbf{alignment}).
-Eventually, a single group is formed.
 
-In an insightful refinement of the model, the field of view of the boids has been adjusted from 360 degrees to 300 degrees. 
-This modification has a notable impact on the simulation outcomes [\ref{300deg}]. If we inspect the 100th step, the boids exhibit a considerably more dispersed distribution. 
-The reduced field of view introduces a nuanced layer to the boid interactions, leading to a broader spatial distribution and decreased cohesion among the agents.
-The improvements encompass a heightened sensitivity to the boids rotational dynamics, allowing for a more nuanced simulation of their rotational speeds. 
-Furthermore, the introduction of systematic parameterization enhances the models flexibility and adaptability. 
-Additionally, a novel escape model has been integrated, introducing a simple yet effective mechanism for boids to navigate away from potential threats. 
-The implementation now also accounts for occlusion among boids, providing a more realistic representation of their interactions in complex environments.
+By combining all the features adding upon realism and the escape maneuvers, we can obtain a realstic patter \textbf{split}.
+This pattern is obtain by using the \textbf{position} based escape manuever and any predator tactic.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.8\linewidth]{boids_step_0.jpg}
-	\caption{Boids simulation at step $0$}
+	\includegraphics[width=0.6\linewidth]{boids_step_146.jpg}
+	\caption{Predator chasing a group of boids (step $146$)}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.8\linewidth]{boids_step_50.jpg}
-	\caption{Boids simulation at step $50$}
+	\includegraphics[width=0.6\linewidth]{boids_step_233.jpg}
+	\caption{Start of split pattern (step $233$)}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.8\linewidth]{boids_step_100.jpg}
-	\caption{Boids simulation at step $100$}
-\end{figure}
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.8\linewidth]{boids_step_100_low_fov.jpg}
-	\caption{Boids simulation at step $100$ with 300 degree field of view}
-	\label{300deg}
+	\includegraphics[width=0.7\linewidth]{boids_step_261.jpg}
+	\caption{Predator caught a prey, split continues (step $261$)}
 \end{figure}
 
-\newpage
+
+\pagebreak
 
 \section*{Discussion}
-This concludes the implementation of boids flocking simulation.
-The following aspects remain to be implemented:
-\begin{enumerate}
-	\item implement different hunting tactics
-	\item implement escape maneuvers
-	\item implement logic for determining success of predators
-\end{enumerate}
 
-\acknow{Matija Ojo: Initial boid implementation and report fixes, Miha Krajnc: Refactor boid implementation and report, Janez Kuhar: Initial version of report, Marko Adžaga: Researching sources and report}
+This concludes boids implementation with additional realsitic features.
+The simulation itself was heavily parameterized aswell, making tweakings easiser and more reproducible.
+
+There is still room for improvement in the visualization of the simulation (add traces, add predators target, ...).
+
+The most important aspect which remains is the implementation of different escape manuevers and predator tactics and the comparisons of the latter.
+
+\acknow{Matija Ojo: Add realistic features, fix escape manuevers, report, Miha Krajnc: Escape manuevers, Janez Kuhar: report, Marko Adžaga: Researching sources and report}
 
 \showacknow % Display the acknowledgments section
 

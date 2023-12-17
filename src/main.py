@@ -20,8 +20,8 @@ font = pg.font.SysFont("monospace", 22)
 FPS = 60
 DT = 1 / FPS
 
-# simEngine: SimEngine = SimEngine(HoPePreyAvoidPosition(), PredatorAttackCentroid())
-simEngine: SimEngine = SimEngine(HoPePreyAvoidDirection(), PredatorAttackRandom())
+simEngine: SimEngine = SimEngine(HoPePreyAvoidPosition(), PredatorAttackRandom())
+# simEngine: SimEngine = SimEngine(HoPePreyAvoidDirection(), PredatorAttackRandom())
 # simEngine: SimEngine = SimEngine(HoPePreyBehaviour(), PredatorAttackCentroid())
 
 
@@ -36,7 +36,7 @@ def add_prey(n_prey):
         simEngine.addPrey(
             Boid(
                 size=(10, 6),
-                color=(0, 0, 255),
+                color=(255, 255, 255),
                 position=Vector2(
                     random.uniform(-WIDTH / 4, WIDTH / 4),
                     random.uniform(-HEIGHT / 4, 0),
