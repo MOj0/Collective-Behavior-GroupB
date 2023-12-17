@@ -10,8 +10,8 @@ class Camera:
         return target + Vector2(self.rect.topleft)
 
     # NOTE: Annotation `target: Boid` results in a crash (circular import)
-    def update(self, target):
-        self.rect = self.camera_func(self.rect, target.getPosition())
+    def update(self, target: Vector2):
+        self.rect = self.camera_func(self.rect, target)
 
 
 def simple_camera(camera: Rect, target: Vector2):

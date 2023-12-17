@@ -4,6 +4,7 @@ import random
 from Constants import *
 from SimEngine import SimEngine
 from Boid import *
+from Behaviours.BasicPreyBehaviour import BasicPreyBehaviour
 from Behaviours.HoPePreyBehaviour import HoPePreyBehaviour
 from Behaviours.BasicPredatorBehaviour import BasicPredatorBehaviour
 import Camera
@@ -17,7 +18,7 @@ font = pg.font.SysFont("monospace", 22)
 FPS = 60
 DT = 1 / FPS
 
-simEngine: SimEngine = SimEngine(HoPePreyBehaviour(), BasicPredatorBehaviour())
+simEngine: SimEngine = SimEngine(BasicPreyBehaviour(), BasicPredatorBehaviour())
 
 
 # NOTE: `add_prey` and `add_predator` needs to be refactored to something more apropriate when necessary
@@ -32,8 +33,11 @@ def add_prey(n_prey):
             Boid(
                 size=(10, 6),
                 color=(0, 0, 255),
-                position=Vector2(random.uniform(0, WIDTH), random.uniform(0, HEIGHT)),
-                velocity=start_velocity,
+                position=Vector2(
+                    random.uniform(-WIDTH / 4, WIDTH / 4),
+                    random.uniform(-HEIGHT / 4, -HEIGHT / 2),
+                ),
+                velocity=Vector2(0, -1),
                 cruise_velocity=PREY_CRUISE_VELOCITY,
                 max_velocity=PREY_MAX_VELOCITY,
                 max_acceleration=PREY_MAX_ACCELERATION,
@@ -61,7 +65,7 @@ def add_predators(n_predators):
             Boid(
                 size=(20, 12),
                 color=(255, 0, 0),
-                position=Vector2(random.uniform(0, WIDTH), random.uniform(0, HEIGHT)),
+                position=Vector2(0, 1000),
                 velocity=start_velocity,
                 cruise_velocity=PREDATOR_CRUISE_VELOCITY,
                 max_velocity=PREDATOR_MAX_VELOCITY,
@@ -73,35 +77,35 @@ def add_predators(n_predators):
 
 
 def init():
-    # add_prey(N_PREY)
-    # add_predators(N_PREDATORS)
-    simEngine.addPrey(
-        Boid(
-            size=(10, 6),
-            color=(0, 0, 255),
-            position=Vector2(WIDTH // 2, HEIGHT - 100),
-            velocity=Vector2(0, -2),
-            cruise_velocity=PREY_CRUISE_VELOCITY,
-            max_velocity=PREY_MAX_VELOCITY,
-            max_acceleration=PREY_MAX_ACCELERATION,
-            base_acceleration=PREY_BASE_ACCELERATION,
-            max_rotation_angle=PREY_MAX_ROTATION_ANGLE,
-        )
-    )
+    add_prey(N_PREY)
+    add_predators(N_PREDATORS)
+    # simEngine.addPrey(
+    #     Boid(
+    #         size=(10, 6),
+    #         color=(0, 0, 255),
+    #         position=Vector2(WIDTH // 2, HEIGHT - 100),
+    #         velocity=Vector2(0, -2),
+    #         cruise_velocity=PREY_CRUISE_VELOCITY,
+    #         max_velocity=PREY_MAX_VELOCITY,
+    #         max_acceleration=PREY_MAX_ACCELERATION,
+    #         base_acceleration=PREY_BASE_ACCELERATION,
+    #         max_rotation_angle=PREY_MAX_ROTATION_ANGLE,
+    #     )
+    # )
 
-    simEngine.addPredator(
-        Boid(
-            size=(20, 12),
-            color=(255, 0, 0),
-            position=Vector2(WIDTH // 2, 100),
-            # velocity=start_velocity,
-            cruise_velocity=PREDATOR_CRUISE_VELOCITY,
-            max_velocity=PREDATOR_MAX_VELOCITY,
-            max_acceleration=PREDATOR_MAX_ACCELERATION,
-            base_acceleration=PREDATOR_BASE_ACCELERATION,
-            max_rotation_angle=PREDATOR_MAX_ROTATION_ANGLE,
-        )
-    )
+    # simEngine.addPredator(
+    #     Boid(
+    #         size=(20, 12),
+    #         color=(255, 0, 0),
+    #         position=Vector2(WIDTH // 2, 100),
+    #         # velocity=start_velocity,
+    #         cruise_velocity=PREDATOR_CRUISE_VELOCITY,
+    #         max_velocity=PREDATOR_MAX_VELOCITY,
+    #         max_acceleration=PREDATOR_MAX_ACCELERATION,
+    #         base_acceleration=PREDATOR_BASE_ACCELERATION,
+    #         max_rotation_angle=PREDATOR_MAX_ROTATION_ANGLE,
+    #     )
+    # )
 
 
 init()
@@ -110,8 +114,12 @@ running: bool = True
 debug_draw: bool = False
 is_update_on: bool = True
 do_single_update: bool = True
-follow_predator: bool = True
+follow_predator: bool = False
 steps = 0
+# camera_center = Vector2(WIDTH // 2, HEIGHT // 2)
+camera_center = Vector2(0, 0)
+mouse_drag = False
+ip = Vector2()
 
 camera = Camera.Camera(Camera.simple_camera, WIDTH, HEIGHT)
 
@@ -136,6 +144,14 @@ while running:
                 pg.image.save(screen, f"boids_step_{steps-1}.jpg")
             elif event.key == pg.K_p:
                 follow_predator = not follow_predator
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            ip = pg.mouse.get_pos()
+            mouse_drag = True
+        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+            mouse_drag = False
+
+        if mouse_drag:
+            camera_center -= (Vector2(pg.mouse.get_pos()) - ip) / 5
 
     if is_update_on or do_single_update:
         simEngine.update(DT)
@@ -145,7 +161,9 @@ while running:
     screen.fill((0, 0, 0))
 
     if follow_predator and len(simEngine._predators) > 0:
-        camera.update(simEngine._predators[0])
+        camera.update(simEngine._predators[0].getPosition())
+    else:
+        camera.update(camera_center)
 
     simEngine.draw(camera, screen, debug_draw)
     if debug_draw:

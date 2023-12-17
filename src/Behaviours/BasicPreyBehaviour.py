@@ -3,7 +3,7 @@ from Boid import Boid
 from pygame import Vector2, Surface, draw
 import Constants
 from Camera import Camera
-from math import radians
+from math import radians, copysign
 import utils
 
 
@@ -95,12 +95,15 @@ class BasicPreyBehaviour(Behaviour):
         return direction * 10
 
     # https://github.com/marinapapa/a-new-HoPE-model/blob/master/actions/avoid_pred_actions.hpp#L58-L98
-    def _avoid_p_direction(self, curPrey: Boid, predators: list[Boid]) -> Vector2:
+    def _avoid_p_direction(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
         direction = Vector2()
         for predator in predators:
-            direction += utils.preyEscapeDir(
-                self._escapeCoef, predator.getVelocity(), curPrey.getVelocity()
+            radAwayPred = -utils.radBetween(
+                predator.getVelocity(), curBoid.getVelocity()
             )
+            weight = copysign(self._escapeCoef, radAwayPred)
+            direction += utils.perpDot(curBoid.getVelocity()) * weight
+
         return direction
 
     def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:
