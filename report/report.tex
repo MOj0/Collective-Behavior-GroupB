@@ -177,7 +177,7 @@ Each boid $B$ has the following properties:
 \noindent With regards to behavioral logic, we also assign the following
 attributes to all boids:
 \begin{enumerate}
-	\item perception radius of 300 degrees (denoted by $r_P$)
+	\item perception radius (denoted by $r_P$)
 	\item separation radius (denoted by $r_S$, also note that $ r_S < r_P $)
 \end{enumerate}
 
@@ -293,7 +293,6 @@ Eventually, a single group is formed.
 In an insightful refinement of the model, the field of view of the boids has been adjusted from 360 degrees to 300 degrees. 
 This modification has a notable impact on the simulation outcomes [\ref{300deg}]. If we inspect the 100th step, the boids exhibit a considerably more dispersed distribution. 
 The reduced field of view introduces a nuanced layer to the boid interactions, leading to a broader spatial distribution and decreased cohesion among the agents.
-The enhancement of the boids flocking simulation is marked by significant refinements. 
 The improvements encompass a heightened sensitivity to the boids rotational dynamics, allowing for a more nuanced simulation of their rotational speeds. 
 Furthermore, the introduction of systematic parameterization enhances the models flexibility and adaptability. 
 Additionally, a novel escape model has been integrated, introducing a simple yet effective mechanism for boids to navigate away from potential threats. 
