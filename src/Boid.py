@@ -1,5 +1,4 @@
 from abc import ABC
-from enum import Enum
 from pygame import Vector2, Surface, draw, SRCALPHA, transform
 from Camera import Camera
 import math
