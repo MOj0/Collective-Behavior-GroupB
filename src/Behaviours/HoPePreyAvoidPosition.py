@@ -3,11 +3,10 @@ from Boid import Boid
 from pygame import Vector2, Surface, draw
 import Constants
 from Camera import Camera
-from math import radians, copysign
-import utils
+from math import radians
 
 
-class BasicPreyBehaviour(Behaviour):
+class HoPePreyAvoidPosition(Behaviour):
     def __init__(
         self,
         perceptionRadius: float = Constants.PREY_PERCEPTION_RADIUS,
@@ -94,16 +93,11 @@ class BasicPreyBehaviour(Behaviour):
 
         return direction * 10
 
-    # https://github.com/marinapapa/a-new-HoPE-model/blob/master/actions/avoid_pred_actions.hpp#L58-L98
-    def _avoid_p_direction(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
+    # https://github.com/marinapapa/a-new-HoPE-model/blob/master/actions/avoid_pred_actions.hpp#L15-L54
+    def _avoid_p_position(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
         direction = Vector2()
         for predator in predators:
-            radAwayPred = -utils.radBetween(
-                predator.getVelocity(), curBoid.getVelocity()
-            )
-            weight = copysign(self._escapeCoef, radAwayPred)
-            direction += utils.perpDot(curBoid.getVelocity()) * weight
-
+            direction += curBoid.getPosition() - predator.getPosition()
         return direction
 
     def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:
@@ -115,10 +109,11 @@ class BasicPreyBehaviour(Behaviour):
             s = self._separation(boid, neighbors)
             c = self._cohesion(boid, neighbors)
             a = self._alignment(boid, neighbors)
-            b = self._bound_position(boid)
-            e = self._avoid_p_direction(boid, predators)
+            # b = self._bound_position(boid)
 
-            boid.setDesiredAcceleration(s + c + a + e + b)
+            e = self._avoid_p_position(boid, predators) * self._escapeCoef
+
+            boid.setDesiredAcceleration(s + c + a + e)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:

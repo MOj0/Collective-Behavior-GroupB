@@ -4,9 +4,11 @@ import random
 from Constants import *
 from SimEngine import SimEngine
 from Boid import *
-from Behaviours.BasicPreyBehaviour import BasicPreyBehaviour
+from Behaviours.HoPePreyAvoidPosition import HoPePreyAvoidPosition
+from Behaviours.HoPePreyAvoidDirection import HoPePreyAvoidDirection
 from Behaviours.HoPePreyBehaviour import HoPePreyBehaviour
-from Behaviours.BasicPredatorBehaviour import BasicPredatorBehaviour
+from Behaviours.PredatorAttackCentroid import PredatorAttackCentroid
+from Behaviours.PredatorAttackRandom import PredatorAttackRandom
 import Camera
 
 pg.init()
@@ -18,7 +20,9 @@ font = pg.font.SysFont("monospace", 22)
 FPS = 60
 DT = 1 / FPS
 
-simEngine: SimEngine = SimEngine(BasicPreyBehaviour(), BasicPredatorBehaviour())
+# simEngine: SimEngine = SimEngine(HoPePreyAvoidPosition(), PredatorAttackCentroid())
+simEngine: SimEngine = SimEngine(HoPePreyAvoidDirection(), PredatorAttackRandom())
+# simEngine: SimEngine = SimEngine(HoPePreyBehaviour(), PredatorAttackCentroid())
 
 
 # NOTE: `add_prey` and `add_predator` needs to be refactored to something more apropriate when necessary
@@ -35,7 +39,7 @@ def add_prey(n_prey):
                 color=(0, 0, 255),
                 position=Vector2(
                     random.uniform(-WIDTH / 4, WIDTH / 4),
-                    random.uniform(-HEIGHT / 4, -HEIGHT / 2),
+                    random.uniform(-HEIGHT / 4, 0),
                 ),
                 velocity=Vector2(0, -1),
                 cruise_velocity=PREY_CRUISE_VELOCITY,
@@ -83,8 +87,8 @@ def init():
     #     Boid(
     #         size=(10, 6),
     #         color=(0, 0, 255),
-    #         position=Vector2(WIDTH // 2, HEIGHT - 100),
-    #         velocity=Vector2(0, -2),
+    #         position=Vector2(0, 800),
+    #         velocity=Vector2(0, -1),
     #         cruise_velocity=PREY_CRUISE_VELOCITY,
     #         max_velocity=PREY_MAX_VELOCITY,
     #         max_acceleration=PREY_MAX_ACCELERATION,
@@ -97,8 +101,8 @@ def init():
     #     Boid(
     #         size=(20, 12),
     #         color=(255, 0, 0),
-    #         position=Vector2(WIDTH // 2, 100),
-    #         # velocity=start_velocity,
+    #         position=Vector2(0, 0),
+    #         velocity=Vector2(0, 1),
     #         cruise_velocity=PREDATOR_CRUISE_VELOCITY,
     #         max_velocity=PREDATOR_MAX_VELOCITY,
     #         max_acceleration=PREDATOR_MAX_ACCELERATION,
@@ -116,7 +120,6 @@ is_update_on: bool = True
 do_single_update: bool = True
 follow_predator: bool = False
 steps = 0
-# camera_center = Vector2(WIDTH // 2, HEIGHT // 2)
 camera_center = Vector2(0, 0)
 mouse_drag = False
 ip = Vector2()

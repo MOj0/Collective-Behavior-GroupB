@@ -2,13 +2,12 @@ from Behaviours.Behaviour import Behaviour
 from Boid import Boid
 from pygame import Vector2, Surface, draw
 import Constants
-from math import radians, copysign
-from random import randrange
-import utils
 from Camera import Camera
+from math import radians, copysign
+import utils
 
 
-class HoPePreyBehaviour(Behaviour):
+class HoPePreyAvoidDirection(Behaviour):
     def __init__(
         self,
         perceptionRadius: float = Constants.PREY_PERCEPTION_RADIUS,
@@ -27,6 +26,7 @@ class HoPePreyBehaviour(Behaviour):
         self._separationCoef: float = separationCoef
         self._cohesionCoef: float = cohesionCoef
         self._alignmentCoef: float = alignmentCoef
+
         self._escapeCoef: float = escapeCoef
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
@@ -43,59 +43,65 @@ class HoPePreyBehaviour(Behaviour):
 
         return neighbors
 
-    def align_action(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
+    def _separation(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
         direction = Vector2(0, 0)
-        for boid in neighbors:
-            direction += boid.getVelocity()
+        if len(neighbors) == 0:
+            return direction
 
-        if len(neighbors) > 0:
-            direction /= len(neighbors)
-        direction -= curBoid.getVelocity()
-
-        return direction
-
-    def cohere_turn_action(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
-        direction = Vector2(0, 0)
-        for boid in neighbors:
-            direction += (boid.getPosition() - curBoid.getPosition()).normalize()
-
-        if len(neighbors) > 0:
-            direction /= len(neighbors)
-        return direction
-
-    def cohere_speed_action(self, curBoid: Boid, neighbors: list[Boid]) -> float:
-        speed = curBoid.getVelocity().magnitude()
-        for boid in neighbors:
-            speed += boid.getVelocity().magnitude()
-
-        speed /= len(neighbors) + 1
-        return speed
-
-    def avoid_friendly_action(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
-        direction = Vector2(0, 0)
         for boid in neighbors:
             if (
                 boid.getPosition() - curBoid.getPosition()
             ).length_squared() < self._separationDistance**2:
                 direction -= boid.getPosition() - curBoid.getPosition()
 
-        return direction
+        return direction * self._separationCoef
 
-    def wiggle_action(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
-        direction = curBoid.getVelocity()
-        randomAngle = radians(randrange(-5, 5) * 0.0001)
-        return direction.rotate(randomAngle)
+    def _cohesion(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
+        if len(neighbors) == 0:
+            return Vector2(0, 0)
+
+        direction = Vector2()
+        for boid in neighbors:
+            direction += boid.getPosition()
+        direction /= len(neighbors)
+        direction -= curBoid.getPosition()
+
+        return direction * self._cohesionCoef
+
+    def _alignment(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
+        if len(neighbors) == 0:
+            return Vector2(0, 0)
+        direction = Vector2(0, 0)
+        for boid in neighbors:
+            direction += boid.getVelocity()
+
+        direction /= len(neighbors)
+        direction -= curBoid.getVelocity()
+
+        return direction * self._alignmentCoef
+
+    def _bound_position(self, curBoid: Boid):
+        direction = Vector2(0, 0)
+        if curBoid.getPosition().x <= self._minBounds.x:
+            direction.x = 1
+        elif curBoid.getPosition().x >= self._maxBounds.x:
+            direction.x = -1
+
+        if curBoid.getPosition().y <= self._minBounds.y:
+            direction.y = 1
+        elif curBoid.getPosition().y >= self._maxBounds.y:
+            direction.y = -1
+
+        return direction * 10
 
     # https://github.com/marinapapa/a-new-HoPE-model/blob/master/actions/avoid_pred_actions.hpp#L58-L98
-    def avoid_enemy_action(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
+    def _avoid_p_direction(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
         direction = Vector2()
-
         for predator in predators:
             radAwayPred = -utils.radBetween(
                 predator.getVelocity(), curBoid.getVelocity()
             )
             weight = copysign(self._escapeCoef, radAwayPred)
-
             direction += utils.perpDot(curBoid.getVelocity()) * weight
 
         return direction
@@ -106,16 +112,14 @@ class HoPePreyBehaviour(Behaviour):
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
 
-            s = self.avoid_friendly_action(boid, neighbors) * self._separationCoef
-            c = self.cohere_turn_action(boid, neighbors) * self.cohere_speed_action(
-                boid, neighbors
-            )
-            a = self.align_action(boid, neighbors) * self._alignmentCoef
-            w = self.wiggle_action(boid, neighbors)
+            s = self._separation(boid, neighbors)
+            c = self._cohesion(boid, neighbors)
+            a = self._alignment(boid, neighbors)
+            # b = self._bound_position(boid)
 
-            e = self.avoid_enemy_action(boid, predators)
+            e = self._avoid_p_direction(boid, predators)
 
-            boid.setDesiredAcceleration(s + c + a + w + e)
+            boid.setDesiredAcceleration(s + c + a + e)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:

@@ -1,12 +1,14 @@
+from typing import Optional
 from Behaviours.Behaviour import Behaviour
 from Boid import Boid
 from pygame import Vector2, Surface, draw
 from Camera import Camera
 import Constants
 from math import radians
+import random
 
 
-class BasicPredatorBehaviour(Behaviour):
+class PredatorAttackRandom(Behaviour):
     def __init__(
         self,
         perceptionRadius: float = Constants.PREDATOR_PERCEPTION_RADIUS,
@@ -61,24 +63,24 @@ class BasicPredatorBehaviour(Behaviour):
 
         return direction * 10
 
-    def find_centroid(self, predator: Boid, others: list[Boid]) -> Vector2:
-        if len(others) == 0:
-            return Vector2(0, 0)
+    def find_random_prey(self, predator: Boid, others: list[Boid]) -> Vector2:
+        if self.selectedPrey is None and len(others) > 0:
+            self.selectedPrey = random.choice(others)
 
-        centroid = Vector2()
-        for p in others:
-            centroid += p.getPosition() - predator.getPosition()
-        return centroid / len(others)
+        if self.selectedPrey:
+            return self.selectedPrey.getPosition() - predator.getPosition()
+
+        return Vector2()
 
     def update(self, friendlies: list[Boid], prey: list[Boid]) -> None:
         for predator in friendlies:
             prey = self.get_neighbor_prey(predator, prey)
             predator.setPredation(len(prey) > 0)
 
-            c = self.find_centroid(predator, prey)
-            b = self._bound_position(predator)
+            c = self.find_random_prey(predator, prey)
+            # b = self._bound_position(predator)
 
-            direction = c + b
+            direction = c
             predator.setDesiredAcceleration(direction)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
