@@ -1,5 +1,6 @@
 from Boid import Boid
 from Behaviours.Behaviour import Behaviour
+from Camera import Camera
 from pygame import Surface
 
 
@@ -27,6 +28,15 @@ class SimEngine:
         self._predators.clear()
 
     def update(self, dt: float):
+        remove_prey_indices = set()
+        for predator in self._predators:
+            remove_prey_indices.update(predator.collide_with_others(self._prey))
+        for remove_prey_idx in sorted(remove_prey_indices, reverse=True):
+            del self._prey[remove_prey_idx]
+
+        if len(remove_prey_indices) > 0:
+            self._predatorBehaviour.selectedPrey = None
+
         self._preyBehaviour.update(self._prey, self._predators)
         self._predatorBehaviour.update(self._predators, self._prey)
 
@@ -37,11 +47,11 @@ class SimEngine:
             p.update(dt)
             p.rolloverAcc()
 
-    def draw(self, surface: Surface, debug_draw: bool):
+    def draw(self, camera: Camera, surface: Surface, debug_draw: bool):
         for p in self._prey:
-            p.draw(surface, debug_draw)
+            p.draw(camera, surface, debug_draw)
         for p in self._predators:
-            p.draw(surface, debug_draw)
+            p.draw(camera, surface, debug_draw)
         if debug_draw:
-            self._preyBehaviour.debug_draw(surface, self._prey)
-            self._predatorBehaviour.debug_draw(surface, self._predators)
+            self._preyBehaviour.debug_draw(camera, surface, self._prey)
+            self._predatorBehaviour.debug_draw(camera, surface, self._predators)

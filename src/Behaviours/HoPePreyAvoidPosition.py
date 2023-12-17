@@ -2,10 +2,11 @@ from Behaviours.Behaviour import Behaviour
 from Boid import Boid
 from pygame import Vector2, Surface, draw
 import Constants
+from Camera import Camera
 from math import radians
 
 
-class BasicPreyBehaviour(Behaviour):
+class HoPePreyAvoidPosition(Behaviour):
     def __init__(
         self,
         perceptionRadius: float = Constants.PREY_PERCEPTION_RADIUS,
@@ -14,6 +15,7 @@ class BasicPreyBehaviour(Behaviour):
         separationCoef: float = Constants.PREY_SEPARATION_COEFFICIENT,
         cohesionCoef: float = Constants.PREY_COHESION_COEFFICIENT,
         alignmentCoef: float = Constants.PREY_ALIGNMENT_COEFFICIENT,
+        escapeCoef: float = Constants.PREY_ESCAPE_COEFFICIENT,
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
@@ -23,6 +25,8 @@ class BasicPreyBehaviour(Behaviour):
         self._separationCoef: float = separationCoef
         self._cohesionCoef: float = cohesionCoef
         self._alignmentCoef: float = alignmentCoef
+
+        self._escapeCoef: float = escapeCoef
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
@@ -89,28 +93,43 @@ class BasicPreyBehaviour(Behaviour):
 
         return direction * 10
 
+    # https://github.com/marinapapa/a-new-HoPE-model/blob/master/actions/avoid_pred_actions.hpp#L15-L54
+    def _avoid_p_position(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
+        direction = Vector2()
+        for predator in predators:
+            direction += curBoid.getPosition() - predator.getPosition()
+        return direction
+
     def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:
         for boid in friendlies:
             neighbors = self._get_neighbors(boid, friendlies)
+            predators = self._get_neighbors(boid, enemies)
+            boid.setPredation(len(predators) > 0)
+
             s = self._separation(boid, neighbors)
             c = self._cohesion(boid, neighbors)
             a = self._alignment(boid, neighbors)
-            b = self._bound_position(boid)
-            boid.setDesiredAcceleration(s + c + a + b)
+            # b = self._bound_position(boid)
 
-    def debug_draw(self, surface: Surface, boids: list[Boid]):
+            e = self._avoid_p_position(boid, predators) * self._escapeCoef
+
+            boid.setDesiredAcceleration(s + c + a + e)
+
+    def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:
             _, heading = boid.getVelocity().as_polar()
             heading = radians(heading)
+
+            arcCenter = camera.apply(
+                boid.getPosition()
+                - Vector2(self._perceptionRadius, self._perceptionRadius)
+            )
 
             draw.arc(
                 surface,
                 (150, 150, 150),
                 (
-                    *(
-                        boid.getPosition()
-                        - Vector2(self._perceptionRadius, self._perceptionRadius)
-                    ),
+                    *arcCenter,
                     2 * self._perceptionRadius,
                     2 * self._perceptionRadius,
                 ),
@@ -120,7 +139,7 @@ class BasicPreyBehaviour(Behaviour):
             draw.circle(
                 surface,
                 (255, 100, 100),
-                boid.getPosition(),
+                camera.apply(boid.getPosition()),
                 self._separationDistance,
                 width=1,
             )
