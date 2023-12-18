@@ -3,13 +3,13 @@ from Behaviours.Behaviour import Behaviour
 from Camera import Camera
 from pygame import Surface
 
-
 class SimEngine:
-    def __init__(self, preyBehaviour: Behaviour, predatorBehaviour: Behaviour) -> None:
+    def __init__(self, preyBehaviour: Behaviour, predatorBehaviour: Behaviour, toroidalCoords: bool = False) -> None:
         self._preyBehaviour: Behaviour = preyBehaviour
         self._predatorBehaviour: Behaviour = predatorBehaviour
         self._prey: list[Boid] = []
         self._predators: list[Boid] = []
+        self.toroidalCoords: bool = toroidalCoords
 
     def addPrey(self, object: Boid) -> None:
         self._prey.append(object)
@@ -43,9 +43,13 @@ class SimEngine:
         for p in self._prey:
             p.update(dt)
             p.rolloverAcc()
+            if self.toroidalCoords:
+                p.rolloverCoords()
         for p in self._predators:
             p.update(dt)
             p.rolloverAcc()
+            if self.toroidalCoords:
+                p.rolloverCoords()
 
     def draw(self, camera: Camera, surface: Surface, debug_draw: bool):
         for p in self._prey:

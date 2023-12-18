@@ -2,6 +2,7 @@ from abc import ABC
 from pygame import Vector2, Surface, draw, SRCALPHA, transform
 from Camera import Camera
 import math
+from Constants import WIDTH, HEIGHT
 
 OCCLUSION_ANGLE = 2  # deg
 
@@ -164,6 +165,11 @@ class Boid(ABC):
 
     def rolloverAcc(self) -> None:
         self._acc = (self._acc[1], Vector2(0, 0))
+
+    def rolloverCoords(self) -> None:
+        x = ((self._pos.x + WIDTH/2) % WIDTH) - WIDTH/2
+        y = ((self._pos.y + HEIGHT/2) % HEIGHT) - HEIGHT/2
+        self._pos = Vector2(x,y)
 
     def update(self, dt: float) -> None:
         initialVelocity = self._vel
