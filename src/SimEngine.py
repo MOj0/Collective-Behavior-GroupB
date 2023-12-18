@@ -1,7 +1,8 @@
 from Boid import Boid
 from Behaviours.Behaviour import Behaviour
 from Camera import Camera
-from pygame import Surface
+from pygame import Surface, draw, Vector2, Rect
+from Constants import WIDTH, HEIGHT
 
 class SimEngine:
     def __init__(self, preyBehaviour: Behaviour, predatorBehaviour: Behaviour, toroidalCoords: bool = False) -> None:
@@ -51,7 +52,17 @@ class SimEngine:
             if self.toroidalCoords:
                 p.rolloverCoords()
 
+    def _draw_bounds(self, camera: Camera, surface: Surface):
+        bounds = (camera.apply(Vector2(0, 0)), Vector2(WIDTH, HEIGHT))
+        draw.rect(
+                surface,
+                (255, 255, 255),
+                Rect(bounds[0], bounds[1]),
+                1
+            )
+
     def draw(self, camera: Camera, surface: Surface, debug_draw: bool):
+        self._draw_bounds(camera, surface)
         for p in self._prey:
             p.draw(camera, surface, debug_draw)
         for p in self._predators:
