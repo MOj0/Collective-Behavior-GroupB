@@ -121,10 +121,11 @@ do_single_update: bool = True
 follow_predator: bool = False
 steps = 0
 camera_view = Vector2(WIDTH * 2, HEIGHT * 2)
-camera_center = camera_view / 2
+camera_center = Vector2(WIDTH/2, HEIGHT/2)
 mouse_drag = False
 
 camera = Camera.Camera(Camera.simple_camera, camera_view.x, camera_view.y)
+camera.update(camera_center)
 
 while running:
     mouseDelta = pg.mouse.get_rel()

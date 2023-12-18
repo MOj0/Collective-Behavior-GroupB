@@ -53,11 +53,11 @@ class SimEngine:
                 p.rolloverCoords()
 
     def _draw_bounds(self, camera: Camera, surface: Surface):
-        bounds = (camera.apply(Vector2(0, 0)), Vector2(WIDTH, HEIGHT))
+        bounds = (camera.apply(Vector2(0, 0)), camera.apply(Vector2(WIDTH, HEIGHT)))
         draw.rect(
                 surface,
                 (255, 255, 255),
-                Rect(bounds[0], bounds[1]),
+                Rect(bounds[0], bounds[1] - bounds[0]),
                 1
             )
 
