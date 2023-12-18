@@ -38,8 +38,8 @@ def add_prey(n_prey):
                 size=(10, 6),
                 color=(255, 255, 255),
                 position=Vector2(
-                    random.uniform(-WIDTH / 4, WIDTH / 4),
-                    random.uniform(-HEIGHT / 4, 0),
+                    random.uniform(WIDTH / 4, 3 * WIDTH / 4),
+                    random.uniform(HEIGHT / 4, HEIGHT / 2),
                 ),
                 velocity=Vector2(0, -1),
                 cruise_velocity=PREY_CRUISE_VELOCITY,
@@ -69,7 +69,7 @@ def add_predators(n_predators):
             Boid(
                 size=(20, 12),
                 color=(255, 0, 0),
-                position=Vector2(0, 1000),
+                position=Vector2(WIDTH/2, 4 * HEIGHT/5),
                 velocity=start_velocity,
                 cruise_velocity=PREDATOR_CRUISE_VELOCITY,
                 max_velocity=PREDATOR_MAX_VELOCITY,
@@ -120,7 +120,7 @@ is_update_on: bool = True
 do_single_update: bool = True
 follow_predator: bool = False
 steps = 0
-camera_center = Vector2(0, 0)
+camera_center = Vector2(WIDTH/2, HEIGHT/2)
 mouse_drag = False
 ip = Vector2()
 

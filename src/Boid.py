@@ -167,9 +167,7 @@ class Boid(ABC):
         self._acc = (self._acc[1], Vector2(0, 0))
 
     def rolloverCoords(self) -> None:
-        x = ((self._pos.x + WIDTH/2) % WIDTH) - WIDTH/2
-        y = ((self._pos.y + HEIGHT/2) % HEIGHT) - HEIGHT/2
-        self._pos = Vector2(x,y)
+        self._pos = Vector2(self._pos.x%WIDTH,self._pos.y%HEIGHT)
 
     def update(self, dt: float) -> None:
         initialVelocity = self._vel
