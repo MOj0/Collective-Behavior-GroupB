@@ -6,11 +6,22 @@ class Camera:
         self.camera_func = camera_func
         self.rect = Rect(0, 0, width, height)
 
-    def apply(self, target: Vector2):
+    def _apply_vec(self, target: Vector2):
         view_range = Vector2(WIDTH / (self.rect.bottomright[0] - self.rect.topleft[0]), 
                             HEIGHT / (self.rect.bottomright[1] - self.rect.topleft[1]))
-        transformed_target = (target - Vector2(self.rect.topleft)).elementwise() * view_range.elementwise()
-        return Vector2(self.rect.topleft) + transformed_target
+        transformed_target = (Vector2(self.rect.topleft) + target) * view_range.elementwise()
+        return transformed_target
+    
+    def _apply_scalar(self, target):
+        view_range = Vector2(WIDTH / (self.rect.bottomright[0] - self.rect.topleft[0]), 
+                            HEIGHT / (self.rect.bottomright[1] - self.rect.topleft[1]))
+        return target * ((view_range.x + view_range.y) / 2)
+
+    def apply(self, target):
+        if isinstance(target, Vector2):
+            return self._apply_vec(target)
+        elif isinstance(target, float) or isinstance(target, int):
+            return self._apply_scalar(target)
 
     # NOTE: Annotation `target: Boid` results in a crash (circular import)
     def update(self, target: Vector2):
