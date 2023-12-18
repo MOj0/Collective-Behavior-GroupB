@@ -120,13 +120,14 @@ is_update_on: bool = True
 do_single_update: bool = True
 follow_predator: bool = False
 steps = 0
-camera_center = Vector2(WIDTH/2, HEIGHT/2)
+camera_view = Vector2(WIDTH * 2, HEIGHT * 2)
+camera_center = camera_view / 2
 mouse_drag = False
-ip = Vector2()
 
-camera = Camera.Camera(Camera.simple_camera, WIDTH, HEIGHT)
+camera = Camera.Camera(Camera.simple_camera, camera_view.x, camera_view.y)
 
 while running:
+    mouseDelta = pg.mouse.get_rel()
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
@@ -148,13 +149,12 @@ while running:
             elif event.key == pg.K_p:
                 follow_predator = not follow_predator
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            ip = pg.mouse.get_pos()
             mouse_drag = True
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
             mouse_drag = False
 
         if mouse_drag:
-            camera_center -= (Vector2(pg.mouse.get_pos()) - ip) / 5
+            camera_center -= Vector2(mouseDelta[0], mouseDelta[1])
 
     if is_update_on or do_single_update:
         simEngine.update(DT)
