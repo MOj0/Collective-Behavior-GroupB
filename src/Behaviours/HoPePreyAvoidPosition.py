@@ -32,10 +32,8 @@ class HoPePreyAvoidPosition(Behaviour):
         neighbors: list[Boid] = []
         for boid in boids:
             if boid is not curBoid:
-                dist_sq = curBoid.distance_sq_to(boid)
-
                 if (
-                    dist_sq < self._perceptionRadius**2
+                    curBoid.distance_sq_to(boid) < self._perceptionRadius**2
                     and curBoid.angle_between(boid) <= self._angleOfView
                 ):
                     neighbors.append(boid)
@@ -48,10 +46,8 @@ class HoPePreyAvoidPosition(Behaviour):
             return direction
 
         for boid in neighbors:
-            if (
-                boid.getPosition() - curBoid.getPosition()
-            ).length_squared() < self._separationDistance**2:
-                direction -= boid.getPosition() - curBoid.getPosition()
+            if curBoid.distance_sq_to(boid) < self._separationDistance**2:
+                direction -= curBoid.dirTo(boid)
 
         return direction * self._separationCoef
 
@@ -61,9 +57,8 @@ class HoPePreyAvoidPosition(Behaviour):
 
         direction = Vector2()
         for boid in neighbors:
-            direction += boid.getPosition()
+            direction += curBoid.dirTo(boid)
         direction /= len(neighbors)
-        direction -= curBoid.getPosition()
 
         return direction * self._cohesionCoef
 
@@ -97,7 +92,7 @@ class HoPePreyAvoidPosition(Behaviour):
     def _avoid_p_position(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
         direction = Vector2()
         for predator in predators:
-            direction += curBoid.getPosition() - predator.getPosition()
+            direction += predator.dirTo(curBoid)
         return direction
 
     def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:

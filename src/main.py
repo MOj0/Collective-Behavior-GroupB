@@ -6,6 +6,7 @@ from SimEngine import SimEngine
 from Boid import *
 from Behaviours.HoPePreyAvoidPosition import HoPePreyAvoidPosition
 from Behaviours.HoPePreyAvoidDirection import HoPePreyAvoidDirection
+from Behaviours.HoPePreyAvoidTurnTime import HoPePreyAvoidTurnTime
 from Behaviours.HoPePreyBehaviour import HoPePreyBehaviour
 from Behaviours.PredatorAttackCentroid import PredatorAttackCentroid
 from Behaviours.PredatorAttackRandom import PredatorAttackRandom
@@ -20,10 +21,8 @@ font = pg.font.SysFont("monospace", 22)
 FPS = 60
 DT = 1 / FPS
 
-# simEngine: SimEngine = SimEngine(HoPePreyAvoidPosition(), PredatorAttackRandom())
-# simEngine: SimEngine = SimEngine(HoPePreyAvoidDirection(), PredatorAttackRandom())
 simEngine: SimEngine = SimEngine(
-    HoPePreyBehaviour(), PredatorAttackCentroid(), toroidalCoords=True
+    HoPePreyAvoidPosition(), PredatorAttackCentroid(), toroidalCoords=True
 )
 
 

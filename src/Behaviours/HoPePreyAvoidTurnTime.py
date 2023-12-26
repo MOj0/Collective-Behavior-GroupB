@@ -54,10 +54,8 @@ class HoPePreyAvoidTurnTime(Behaviour):
             return direction
 
         for boid in neighbors:
-            if (
-                boid.getPosition() - curBoid.getPosition()
-            ).length_squared() < self._separationDistance**2:
-                direction -= boid.getPosition() - curBoid.getPosition()
+            if curBoid.distance_sq_to(boid) < self._separationDistance**2:
+                direction -= curBoid.dirTo(boid)
 
         return direction * self._separationCoef
 
@@ -67,9 +65,8 @@ class HoPePreyAvoidTurnTime(Behaviour):
 
         direction = Vector2()
         for boid in neighbors:
-            direction += boid.getPosition()
+            direction += curBoid.dirTo(boid)
         direction /= len(neighbors)
-        direction -= curBoid.getPosition()
 
         return direction * self._cohesionCoef
 
@@ -108,7 +105,7 @@ class HoPePreyAvoidTurnTime(Behaviour):
         radius = curBoid.getVelocity().magnitude() / angularVelocity
 
         for predator in predators:
-            dirAway = curBoid.getPosition() - predator.getPosition()
+            dirAway = predator.dirTo(curBoid)
             sign = 1 if utils.perpDot2(curBoid.getVelocity(), dirAway) > 0 else -1
 
             turnDir = sign * utils.perpDot(curBoid.getVelocity())
