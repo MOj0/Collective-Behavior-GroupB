@@ -4,8 +4,14 @@ from Camera import Camera
 from pygame import Surface, draw, Vector2, Rect
 from Constants import WIDTH, HEIGHT
 
+
 class SimEngine:
-    def __init__(self, preyBehaviour: Behaviour, predatorBehaviour: Behaviour, toroidalCoords: bool = False) -> None:
+    def __init__(
+        self,
+        preyBehaviour: Behaviour,
+        predatorBehaviour: Behaviour,
+        toroidalCoords: bool = False,
+    ) -> None:
         self._preyBehaviour: Behaviour = preyBehaviour
         self._predatorBehaviour: Behaviour = predatorBehaviour
         self._prey: list[Boid] = []
@@ -21,6 +27,7 @@ class SimEngine:
     def clear(self) -> None:
         self.clearPrey()
         self.clearPredators()
+        self._predatorBehaviour.selectedPrey = None
 
     def clearPrey(self) -> None:
         self._prey.clear()
@@ -54,12 +61,7 @@ class SimEngine:
 
     def _draw_bounds(self, camera: Camera, surface: Surface):
         bounds = (camera.apply(Vector2(0, 0)), camera.apply(Vector2(WIDTH, HEIGHT)))
-        draw.rect(
-                surface,
-                (255, 255, 255),
-                Rect(bounds[0], bounds[1] - bounds[0]),
-                1
-            )
+        draw.rect(surface, (255, 255, 255), Rect(bounds[0], bounds[1] - bounds[0]), 1)
 
     def draw(self, camera: Camera, surface: Surface, debug_draw: bool):
         self._draw_bounds(camera, surface)
