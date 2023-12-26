@@ -49,10 +49,8 @@ class HoPePreyAvoidDirection(Behaviour):
             return direction
 
         for boid in neighbors:
-            if (
-                boid.getPosition() - curBoid.getPosition()
-            ).length_squared() < self._separationDistance**2:
-                direction -= boid.getPosition() - curBoid.getPosition()
+            if curBoid.distance_sq_to(boid) < self._separationDistance**2:
+                direction -= curBoid.dirTo(boid)
 
         return direction * self._separationCoef
 
@@ -62,9 +60,8 @@ class HoPePreyAvoidDirection(Behaviour):
 
         direction = Vector2()
         for boid in neighbors:
-            direction += boid.getPosition()
+            direction += curBoid.dirTo(boid)
         direction /= len(neighbors)
-        direction -= curBoid.getPosition()
 
         return direction * self._cohesionCoef
 

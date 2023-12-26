@@ -2,6 +2,8 @@ from abc import ABC
 from pygame import Vector2, Surface, draw, SRCALPHA, transform
 from Camera import Camera
 import math
+from Constants import WIDTH, HEIGHT
+import Torus
 
 OCCLUSION_ANGLE = 2  # deg
 
@@ -54,6 +56,9 @@ class Boid(ABC):
         # True if under predation (prey) or hunting (predator), False otherwise
         self._predation = predation
 
+    def dirTo(self, other: "Boid") -> Vector2:
+        return Torus.ofs(self.getPosition(), other.getPosition())
+
     def getPosition(self) -> Vector2:
         return self._pos
 
@@ -73,10 +78,10 @@ class Boid(ABC):
         return self._r
 
     def distance_sq_to(self, other: "Boid") -> float:
-        return self.getPosition().distance_squared_to(other.getPosition())
+        return Torus.ofs(self.getPosition(), other.getPosition()).length_squared()
 
     def angle_between(self, other: "Boid") -> float:
-        diff = other.getPosition() - self.getPosition()
+        diff = self.dirTo(other)
         angle = self.getVelocity().angle_to(diff) % 360
         return min(angle, 360 - angle)
 
@@ -113,8 +118,7 @@ class Boid(ABC):
         return [
             i
             for i, boid in enumerate(others)
-            if (boid.getPosition() - self._pos).length_squared()
-            <= (boid.getCollisionRadius() + self._r) ** 2
+            if self.distance_sq_to(boid) <= (boid.getCollisionRadius() + self._r) ** 2
         ]
 
     def setDesiredAcceleration(self, new_acc: Vector2) -> None:
@@ -164,6 +168,9 @@ class Boid(ABC):
 
     def rolloverAcc(self) -> None:
         self._acc = (self._acc[1], Vector2(0, 0))
+
+    def rolloverCoords(self) -> None:
+        self._pos = Vector2(self._pos.x % WIDTH, self._pos.y % HEIGHT)
 
     def update(self, dt: float) -> None:
         initialVelocity = self._vel

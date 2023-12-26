@@ -57,7 +57,7 @@ class HoPePreyBehaviour(Behaviour):
     def cohere_turn_action(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
         direction = Vector2(0, 0)
         for boid in neighbors:
-            direction += (boid.getPosition() - curBoid.getPosition()).normalize()
+            direction += curBoid.dirTo(boid).normalize()
 
         if len(neighbors) > 0:
             direction /= len(neighbors)
@@ -74,10 +74,8 @@ class HoPePreyBehaviour(Behaviour):
     def avoid_friendly_action(self, curBoid: Boid, neighbors: list[Boid]) -> Vector2:
         direction = Vector2(0, 0)
         for boid in neighbors:
-            if (
-                boid.getPosition() - curBoid.getPosition()
-            ).length_squared() < self._separationDistance**2:
-                direction -= boid.getPosition() - curBoid.getPosition()
+            if curBoid.distance_sq_to(boid) < self._separationDistance**2:
+                direction -= curBoid.dirTo(boid)
 
         return direction
 
@@ -132,8 +130,8 @@ class HoPePreyBehaviour(Behaviour):
                 (150, 150, 150),
                 (
                     *arcCenter,
-                    2 * self._perceptionRadius,
-                    2 * self._perceptionRadius,
+                    camera.apply(2 * self._perceptionRadius),
+                    camera.apply(2 * self._perceptionRadius),
                 ),
                 -heading - radians(self._angleOfView),
                 -heading + radians(self._angleOfView),
@@ -142,6 +140,6 @@ class HoPePreyBehaviour(Behaviour):
                 surface,
                 (255, 100, 100),
                 camera.apply(boid.getPosition()),
-                self._separationDistance,
+                camera.apply(self._separationDistance),
                 width=1,
             )

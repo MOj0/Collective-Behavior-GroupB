@@ -18,7 +18,7 @@ class PredatorAttackRandom(Behaviour):
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
         self._separationDistance: float = separationDistance
-        self._angleOfview: float = angleOfView
+        self._angleOfView: float = angleOfView
 
     def get_neighbor_prey(self, predator: Boid, prey: list[Boid]):
         neigh_prey: list[Boid] = []
@@ -27,7 +27,7 @@ class PredatorAttackRandom(Behaviour):
 
             if (
                 dist_sq < self._perceptionRadius**2
-                and predator.angle_between(p) <= self._angleOfview
+                and predator.angle_between(p) <= self._angleOfView
             ):
                 angle_between_boids = predator.angle_between(p)
 
@@ -74,10 +74,10 @@ class PredatorAttackRandom(Behaviour):
 
     def update(self, friendlies: list[Boid], prey: list[Boid]) -> None:
         for predator in friendlies:
-            prey = self.get_neighbor_prey(predator, prey)
-            predator.setPredation(len(prey) > 0)
+            neigh_prey = self.get_neighbor_prey(predator, prey)
+            predator.setPredation(len(neigh_prey) > 0)
 
-            c = self.find_random_prey(predator, prey)
+            c = self.find_random_prey(predator, neigh_prey)
             # b = self._bound_position(predator)
 
             direction = c
@@ -98,16 +98,16 @@ class PredatorAttackRandom(Behaviour):
                 (150, 150, 150),
                 (
                     *arcCenter,
-                    2 * self._perceptionRadius,
-                    2 * self._perceptionRadius,
+                    camera.apply(2 * self._perceptionRadius),
+                    camera.apply(2 * self._perceptionRadius),
                 ),
-                -heading - radians(self._angleOfview),
-                -heading + radians(self._angleOfview),
+                -heading - radians(self._angleOfView),
+                -heading + radians(self._angleOfView),
             )
             draw.circle(
                 surface,
                 (255, 100, 100),
                 camera.apply(boid.getPosition()),
-                self._separationDistance,
+                camera.apply(self._separationDistance),
                 width=1,
             )
