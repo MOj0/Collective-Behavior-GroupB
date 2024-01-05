@@ -95,7 +95,7 @@ class HoPePreyAvoidPosition(Behaviour):
             direction += predator.dirTo(curBoid)
         return direction
 
-    def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:
+    def update(self, friendlies: list[Boid], enemies: list[Boid], dt: float) -> None:
         for boid in friendlies:
             neighbors = self._get_neighbors(boid, friendlies)
             predators = self._get_neighbors(boid, enemies)

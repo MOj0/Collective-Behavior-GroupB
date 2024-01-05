@@ -72,7 +72,7 @@ class PredatorAttackRandom(Behaviour):
 
         return Vector2()
 
-    def update(self, friendlies: list[Boid], prey: list[Boid]) -> None:
+    def update(self, friendlies: list[Boid], prey: list[Boid], dt: float) -> None:
         for predator in friendlies:
             neigh_prey = self.get_neighbor_prey(predator, prey)
             predator.setPredation(len(neigh_prey) > 0)

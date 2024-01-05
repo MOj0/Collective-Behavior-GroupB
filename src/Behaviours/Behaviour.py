@@ -18,7 +18,7 @@ class Behaviour(ABC):
         self.selectedPrey: Optional[Boid] = None
 
     @abstractmethod
-    def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:
+    def update(self, friendlies: list[Boid], enemies: list[Boid], dt: float) -> None:
         raise Exception("Missing implementation!")
 
     @abstractmethod

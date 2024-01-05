@@ -3,11 +3,12 @@ from Boid import Boid
 from pygame import Vector2, Surface, draw
 import Constants
 from Camera import Camera
-from math import radians, copysign
+from math import radians
 import utils
+import random
 
 
-class HoPePreyAvoidDirection(Behaviour):
+class HoPePreyAvoidTurnRandom(Behaviour):
     def __init__(
         self,
         perceptionRadius: float = Constants.PREY_PERCEPTION_RADIUS,
@@ -17,6 +18,10 @@ class HoPePreyAvoidDirection(Behaviour):
         cohesionCoef: float = Constants.PREY_COHESION_COEFFICIENT,
         alignmentCoef: float = Constants.PREY_ALIGNMENT_COEFFICIENT,
         escapeCoef: float = Constants.PREY_ESCAPE_COEFFICIENT,
+        escapeTurnMin: float = radians(5),
+        escapeTurnMax: float = radians(30),
+        escapeTimeMin: float = 10, # sec
+        escapeTimeMax: float = 100, # sec
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
@@ -28,6 +33,11 @@ class HoPePreyAvoidDirection(Behaviour):
         self._alignmentCoef: float = alignmentCoef
 
         self._escapeCoef: float = escapeCoef
+
+        self._escapeTurnMin: float = escapeTurnMin
+        self._escapeTurnMax: float = escapeTurnMax
+        self._escapeTimeMin: float = escapeTimeMin
+        self._escapeTimeMax: float = escapeTimeMax
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
@@ -91,19 +101,26 @@ class HoPePreyAvoidDirection(Behaviour):
 
         return direction * 10
 
-    # https://github.com/marinapapa/a-new-HoPE-model/blob/master/actions/avoid_pred_actions.hpp#L58-L98
-    def _avoid_p_direction(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
+    def _random_t_turn_pred(self, curBoid: Boid, predators: list[Boid], dt: float) -> Vector2:
         direction = Vector2()
+
         for predator in predators:
-            radAwayPred = -utils.radBetween(
-                predator.getVelocity(), curBoid.getVelocity()
-            )
-            weight = copysign(self._escapeCoef, radAwayPred)
-            direction += utils.perpDot(curBoid.getVelocity()) * weight
+
+            angularVelocity = random.uniform(self._escapeTurnMin, self._escapeTurnMax) \
+                            / random.uniform(self._escapeTimeMin, self._escapeTimeMax)
+            radius = curBoid.getVelocity().magnitude() / angularVelocity
+
+            dirAway = predator.dirTo(curBoid)
+            sign = 1 if utils.perpDot2(curBoid.getVelocity(), dirAway) > 0 else -1
+
+            turnDir = sign * utils.perpDot(curBoid.getVelocity())
+            fz = curBoid.getVelocity().magnitude() ** 2 / radius
+
+            direction += fz * turnDir
 
         return direction
 
-    def update(self, friendlies: list[Boid], enemies: list[Boid], dt: float) -> None:
+    def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:
         for boid in friendlies:
             neighbors = self._get_neighbors(boid, friendlies)
             predators = self._get_neighbors(boid, enemies)
@@ -114,7 +131,9 @@ class HoPePreyAvoidDirection(Behaviour):
             a = self._alignment(boid, neighbors)
             # b = self._bound_position(boid)
 
-            e = self._avoid_p_direction(boid, predators)
+            e = self._random_t_turn_pred(
+                boid, predators
+            )
 
             boid.setDesiredAcceleration(s + c + a + e)
 

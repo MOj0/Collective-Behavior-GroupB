@@ -45,8 +45,8 @@ class SimEngine:
         if len(remove_prey_indices) > 0:
             self._predatorBehaviour.selectedPrey = None
 
-        self._preyBehaviour.update(self._prey, self._predators)
-        self._predatorBehaviour.update(self._predators, self._prey)
+        self._preyBehaviour.update(self._prey, self._predators, dt)
+        self._predatorBehaviour.update(self._predators, self._prey, dt)
 
         for p in self._prey:
             p.update(dt)
