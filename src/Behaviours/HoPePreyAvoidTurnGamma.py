@@ -8,7 +8,7 @@ import utils
 import random
 
 
-class HoPePreyAvoidTurnRandom(Behaviour):
+class HoPePreyAvoidTurnGamma(Behaviour):
     def __init__(
         self,
         perceptionRadius: float = Constants.PREY_PERCEPTION_RADIUS,
@@ -18,10 +18,10 @@ class HoPePreyAvoidTurnRandom(Behaviour):
         cohesionCoef: float = Constants.PREY_COHESION_COEFFICIENT,
         alignmentCoef: float = Constants.PREY_ALIGNMENT_COEFFICIENT,
         escapeCoef: float = Constants.PREY_ESCAPE_COEFFICIENT,
-        escapeTurnMin: float = radians(5),
-        escapeTurnMax: float = radians(30),
-        escapeTimeMin: float = 10, # sec
-        escapeTimeMax: float = 100, # sec
+        escapeTurnMean: float = radians(30),
+        escapeTurnSD: float = radians(20),
+        escapeTimeMean: float = 2, # sec
+        escapeTimeSD: float = 1, # sec
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
@@ -34,10 +34,11 @@ class HoPePreyAvoidTurnRandom(Behaviour):
 
         self._escapeCoef: float = escapeCoef
 
-        self._escapeTurnMin: float = escapeTurnMin
-        self._escapeTurnMax: float = escapeTurnMax
-        self._escapeTimeMin: float = escapeTimeMin
-        self._escapeTimeMax: float = escapeTimeMax
+        self._turnAlpha: float = (escapeTurnMean / escapeTurnSD) ** 2
+        self._turnBeta: float = (escapeTurnSD ** 2) / escapeTurnMean
+
+        self._timeAlpha: float = (escapeTimeMean / escapeTimeSD) ** 2
+        self._timeBeta: float = (escapeTimeSD ** 2) / escapeTimeMean
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
@@ -106,8 +107,14 @@ class HoPePreyAvoidTurnRandom(Behaviour):
 
         for predator in predators:
 
-            angularVelocity = random.uniform(self._escapeTurnMin, self._escapeTurnMax) \
-                            / random.uniform(self._escapeTimeMin, self._escapeTimeMax)
+            turnTime = 0
+            turnAmount = 0
+
+            while (turnTime * turnAmount) <= 0:
+                turnTime = random.gammavariate(self._timeAlpha, self._timeBeta)
+                turnAmount = random.gammavariate(self._turnAlpha, self._turnBeta)
+
+            angularVelocity = turnAmount / turnAmount
             radius = curBoid.getVelocity().magnitude() / angularVelocity
 
             dirAway = predator.dirTo(curBoid)
