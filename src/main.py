@@ -9,6 +9,7 @@ from Behaviours.HoPePreyAvoidDirection import HoPePreyAvoidDirection
 from Behaviours.HoPePreyAvoidTurnTime import HoPePreyAvoidTurnTime
 from Behaviours.HoPePreyAvoidTurnRandom import HoPePreyAvoidTurnRandom
 from Behaviours.HoPePreyAvoidTurnGamma import HoPePreyAvoidTurnGamma
+from Behaviours.HoPePreyAvoidZigZag import HoPePreyAvoidZigZag
 from Behaviours.HoPePreyBehaviour import HoPePreyBehaviour
 from Behaviours.PredatorAttackCentroid import PredatorAttackCentroid
 from Behaviours.PredatorAttackRandom import PredatorAttackRandom
@@ -24,7 +25,7 @@ FPS = 60
 DT = 1 / FPS
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidTurnGamma(), PredatorAttackCentroid(), toroidalCoords=True
+    HoPePreyAvoidZigZag(), PredatorAttackCentroid(), toroidalCoords=True
 )
 
 

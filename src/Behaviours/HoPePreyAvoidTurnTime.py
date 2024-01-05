@@ -34,7 +34,7 @@ class HoPePreyAvoidTurnTime(Behaviour):
         self._escapeTurn = escapeTurn
         self._escapeTime = escapeTime
 
-    def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
+    def _get_neighbors(self, curBoid: Boid, boids: list[Boid], dt: float) -> list[Boid]:
         neighbors: list[Boid] = []
         for boid in boids:
             if boid is not curBoid:

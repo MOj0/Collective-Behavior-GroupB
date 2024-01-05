@@ -101,7 +101,7 @@ class HoPePreyAvoidTurnRandom(Behaviour):
 
         return direction * 10
 
-    def _random_t_turn_pred(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
+    def _random_t_turn_pred(self, curBoid: Boid, predators: list[Boid], dt: float) -> Vector2:
         direction = Vector2()
 
         for predator in predators:

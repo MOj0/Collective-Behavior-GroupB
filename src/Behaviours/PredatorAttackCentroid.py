@@ -71,7 +71,7 @@ class PredatorAttackCentroid(Behaviour):
             centroid += predator.dirTo(p)
         return centroid / len(others)
 
-    def update(self, friendlies: list[Boid], prey: list[Boid]) -> None:
+    def update(self, friendlies: list[Boid], prey: list[Boid], dt: float) -> None:
         for predator in friendlies:
             prey = self.get_neighbor_prey(predator, prey)
             predator.setPredation(len(prey) > 0)

@@ -102,7 +102,7 @@ class HoPePreyAvoidTurnGamma(Behaviour):
 
         return direction * 10
 
-    def _random_t_turn_pred(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
+    def _gamma_t_turn_pred(self, curBoid: Boid, predators: list[Boid]) -> Vector2:
         direction = Vector2()
 
         for predator in predators:
@@ -127,7 +127,7 @@ class HoPePreyAvoidTurnGamma(Behaviour):
 
         return direction
 
-    def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:
+    def update(self, friendlies: list[Boid], enemies: list[Boid], dt: float) -> None:
         for boid in friendlies:
             neighbors = self._get_neighbors(boid, friendlies)
             predators = self._get_neighbors(boid, enemies)
@@ -138,7 +138,7 @@ class HoPePreyAvoidTurnGamma(Behaviour):
             a = self._alignment(boid, neighbors)
             # b = self._bound_position(boid)
 
-            e = self._random_t_turn_pred(
+            e = self._gamma_t_turn_pred(
                 boid, predators
             )
 
