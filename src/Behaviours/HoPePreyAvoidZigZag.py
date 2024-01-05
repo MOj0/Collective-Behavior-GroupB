@@ -123,16 +123,20 @@ class HoPePreyAvoidZigZag(Behaviour):
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
 
-            s = self._separation(boid, neighbors)
-            c = self._cohesion(boid, neighbors)
-            a = self._alignment(boid, neighbors)
-            # b = self._bound_position(boid)
+            if boid.getPredation():
+                e = self._zigzag_turn_pred(boid, predators)
 
-            e = self._zigzag_turn_pred(
-                boid, predators
-            ) 
+                boid.setDesiredAcceleration(e)
+                boid.setEvasion(True)
+            else:
+                boid.setEvasion(False)
 
-            boid.setDesiredAcceleration(s + c + a + e)
+                s = self._separation(boid, neighbors)
+                c = self._cohesion(boid, neighbors)
+                a = self._alignment(boid, neighbors)
+                # b = self._bound_position(boid)
+
+                boid.setDesiredAcceleration(s + c + a)
 
         if self._zigTimer > self._zigZagTime:
             self._zigTimer = 0

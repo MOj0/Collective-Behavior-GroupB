@@ -72,7 +72,7 @@ def add_predators(n_predators):
         )
         simEngine.addPredator(
             Boid(
-                100000+i,
+                100000 + i,
                 size=(20, 12),
                 color=(255, 0, 0),
                 position=Vector2(WIDTH / 2, 4 * HEIGHT / 5),

@@ -28,6 +28,7 @@ class Boid(ABC):
         self._id: int = id
         self._width, self._height = size
         self._boid_shape: Surface = Surface(size, SRCALPHA)
+        self._color = color
         draw.polygon(
             self._boid_shape,
             color,
@@ -58,6 +59,8 @@ class Boid(ABC):
         # True if under predation (prey) or hunting (predator), False otherwise
         self._predation = predation
 
+        self._evasion = False
+
     def getId(self) -> int:
         return self._id
 
@@ -78,6 +81,12 @@ class Boid(ABC):
 
     def setPredation(self, predation):
         self._predation = predation
+
+    def getEvasion(self) -> bool:
+        return self._evasion
+
+    def setEvasion(self, evasion: bool):
+        self._evasion = evasion
 
     def getCollisionRadius(self) -> float:
         return self._r
@@ -188,6 +197,19 @@ class Boid(ABC):
     def draw(self, camera: Camera, surface: Surface, debug_draw: bool) -> None:
         _, heading = self._vel.as_polar()
         shape_rotated = transform.rotate(self._boid_shape, -heading)
+
+        if self._evasion:
+            draw.polygon(
+                self._boid_shape,
+                (0, 255, 255),
+                [(self._width, self._height / 2), (0, 0), (0, self._height)],
+            )
+        else:
+            draw.polygon(
+                self._boid_shape,
+                self._color,
+                [(self._width, self._height / 2), (0, 0), (0, self._height)],
+            )
 
         surface.blit(
             shape_rotated,

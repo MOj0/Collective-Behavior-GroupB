@@ -4,6 +4,7 @@ from pygame import Vector2, Surface, draw
 import Constants
 from Camera import Camera
 from math import radians
+import random
 
 
 class HoPePreyAvoidPosition(Behaviour):
@@ -101,14 +102,41 @@ class HoPePreyAvoidPosition(Behaviour):
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
 
-            s = self._separation(boid, neighbors)
-            c = self._cohesion(boid, neighbors)
-            a = self._alignment(boid, neighbors)
-            # b = self._bound_position(boid)
+            # NOTE: With randomness
+            if boid.getPredation():
+                min_dist = min(map(boid.distance_sq_to, predators))
+                min_dist_m = min_dist * 0.0002645833  # Convert px -> m
 
-            e = self._avoid_p_position(boid, predators) * self._escapeCoef
+                if boid.getEvasion() or random.random() <= self.manuever_chance(
+                    min_dist_m
+                ):
+                    e = self._avoid_p_position(boid, predators) * self._escapeCoef
+                    boid.setDesiredAcceleration(e)
+                    boid.setEvasion(True)
+            else:
+                boid.setEvasion(False)
 
-            boid.setDesiredAcceleration(s + c + a + e)
+                s = self._separation(boid, neighbors)
+                c = self._cohesion(boid, neighbors)
+                a = self._alignment(boid, neighbors)
+                # b = self._bound_position(boid)
+
+                boid.setDesiredAcceleration(s + c + a)
+
+            # NOTE: No randomness
+            # if boid.getPredation():
+            #     e = self._avoid_p_position(boid, predators) * self._escapeCoef
+            #     boid.setDesiredAcceleration(e)
+            #     boid.setEvasion(True)
+            # else:
+            #     boid.setEvasion(False)
+
+            #     s = self._separation(boid, neighbors)
+            #     c = self._cohesion(boid, neighbors)
+            #     a = self._alignment(boid, neighbors)
+            #     # b = self._bound_position(boid)
+
+            #     boid.setDesiredAcceleration(s + c + a)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:
