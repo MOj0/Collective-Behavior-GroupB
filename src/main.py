@@ -25,13 +25,13 @@ FPS = 60
 DT = 1 / FPS
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidZigZag(), PredatorAttackCentroid(), toroidalCoords=True
+    HoPePreyAvoidPosition(), PredatorAttackCentroid(), toroidalCoords=True
 )
 
 
 # NOTE: `add_prey` and `add_predator` needs to be refactored to something more apropriate when necessary
 def add_prey(n_prey):
-    for _ in range(n_prey):
+    for i in range(n_prey):
         random_velocity = pg.Vector2(
             random.uniform(-1, 1),
             random.uniform(-1, 1),
@@ -39,6 +39,7 @@ def add_prey(n_prey):
         start_velocity = PREY_CRUISE_VELOCITY * random_velocity.normalize()
         simEngine.addPrey(
             Boid(
+                i,
                 size=(10, 6),
                 color=(255, 255, 255),
                 position=Vector2(
@@ -56,7 +57,7 @@ def add_prey(n_prey):
 
 
 def add_predators(n_predators):
-    for _ in range(n_predators):
+    for i in range(n_predators):
         random_velocity = pg.Vector2(
             random.uniform(-1, 1),
             random.uniform(-1, 1),
@@ -71,6 +72,7 @@ def add_predators(n_predators):
         )
         simEngine.addPredator(
             Boid(
+                100000+i,
                 size=(20, 12),
                 color=(255, 0, 0),
                 position=Vector2(WIDTH / 2, 4 * HEIGHT / 5),
