@@ -1,5 +1,6 @@
 from Behaviours.Behaviour import Behaviour
 from Boid import Boid
+from typing import Optional
 from pygame import Vector2, Surface, draw
 from Camera import Camera
 import Torus
@@ -66,9 +67,9 @@ class PredatorAttackRandom(Behaviour):
 
         return direction * 10
 
-    def find_random_prey(self, prey: list[Boid]) -> Boid:
+    def find_random_prey(self, prey: list[Boid]) -> Optional[Boid]:
         if len(prey) == 0:
-            return Vector2(0, 0)
+            return None
 
         return random.choice(prey)
 
@@ -87,6 +88,9 @@ class PredatorAttackRandom(Behaviour):
         match predator.huntingState:
             case HuntingState.SCOUT:
                 random_prey = self.find_random_prey(prey)
+                if random_prey is None:
+                    return
+
                 predator.setSelectedPrey(random_prey)
                 predator.setDesiredAcceleration(
                     Torus.ofs(
@@ -105,8 +109,6 @@ class PredatorAttackRandom(Behaviour):
 
                 # NOTE: Switching to REST state is handeled in Predator
             case HuntingState.REST:
-                predator.setDesiredAcceleration(Vector2(0, 0))
-
                 predator.decreaseRestPeriod(dt)
                 if predator.getRestPeriod() < 0:
                     predator.huntingState = HuntingState.SCOUT

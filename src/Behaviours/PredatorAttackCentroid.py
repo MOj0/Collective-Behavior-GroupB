@@ -5,6 +5,7 @@ from pygame import Vector2, Surface, draw
 from Camera import Camera
 import Constants
 from math import radians
+from typing import Optional
 import Torus
 
 
@@ -65,9 +66,9 @@ class PredatorAttackCentroid(Behaviour):
 
         return direction * 10
 
-    def find_centroid(self, prey: list[Boid]) -> Vector2:
+    def find_centroid(self, prey: list[Boid]) -> Optional[Vector2]:
         if len(prey) == 0:
-            return Vector2(0, 0)
+            return None
 
         centroid = Vector2()
         for p in prey:
@@ -94,6 +95,9 @@ class PredatorAttackCentroid(Behaviour):
         match predator.huntingState:
             case HuntingState.SCOUT:
                 center = self.find_centroid(prey)
+                if center is None:
+                    return
+
                 predator.setTarget(center)
                 predator.setDesiredAcceleration(
                     Torus.ofs(predator.getPosition(), predator.getTarget())
@@ -110,8 +114,6 @@ class PredatorAttackCentroid(Behaviour):
                 # NOTE: Switching to REST state is handeled in Predator
             case HuntingState.REST:
                 # After attack was successfull (or not), simply goes forward
-                predator.setDesiredAcceleration(Vector2(0, 0))
-
                 predator.decreaseRestPeriod(dt)
                 if predator.getRestPeriod() < 0:
                     predator.huntingState = HuntingState.SCOUT

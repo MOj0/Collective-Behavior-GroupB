@@ -5,6 +5,7 @@ from pygame import Vector2, Surface, draw
 from Camera import Camera
 import Constants
 from math import radians
+from typing import Optional
 import Torus
 
 
@@ -65,9 +66,9 @@ class PredatorAttackNearest(Behaviour):
 
         return direction * 10
 
-    def find_nearest(self, predator: Predator, prey: list[Boid]) -> Boid:
+    def find_nearest(self, predator: Predator, prey: list[Boid]) -> Optional[Boid]:
         if len(prey) == 0:
-            return Vector2(0, 0)
+            return None
 
         return min(
             prey,
@@ -91,6 +92,9 @@ class PredatorAttackNearest(Behaviour):
         match predator.huntingState:
             case HuntingState.SCOUT:
                 nearest_prey = self.find_nearest(predator, prey)
+                if nearest_prey is None:
+                    return
+
                 predator.setSelectedPrey(nearest_prey)
                 predator.setDesiredAcceleration(
                     Torus.ofs(
@@ -109,8 +113,6 @@ class PredatorAttackNearest(Behaviour):
 
                 # NOTE: Switching to REST state is handeled in Predator
             case HuntingState.REST:
-                predator.setDesiredAcceleration(Vector2(0, 0))
-
                 predator.decreaseRestPeriod(dt)
                 if predator.getRestPeriod() < 0:
                     predator.huntingState = HuntingState.SCOUT

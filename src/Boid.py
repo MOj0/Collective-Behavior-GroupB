@@ -17,6 +17,7 @@ class Boid(ABC):
         max_acceleration: float,
         base_acceleration: float,
         max_rotation_angle: float,
+        escape_reaction_time: float,
         size=(10, 6),
         color=(0, 0, 255),
         position=Vector2(0, 0),
@@ -53,8 +54,10 @@ class Boid(ABC):
         self.max_velocity = max_velocity
         self.max_acceleration = max_acceleration
         self.base_acceleration = base_acceleration
-
         self.max_rotation_angle = max_rotation_angle
+
+        self._escape_reaction_time = escape_reaction_time
+        self._curr_escape_time = escape_reaction_time
 
         # True if under predation (prey) or hunting (predator), False otherwise
         self._predation = predation
@@ -93,6 +96,15 @@ class Boid(ABC):
 
     def distance_sq_to(self, other: "Boid") -> float:
         return Torus.ofs(self.getPosition(), other.getPosition()).length_squared()
+
+    def get_curr_escape_reaction_time(self):
+        return self._curr_escape_time
+
+    def decrease_curr_escape_reaction_time(self, amount: float):
+        self._curr_escape_time -= amount
+
+    def reset_curr_escape_reaction_time(self):
+        self._curr_escape_time = self._escape_reaction_time
 
     def angle_between(self, other: "Boid") -> float:
         diff = self.dirTo(other)

@@ -37,6 +37,7 @@ class Predator(Boid):
             max_acceleration,
             base_acceleration,
             max_rotation_angle,
+            0,
             size,
             color,
             position,
@@ -94,8 +95,8 @@ class Predator(Boid):
             self.setRestPeriod(5)
             self.setTarget(None)
             self.setPredation(False)
-        elif len(collision_indices) > len(out):
-            print("missed prey..")
+        if len(collision_indices) > len(out):
+            print("missed prey")
 
         return out
 

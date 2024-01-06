@@ -34,11 +34,11 @@ simEngine: SimEngine = SimEngine(
 # NOTE: `add_prey` and `add_predator` needs to be refactored to something more apropriate when necessary
 def add_prey(n_prey):
     for i in range(n_prey):
-        random_velocity = pg.Vector2(
-            random.uniform(-1, 1),
-            random.uniform(-1, 1),
-        )
-        start_velocity = PREY_CRUISE_VELOCITY * random_velocity.normalize()
+        # random_velocity = pg.Vector2(
+        #     random.uniform(-1, 1),
+        #     random.uniform(-1, 1),
+        # )
+        # start_velocity = PREY_CRUISE_VELOCITY * random_velocity.normalize()
         simEngine.addPrey(
             Boid(
                 i,
@@ -54,6 +54,7 @@ def add_prey(n_prey):
                 max_acceleration=PREY_MAX_ACCELERATION,
                 base_acceleration=PREY_BASE_ACCELERATION,
                 max_rotation_angle=PREY_MAX_ROTATION_ANGLE,
+                escape_reaction_time=PREY_ESCAPE_REACTION_TIME,
             )
         )
 

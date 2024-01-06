@@ -22,6 +22,7 @@ PREY_PERCEPTION_RADIUS = 500
 PREY_SEPARATION_DISTANCE = 25
 # NOTE: FOV has to be halved, because we have FOV/2 on each of the 2 sides
 PREY_FOV = 300 // 2
+PREY_ESCAPE_REACTION_TIME = 0.3  # sec
 
 # Behaviour parameters
 PREY_SEPARATION_COEFFICIENT = 1
