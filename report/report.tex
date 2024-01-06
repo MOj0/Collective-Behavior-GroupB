@@ -8,6 +8,8 @@
 
 % Custom added packages
 \usetikzlibrary{shapes.geometric}
+\usepackage{subcaption}
+
 
 \templatetype{pnasresearcharticle} % Choose template 
 % {pnasresearcharticle} = Template for a two-column research article
@@ -104,123 +106,94 @@ Although we are not using fuzzy logic to set the direction and speed of our boid
 \cite{JDemsar_predator_attacks}. Specifically, we've set the field of vision for our boids to 300° and implemented occlusion for the predator.
 
 \section*{Methods}
-A boids model is implemented, along with some additional checks to add more realism.
-Boids model has 3 rules:
-\begin{enumerate}
-	\item Avoid collisions.
-	      \begin{center}
-		      \begin{tikzpicture}
-			      % Draw a semi-transparent blue circle with a dark border
-			      \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			      % Define a triangle shape
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t1) at (0,0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
-			      % Outside,rotated
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, draw, rotate=30] (rotated) at (2.5,0) {};
+The Boids model is the foundation of our flocking model. Every object in such a model adheres to the three simple
+rules as shown in Figure \ref{fig:boids}.
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[t]{.28\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
+            % Draw a semi-transparent blue circle with a dark border
+            \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+			% Draw bounding box
+            \draw (-2.5,-2.5) rectangle (3.5,2.5);
+            % Define a triangle shape
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t1) at (0,0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
 
-			      \draw[green,thick] (t1) -- (t2);
-			      \draw[green,thick] (t1) -- (t3);
+            % Outside, rotated
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, draw, rotate=30] (rotated) at (2.5,0) {};
 
-			      \draw[red,thick,->] (t1) -- (-.125,-.75);
-		      \end{tikzpicture}
-	      \end{center}
-	\item Maintain the same heading and speed as the neighboring boids.
-	      \begin{center}
-		      \begin{tikzpicture}
-			      % Draw a semi-transparent blue circle with a dark border
-			      \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			      % Define a triangle shape
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green,rotate=-30] (t1) at (0,0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t2) at (-1.5, 0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t3) at (1.5, 0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t4) at (0, -1.5) {};
+            \draw[gray,thick] (t1) -- (t2);
+            \draw[gray,thick] (t1) -- (t3);
 
-			      \draw[green,thick,->] (t1) -- ++(.5, 1);
-			      \draw[black,thick,->] (t2) -- ++(.5, 1);
-			      \draw[black,thick,->] (t3) -- ++(.5, 1);
-			      \draw[black,thick,->] (t4) -- ++(.5, 1);
-		      \end{tikzpicture}
-	      \end{center}
-	\item Gravitate toward the center of the flock.
-	      \begin{center}
-		      \begin{tikzpicture}
-			      % Draw a semi-transparent blue circle with a dark border
-			      \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			      % Define a triangle shape
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t1) at (0,0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
+            \draw[red,thick,->] (t1) -- (-.125,-.75);
+        \end{tikzpicture}
+        \caption{{\bf Collision avoidance (separation)}.}
+    \end{subfigure}%
+	\hspace{.5cm} % Adjust this value to increase or decrease the space
+	\begin{subfigure}[t]{.28\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
+            % Draw a semi-transparent blue circle with a dark border
+            \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+			% Draw bounding box
+			\draw (-2.5,-2.5) rectangle (2.5,2.5);
+            % Define a triangle shape
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t1) at (0,0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
 
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t4) at (1.2, -1.1) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t4) at (1.2, -1.1) {};
 
-			      \draw[green, thick] (t1) -- (-.125,.75);
-			      \fill[green, thick] (-.125,.75) circle (2pt);
-			      \draw[green,thick] (t2) -- (t3);
+            \draw[gray, thick] (t1) -- (-.125,.75);
+            \fill[gray, thick] (-.125,.75) circle (2pt);
+            \draw[gray,thick] (t2) -- (t3);
 
-			      \draw[red,thick,->] (t4) -- (.75,-.3);
-		      \end{tikzpicture}
-	      \end{center}
-\end{enumerate}
+            \draw[red,thick,->] (t4) -- (.75,-.3);
+        \end{tikzpicture}
+        \caption{{\bf Cohesion}: gravitate toward the center of the flock.}
+    \end{subfigure}%
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.28\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
+            % Draw a semi-transparent blue circle with a dark border
+            \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+			% Draw bounding box
+			\draw (-2.5,-2.5) rectangle (2.5,2.5);
+            % Define a triangle shape
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green,rotate=-30] (t1) at (0,0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t2) at (-1.5, 0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t3) at (1.5, 0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t4) at (0, -1.5) {};
 
-\subsection*{Boids implementation}
+            \draw[green,thick,->] (t1) -- ++(.5, 1);
+            \draw[black,thick,->] (t2) -- ++(.5, 1);
+            \draw[black,thick,->] (t3) -- ++(.5, 1);
+            \draw[black,thick,->] (t4) -- ++(.5, 1);
+        \end{tikzpicture}
+        \caption{{\bf Alignment}: maintain the same heading and speed.}
+    \end{subfigure}
+    \caption{The basic three rules of the Boids model. We show how the rules apply to a particular boid, marked
+	green, and its neighbors, marked blue. Red arrows indicate the direction in which the observed boid has
+	the tendency to move.}
+	\label{fig:boids}
+\end{figure}
 
-Each boid $B$ has the following properties:
-\begin{enumerate}
-	\item position - a vector in $ \mathbb{R}^2 $, denoted by $position(B)$,
-	\item velocity - a vector in $ \mathbb{R}^2 $, denoted by $velocity(B)$,
-	\item acceleration - a vector in $\mathbb{R}^2$; used exclusively
-	      for the internal \\ computation of the boid's velocity and not for behavioral logic.
-\end{enumerate}
+\subsection*{Boids model implementation overview}
 
-\noindent With regards to behavioral logic, we also assign the following
-attributes to all boids:
-\begin{enumerate}
-	\item perception radius (denoted by $r_P$)
-	\item separation radius (denoted by $r_S$, also note that $ r_S < r_P $)
-	\item perception angle (denoted by $fov$)
-\end{enumerate}
+Each boid $B$ possesses three basic properties: position, velocity, and acceleration. Behavioral attributes include perception radius ($r_P$), separation radius ($r_S$), and perception angle ($fov$). The Euclidean distance, given by $d(p, q)^2 = (p_1-q_1)^2 + (p_2 - q_2)^2$, is utilized for distance computations.
 
-\noindent The {\em Euclidean distance} (\ref{eq:eucl_dst}) is used for computing the distance between boids.
-\begin{equation} \label{eq:eucl_dst}
-	d(p, q) = \sqrt{(p_1-q_1)^2 + (p_2 - q_2)^2};\  p, q \in \mathbb{R}^2
-\end{equation}
-To avoid the computation of the costly square root of a real number, we utilize an equivalent formula
-(\ref{eq:eucl_dst_sq}):
-\begin{equation} \label{eq:eucl_dst_sq}
-	d(p, q)^2 = (p_1-q_1)^2 + (p_2 - q_2)^2;\  p, q \in \mathbb{R}^2
-\end{equation}
+The simulation loop updates boid directions based on three rules: \textbf{collision avoidance} (or \textbf{separation}), \textbf{alignment}, and \textbf{cohesion}. The avoidance direction is determined by summing the vector differences between the boid $B$ and its neighbors $B_i$ when their distance is within $r_S$. The cohesion direction is obtained by averaging the vector differences between the positions of boid $B$ and its neighbors $B_i$. The alignment direction is computed as the average velocity of neighboring boids $B_i$, subtracted from the velocity of the boid $B$, considering neighbors within a perception radius $r_P$.
 
-Each step of the simulation loop updates the direction of a boid, which is then applied to its acceleration,
-determining the actual velocity for all boids.
-
-Before applying the 3 mentioned rules, the neighbours of a boid.
-Neighbours (\ref{eq:neighbor_predicate}) of boid $ B $ are all $B_i$ for which the following formula holds:
-
+The neighbors (all $B_i$) of a boid $B$ are determined using distance and angle conditions:
 \begin{equation} \label{eq:neighbor_predicate}
-	d(B, B_i)^2 < r_P^2 \land angle\ between(B, B_i) <= fov
+    d(B, B_i)^2 < {r_P}^2 \, \land \, \text{AngleBetween}(B, B_i) \leq fov
 \end{equation}
+Modifying the base Boids model with the field of vision is an improvement inspired by \cite{JDemsar_predator_attacks}.
 
-Taking perception angle ($fov$) into account adds more realism, especially when interacting with predators.
-
-The direction for collision avoidance, also known as {\em separation}, for boid $B$ is computed by the
-following formula (\ref{eq:sum_dir_vectors}):
-\begin{equation} \label{eq:sum_dir_vectors}
-	direction = \sum_{i=1}^{n} position(B) - position(B_i)
-\end{equation}
-where $i$-th boid $B_i$ is a neighbor of $B$ and: $ d(position(B), position(B_i))^2 < r_S^2 $.
-This effectively means that boid $B$ will move away (in the opposite direction) from the boids which are too near (closer than the specified $r_S$).
-
-The direction for {\em alignment} for boid $B$ is computed as (\ref{eq:sum_align}):
-\begin{equation} \label{eq:sum_align}
-	direction = \frac{\sum_{i=1}^{n} velocity(B_i)}{n} - velocity(B)
-\end{equation}
-where $i$-th boid $B_i$ is a boid such that: $ d(position(B), position(B_i)^2 < r_P^2) $ (i.e., $B_i$ is $B$'s neighbour).
-
-The direction for {\em cohesion} for boid $B$ is computed like so (\ref{eq:sum_coh}):
-\begin{equation} \label{eq:sum_coh}
-	direction =  \frac{\sum_{i=1}^{n} \left(position(B_i) - position(B)\right)}{n}
-\end{equation}
 
 \subsection*{Occlusion algorithm}
 
