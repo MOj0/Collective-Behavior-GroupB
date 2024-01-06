@@ -115,7 +115,7 @@ rules as shown in Figure \ref{fig:boids}.
         \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
             % Draw a semi-transparent blue circle with a dark border
             \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			% Draw bounding box
+            % Draw bounding box
             \draw (-2.5,-2.5) rectangle (3.5,2.5);
             % Define a triangle shape
             \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t1) at (0,0) {};
@@ -132,14 +132,14 @@ rules as shown in Figure \ref{fig:boids}.
         \end{tikzpicture}
         \caption{{\bf Collision avoidance (separation)}.}
     \end{subfigure}%
-	\hspace{.5cm} % Adjust this value to increase or decrease the space
-	\begin{subfigure}[t]{.28\textwidth}
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.28\textwidth}
         \centering
         \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
             % Draw a semi-transparent blue circle with a dark border
             \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			% Draw bounding box
-			\draw (-2.5,-2.5) rectangle (2.5,2.5);
+            % Draw bounding box
+            \draw (-2.5,-2.5) rectangle (2.5,2.5);
             % Define a triangle shape
             \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t1) at (0,0) {};
             \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
@@ -161,8 +161,8 @@ rules as shown in Figure \ref{fig:boids}.
         \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
             % Draw a semi-transparent blue circle with a dark border
             \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			% Draw bounding box
-			\draw (-2.5,-2.5) rectangle (2.5,2.5);
+            % Draw bounding box
+            \draw (-2.5,-2.5) rectangle (2.5,2.5);
             % Define a triangle shape
             \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green,rotate=-30] (t1) at (0,0) {};
             \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t2) at (-1.5, 0) {};
@@ -177,9 +177,9 @@ rules as shown in Figure \ref{fig:boids}.
         \caption{{\bf Alignment}: maintain the same heading and speed.}
     \end{subfigure}
     \caption{The basic three rules of the Boids model. We show how the rules apply to a particular boid, marked
-	green, and its neighbors, marked blue. Red arrows indicate the direction in which the observed boid has
-	the tendency to move.}
-	\label{fig:boids}
+        green, and its neighbors, marked blue. Red arrows indicate the direction in which the observed boid has
+        the tendency to move.}
+    \label{fig:boids}
 \end{figure}
 
 \subsection*{Boids model implementation overview}
@@ -205,26 +205,26 @@ If the angle difference is below a threshold, boids $B_i$ and $B_j$ are consider
 To determine which boid occludes the other (is the actual neighbor), minimum distance is computed: $ min(d(B, B_i), d(B, B_j)) $.
 
 \begin{center}
-	\begin{tikzpicture}
-		% Draw a semi-transparent blue circle with a dark border
-		\draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+    \begin{tikzpicture}
+        % Draw a semi-transparent blue circle with a dark border
+        \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
 
-		% Define a triangle shape for the top boid
-		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (boid1) at (0,1.5) {};
+        % Define a triangle shape for the top boid
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (boid1) at (0,1.5) {};
 
-		% Define a triangle shape for the middle boid
-		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid2) at (0,0) {};
+        % Define a triangle shape for the middle boid
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid2) at (0,0) {};
 
-		% Define a triangle shape for the bottom boid
-		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,red] (boid3) at (0,-1.5) {};
+        % Define a triangle shape for the bottom boid
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,red] (boid3) at (0,-1.5) {};
 
-		% Draw arrows indicating occlusion
-		\draw[green,thick,<-] (boid2) -- (boid1);
-		\draw[blue,thick,->] (boid2) -- (boid3);
+        % Draw arrows indicating occlusion
+        \draw[green,thick,<-] (boid2) -- (boid1);
+        \draw[blue,thick,->] (boid2) -- (boid3);
 
-		% Label for occlusion
-		\node[blue, below] at (0, -0.5) {Occlusion};
-	\end{tikzpicture}
+        % Label for occlusion
+        \node[blue, below] at (0, -0.5) {Occlusion};
+    \end{tikzpicture}
 \end{center}
 
 \subsection*{Turn speed}
@@ -252,19 +252,19 @@ By combining all the features adding upon realism and the escape maneuvers, we c
 This pattern is obtain by using the \textbf{position} based escape manuever and any predator tactic.
 
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.6\linewidth]{boids_step_146.jpg}
-	\caption{Predator chasing a group of boids (step $146$)}
+    \centering
+    \includegraphics[width=0.6\linewidth]{boids_step_146.jpg}
+    \caption{Predator chasing a group of boids (step $146$)}
 \end{figure}
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.6\linewidth]{boids_step_233.jpg}
-	\caption{Start of split pattern (step $233$)}
+    \centering
+    \includegraphics[width=0.6\linewidth]{boids_step_233.jpg}
+    \caption{Start of split pattern (step $233$)}
 \end{figure}
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.7\linewidth]{boids_step_261.jpg}
-	\caption{Predator caught a prey, split continues (step $261$)}
+    \centering
+    \includegraphics[width=0.7\linewidth]{boids_step_261.jpg}
+    \caption{Predator caught a prey, split continues (step $261$)}
 \end{figure}
 
 
@@ -289,9 +289,9 @@ The most important aspect which remains is the implementation of different escap
 %\pnasbreak
 
 \begin{multicols}{2}
-	\section*{\bibname}
-	% Bibliography
-	\bibliography{bibliography}
+    \section*{\bibname}
+    % Bibliography
+    \bibliography{bibliography}
 \end{multicols}
 
 \end{document}
