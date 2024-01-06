@@ -107,11 +107,7 @@ class PredatorAttackNearest(Behaviour):
                 )
                 predator.setDesiredAcceleration(targetDir)
 
-                if targetDir.length_squared() < predator.getCollisionRadius() ** 2:
-                    predator.huntingState = HuntingState.REST
-                    predator.setRestPeriod(5)
-                    predator.setTarget(None)
-                    predator.setPredation(False)
+                # NOTE: Switching to REST state is handeled in Predator
             case HuntingState.REST:
                 predator.setDesiredAcceleration(Vector2(0, 0))
 

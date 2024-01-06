@@ -6,6 +6,7 @@ from pygame import Surface, draw, Vector2, Rect
 from Constants import WIDTH, HEIGHT
 from Telemetry import Telemetry
 
+
 class SimEngine:
     def __init__(
         self,
@@ -39,15 +40,8 @@ class SimEngine:
     def update(self, dt: float):
         remove_prey_indices = set()
         for predator in self._predators:
-            numNeighPrey = predator.getNumPreyInConfusionDist()
-            if numNeighPrey > 0:
-                if numNeighPrey == 1:
-                    prey_indx = predator.collide_with_others(self._prey)
-                    remove_prey_indices.update(prey_indx)
-                else:
-                    print(
-                        f"too much prey [{numNeighPrey}] - missed; TODO: add probability",
-                    )
+            prey_indx = predator.attack_prey(self._prey)
+            remove_prey_indices.update(prey_indx)
 
         for remove_prey_idx in sorted(remove_prey_indices, reverse=True):
             del self._prey[remove_prey_idx]
@@ -81,6 +75,6 @@ class SimEngine:
         if debug_draw:
             self._preyBehaviour.debug_draw(camera, surface, self._prey)
             self._predatorBehaviour.debug_draw(camera, surface, self._predators)
-    
+
     def plot(self):
         self._telemetry.plotResults()

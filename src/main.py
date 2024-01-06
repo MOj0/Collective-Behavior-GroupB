@@ -27,7 +27,7 @@ FPS = 60
 DT = 1 / FPS
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidTurnTime(), PredatorAttackCentroid(), toroidalCoords=True
+    HoPePreyAvoidTurnTime(), PredatorAttackNearest(), toroidalCoords=True
 )
 
 

@@ -3,6 +3,8 @@ from typing import Optional
 from enum import Enum
 from pygame import Vector2, Surface, draw
 from Camera import Camera
+import utils
+import random
 
 
 class HuntingState(Enum):
@@ -75,6 +77,27 @@ class Predator(Boid):
 
     def decreaseRestPeriod(self, amount):
         self.restPeriod -= amount
+
+    def attack_prey(self, prey: list[Boid]) -> list[int]:
+        n = self.getNumPreyInConfusionDist()
+        collision_indices = self.collide_with_others(prey)
+
+        out = [
+            idx
+            for idx in collision_indices
+            if random.random() <= utils.probability_distribution(n)
+        ]
+
+        # Handle hunting state
+        if len(out) > 0:
+            self.huntingState = HuntingState.REST
+            self.setRestPeriod(5)
+            self.setTarget(None)
+            self.setPredation(False)
+        elif len(collision_indices) > len(out):
+            print("missed prey..")
+
+        return out
 
     def draw(self, camera: Camera, surface: Surface, debug_draw: bool) -> None:
         super().draw(camera, surface, debug_draw)
