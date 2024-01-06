@@ -1,10 +1,11 @@
-from typing import Optional
 from Behaviours.Behaviour import Behaviour
 from Boid import Boid
+from Predator import Predator, HuntingState
 from pygame import Vector2, Surface, draw
 from Camera import Camera
 import Constants
 from math import radians
+import Torus
 
 
 class PredatorAttackCentroid(Behaviour):
@@ -13,13 +14,15 @@ class PredatorAttackCentroid(Behaviour):
         perceptionRadius: float = Constants.PREDATOR_PERCEPTION_RADIUS,
         separationDistance: float = Constants.PREDATOR_SEPARATION_DISTANCE,
         angleOfView: float = Constants.PREDATOR_FOV,
+        confusionRadius: float = Constants.PREDATOR_CONFUSION_RADIUS,
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
         self._separationDistance: float = separationDistance
         self._angleOfView: float = angleOfView
+        self._confusionRadius: float = confusionRadius
 
-    def get_neighbor_prey(self, predator: Boid, prey: list[Boid]):
+    def get_neighbor_prey(self, predator: Predator, prey: list[Boid]):
         neigh_prey: list[Boid] = []
         for p in prey:
             dist_sq = predator.distance_sq_to(p)
@@ -62,25 +65,64 @@ class PredatorAttackCentroid(Behaviour):
 
         return direction * 10
 
-    def find_centroid(self, predator: Boid, others: list[Boid]) -> Vector2:
-        if len(others) == 0:
+    def find_centroid(self, prey: list[Boid]) -> Vector2:
+        if len(prey) == 0:
             return Vector2(0, 0)
 
         centroid = Vector2()
-        for p in others:
-            centroid += predator.dirTo(p)
-        return centroid / len(others)
+        for p in prey:
+            centroid += p.getPosition()
+        centroid /= len(prey)
 
-    def update(self, friendlies: list[Boid], prey: list[Boid], dt: float) -> None:
+        return Vector2(
+            Torus.ofs_coor(0, centroid.x) % Constants.WH,
+            Torus.ofs_coor(0, centroid.y) % Constants.WH,
+        )
+
+    def predator_behavior(self, predator: Predator, prey: list[Boid], dt: float):
+        prey = self.get_neighbor_prey(predator, prey)
+        predator.setNumPreyInConfusionDist(
+            sum(
+                1
+                for _ in filter(
+                    lambda p: predator.distance_sq_to(p) <= self._confusionRadius**2,
+                    prey,
+                )
+            )
+        )
+
+        match predator.huntingState:
+            case HuntingState.SCOUT:
+                center = self.find_centroid(prey)
+                predator.setTarget(center)
+                predator.setDesiredAcceleration(
+                    Torus.ofs(predator.getPosition(), predator.getTarget())
+                )
+
+                predator.setPredation(len(prey) > 0)
+                if predator.getPredation():
+                    predator.huntingState = HuntingState.ATTACK
+            case HuntingState.ATTACK:
+                # Accelerates towards the target/centroid and tries to collide with it
+                targetDir = Torus.ofs(predator.getPosition(), predator.getTarget())
+                predator.setDesiredAcceleration(targetDir)
+
+                if targetDir.length_squared() < predator.getCollisionRadius() ** 2:
+                    predator.huntingState = HuntingState.REST
+                    predator.setRestPeriod(5)
+                    predator.setTarget(None)
+                    predator.setPredation(False)
+            case HuntingState.REST:
+                # After attack was successfull (or not), simply goes forward
+                predator.setDesiredAcceleration(Vector2(0, 0))
+
+                predator.decreaseRestPeriod(dt)
+                if predator.getRestPeriod() < 0:
+                    predator.huntingState = HuntingState.SCOUT
+
+    def update(self, friendlies: list[Predator], prey: list[Boid], dt: float) -> None:
         for predator in friendlies:
-            prey = self.get_neighbor_prey(predator, prey)
-            predator.setPredation(len(prey) > 0)
-
-            c = self.find_centroid(predator, prey)
-            # b = self._bound_position(predator)
-
-            direction = c
-            predator.setDesiredAcceleration(direction)
+            self.predator_behavior(predator, prey, dt)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:

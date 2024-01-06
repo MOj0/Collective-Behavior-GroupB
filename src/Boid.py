@@ -135,7 +135,9 @@ class Boid(ABC):
             if self.distance_sq_to(boid) <= (boid.getCollisionRadius() + self._r) ** 2
         ]
 
-    def setDesiredAcceleration(self, new_acc: Vector2) -> None:
+    def setDesiredAcceleration(self, acc: Vector2) -> None:
+        new_acc = Vector2(acc.x, acc.y)  # deepcopy, otherwise changes refernced `acc`!
+
         if new_acc.length_squared() == 0:
             self._acc = (self._acc[0], new_acc)
             return

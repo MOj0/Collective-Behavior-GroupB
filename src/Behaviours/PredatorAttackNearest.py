@@ -1,15 +1,14 @@
 from Behaviours.Behaviour import Behaviour
 from Boid import Boid
+from Predator import Predator, HuntingState
 from pygame import Vector2, Surface, draw
 from Camera import Camera
-import Torus
-from Predator import Predator, HuntingState
 import Constants
 from math import radians
-import random
+import Torus
 
 
-class PredatorAttackRandom(Behaviour):
+class PredatorAttackNearest(Behaviour):
     def __init__(
         self,
         perceptionRadius: float = Constants.PREDATOR_PERCEPTION_RADIUS,
@@ -23,7 +22,7 @@ class PredatorAttackRandom(Behaviour):
         self._angleOfView: float = angleOfView
         self._confusionRadius: float = confusionRadius
 
-    def get_neighbor_prey(self, predator: Boid, prey: list[Boid]):
+    def get_neighbor_prey(self, predator: Predator, prey: list[Boid]):
         neigh_prey: list[Boid] = []
         for p in prey:
             dist_sq = predator.distance_sq_to(p)
@@ -66,11 +65,16 @@ class PredatorAttackRandom(Behaviour):
 
         return direction * 10
 
-    def find_random_prey(self, prey: list[Boid]) -> Boid:
+    def find_nearest(self, predator: Predator, prey: list[Boid]) -> Boid:
         if len(prey) == 0:
             return Vector2(0, 0)
 
-        return random.choice(prey)
+        return min(
+            prey,
+            key=lambda p: Torus.ofs(
+                predator.getPosition(), p.getPosition()
+            ).length_squared(),
+        )
 
     def predator_behavior(self, predator: Predator, prey: list[Boid], dt: float):
         prey = self.get_neighbor_prey(predator, prey)
@@ -86,8 +90,8 @@ class PredatorAttackRandom(Behaviour):
 
         match predator.huntingState:
             case HuntingState.SCOUT:
-                random_prey = self.find_random_prey(prey)
-                predator.setSelectedPrey(random_prey)
+                nearest_prey = self.find_nearest(predator, prey)
+                predator.setSelectedPrey(nearest_prey)
                 predator.setDesiredAcceleration(
                     Torus.ofs(
                         predator.getPosition(), predator.getSelectedPrey().getPosition()
@@ -115,7 +119,7 @@ class PredatorAttackRandom(Behaviour):
                 if predator.getRestPeriod() < 0:
                     predator.huntingState = HuntingState.SCOUT
 
-    def update(self, friendlies: list[Boid], prey: list[Boid], dt: float) -> None:
+    def update(self, friendlies: list[Predator], prey: list[Boid], dt: float) -> None:
         for predator in friendlies:
             self.predator_behavior(predator, prey, dt)
 

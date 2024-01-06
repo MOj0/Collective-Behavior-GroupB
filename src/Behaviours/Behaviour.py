@@ -1,4 +1,3 @@
-from typing import Optional
 from abc import ABC, abstractmethod
 from Boid import Boid
 from pygame import Vector2, Surface
@@ -15,7 +14,6 @@ class Behaviour(ABC):
         super().__init__()
         self._minBounds: Vector2 = minBounds
         self._maxBounds: Vector2 = maxBounds
-        self.selectedPrey: Optional[Boid] = None
 
     @abstractmethod
     def update(self, friendlies: list[Boid], enemies: list[Boid], dt: float) -> None:
