@@ -15,6 +15,7 @@ from Behaviours.HoPePreyBehaviour import HoPePreyBehaviour
 from Behaviours.PredatorAttackCentroid import PredatorAttackCentroid
 from Behaviours.PredatorAttackNearest import PredatorAttackNearest
 from Behaviours.PredatorAttackRandom import PredatorAttackRandom
+from Behaviours.PredatorAttackMostPeripheral import PredatorAttackMostPeripheral
 import Camera
 
 pg.init()
@@ -27,7 +28,7 @@ FPS = 60
 DT = 1 / FPS
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidTurnTime(), PredatorAttackNearest(), toroidalCoords=True
+    HoPePreyAvoidTurnTime(), PredatorAttackMostPeripheral(), toroidalCoords=True
 )
 
 
