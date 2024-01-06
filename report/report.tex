@@ -36,7 +36,7 @@
 \author{Marko Adžaga}
 \author{Janez Kuhar}
 
-\affil{Collective behaviour course research seminar report}
+\affil{Collective behavior course research seminar report}
 
 % Please give the surname of the lead author for the running footer
 \leadauthor{Ojo} 
@@ -44,7 +44,7 @@
 \selectlanguage{english}
 
 % Please add here a significance statement to explain the relevance of your work
-\significancestatement{Collective behaviour course research seminar report}{Predator-prey interactions is of significant importance in biology and nature itself. The insights gleaned from this research can offer more than a theoretical understanding; they pave the way for the design and optimization of autonomous agents capable of adaptive and context-aware behaviors. The applications range from research in biology to simulations of large amounts of boids found in computer graphics.}{Collective Behaviour | Boids | Simulation | Prey-Predator | Escape patterns}
+\significancestatement{Collective behavior course research seminar report}{Predator-prey interactions is of significant importance in biology and nature itself. The insights gleaned from this research can offer more than a theoretical understanding; they pave the way for the design and optimization of autonomous agents capable of adaptive and context-aware behaviors. The applications range from research in biology to simulations of large amounts of boids found in computer graphics.}{Collective behavior | Boids | Simulation | Prey-Predator | Escape patterns}
 
 \selectlanguage{english}
 
@@ -55,10 +55,10 @@
 %\correspondingauthor{\textsuperscript{2}To whom correspondence should be addressed. E-mail: author.two\@email.com}
 
 % Keywords are not mandatory, but authors are strongly encouraged to provide them. If provided, please include two to five keywords, separated by the pipe symbol, e.g:
-\keywords{Collective Behaviour | Boids | Simulation | Prey-Predator | Escape patterns } 
+\keywords{Collective behavior | Boids | Simulation | Prey-Predator | Escape patterns } 
 
 \begin{abstract}
-The collective behaviours observed in nature, such as flocking, herding, or schooling, often serve as adaptive strategies that enhance the survival chances of individuals within a group.
+The collective behaviors observed in nature, such as flocking, herding, or schooling, often serve as adaptive strategies that enhance the survival chances of individuals within a group.
 Understanding these natural behaviors serves as inspiration for designing autonomous agents capable of sophisticated interactions within a simulated environment.
 Our goal is to simulate prey and predator with different predator tactics (attack center, attack nearest, attack isolated, attacks from various directions, constant bearing hunting), escape maneuvers (split, hourglass, herd, vacuole, flash expansion, fountain) and parameters (perception radius, moving speed, turning speed) in order to conclude how different escape maneuvers affect predator's success.
 
@@ -88,13 +88,10 @@ This simulation will serve as a foundation for the more complex simulations in t
 % If your first paragraph (i.e. with the \dropcap) contains a list environment (quote, quotation, theorem, definition, enumerate, itemize...), the line after the list may have some extra indentation. If this is the case, add \parshape=0 to the end of the list environment.
 \dropcap{O}ne of the most striking patterns in biology is the formation of animal aggregations.
 Classically, aggregation has been viewed as an evolutionarily advantageous state, in which members derive the benefits of protection, mate choice, and centralized information, balanced by the costs of limiting resources \cite{complexity_pattern}.
-We will presume the most common hypotheses, which is that flocking evolved in order to provide defense against predators, and conclude with which flocking behaviour is the most effective for prey and predator.
-Our research is based on Emergence of splits and collective turns in pigeon flocks under predation \cite{papadopoulou2022emergence}, which we will extend by providing concrete results in the predator and prey simulation.
-This research is similar to Jure Demšar and Iztok Lebar Bajec's Comparison of (predator) tactics \cite{JDemsar_predator_attacks}.
-The main difference between the mentioned research and ours is the use of boids algorithm instead of fuzzy logic.
+We would like to experimentally determine which flocking behaviors help the prey best defend itself against a predator.
 
-The flocking behaviour can be simulated in different ways.
-For example Heppner and Grenader \cite{Heppner_nonlinear_model} were modeling bird's behaviour with stohastic nonlinear differential equations.
+The flocking behavior can be simulated in different ways.
+For example Heppner and Grenader \cite{Heppner_nonlinear_model} were modeling birds behavior with stohastic nonlinear differential equations.
 Oweis, Ganesan and Cheok \cite{centralized_flocking} took a different approach and modeled birds with a centralized logic (as in the server-client architecture).
 In 1987, Reynolds \cite{reynolds1987flocks} proposed a simple algorithm, which was groundbreaking at the time, to model the
 flocking behavior of birds, herding of sheep, and similar phenomena, known as the Boids (Bird-oid objects) model.
@@ -102,7 +99,9 @@ In contrast to controlling the interactions of the entire flock, the Boids simul
 dictating the behavior of each individual boid. Despite consisting of a few simple rules, this
 algorithm produces complex and lifelike behaviors similar to those observed in nature.
 
-Our paper centers on the implementation of a predator-prey behavior utilizing a Boids simulation.
+Our research is based on a paper by Papadopoulou and others \cite{papadopoulou2022emergence}, which we will extend with the results our predator and prey simulation.
+Although we are not using fuzzy logic to set the direction and speed of our boids, which makes the movement less natural, we have taken taken some elements for our model from
+\cite{JDemsar_predator_attacks}. Specifically, we've set the field of vision to our boids to 300° and implemented occulsion for the predator.
 
 \section*{Methods}
 A boids model is implemented, along with some additional checks to add more realism.
@@ -272,7 +271,7 @@ The direction based escape maneuver works such that it determines on which side 
 
 \subsection*{Predators}
 
-2 simple predator behaviours (strategies) are implemented: attack centroid, attack random prey.
+2 simple predator behaviors (strategies) are implemented: attack centroid, attack random prey.
 
 \section*{Results}
 
