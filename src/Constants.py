@@ -1,7 +1,7 @@
 WH = 900
 HEIGHT, WIDTH = (WH, WH)
 
-N_PREY = 30
+N_PREY = 10
 N_PREDATORS = 1
 
 

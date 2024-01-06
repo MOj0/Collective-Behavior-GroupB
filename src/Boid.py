@@ -11,6 +11,7 @@ OCCLUSION_ANGLE = 2  # deg
 class Boid(ABC):
     def __init__(
         self,
+        id: int,
         cruise_velocity: float,
         max_velocity: float,
         max_acceleration: float,
@@ -24,6 +25,7 @@ class Boid(ABC):
         predation=False,
     ) -> None:
         super().__init__()
+        self._id: int = id
         self._width, self._height = size
         self._boid_shape: Surface = Surface(size, SRCALPHA)
         draw.polygon(
@@ -55,6 +57,9 @@ class Boid(ABC):
 
         # True if under predation (prey) or hunting (predator), False otherwise
         self._predation = predation
+
+    def getId(self) -> int:
+        return self._id
 
     def dirTo(self, other: "Boid") -> Vector2:
         return Torus.ofs(self.getPosition(), other.getPosition())
