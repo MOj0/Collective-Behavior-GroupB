@@ -25,7 +25,7 @@ FPS = 60
 DT = 1 / FPS
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidPosition(), PredatorAttackCentroid(), toroidalCoords=True
+    HoPePreyAvoidTurnTime(), PredatorAttackCentroid(), toroidalCoords=True
 )
 
 
@@ -154,6 +154,8 @@ while running:
                 do_single_update = True
             elif event.key == pg.K_s:
                 pg.image.save(screen, f"boids_step_{steps-1}.jpg")
+            elif event.key == pg.K_a:
+                simEngine.plot()
             elif event.key == pg.K_p:
                 follow_predator = not follow_predator
         elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
