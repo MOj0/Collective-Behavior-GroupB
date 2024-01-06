@@ -91,17 +91,17 @@ Classically, aggregation has been viewed as an evolutionarily advantageous state
 We would like to experimentally determine which flocking behaviors help the prey best defend itself against a predator.
 
 The flocking behavior can be simulated in different ways.
-For example Heppner and Grenader \cite{Heppner_nonlinear_model} were modeling birds behavior with stohastic nonlinear differential equations.
-Oweis, Ganesan and Cheok \cite{centralized_flocking} took a different approach and modeled birds with a centralized logic (as in the server-client architecture).
+For example, Heppner and Grenader \cite{Heppner_nonlinear_model} were modeling birds behavior with stochastic nonlinear differential equations.
+Oweis, Ganesan, and Cheok \cite{centralized_flocking} took a different approach and modeled birds with a centralized logic (as in the server-client architecture).
 In 1987, Reynolds \cite{reynolds1987flocks} proposed a simple algorithm, which was groundbreaking at the time, to model the
 flocking behavior of birds, herding of sheep, and similar phenomena, known as the Boids (Bird-oid objects) model.
 In contrast to controlling the interactions of the entire flock, the Boids simulation focuses on
 dictating the behavior of each individual boid. Despite consisting of a few simple rules, this
 algorithm produces complex and lifelike behaviors similar to those observed in nature.
 
-Our research is based on a paper by Papadopoulou and others \cite{papadopoulou2022emergence}, which we will extend with the results our predator and prey simulation.
-Although we are not using fuzzy logic to set the direction and speed of our boids, which makes the movement less natural, we have taken taken some elements for our model from
-\cite{JDemsar_predator_attacks}. Specifically, we've set the field of vision to our boids to 300° and implemented occulsion for the predator.
+Our research is based on a paper by Papadopoulou and others \cite{papadopoulou2022emergence}, which we will extend with the results of our predator and prey simulation.
+Although we are not using fuzzy logic to set the direction and speed of our boids, which makes the movement less natural, we have taken some elements for our model from
+\cite{JDemsar_predator_attacks}. Specifically, we've set the field of vision for our boids to 300° and implemented occlusion for the predator.
 
 \section*{Methods}
 A boids model is implemented, along with some additional checks to add more realism.
