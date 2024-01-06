@@ -3,8 +3,9 @@ from Boid import Boid
 from pygame import Vector2, Surface, draw
 import Constants
 from Camera import Camera
-from math import radians, copysign
+from math import radians, copysign, sqrt
 import utils
+import random
 
 
 class HoPePreyAvoidDirection(Behaviour):
@@ -109,14 +110,19 @@ class HoPePreyAvoidDirection(Behaviour):
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
 
-            s = self._separation(boid, neighbors)
-            c = self._cohesion(boid, neighbors)
-            a = self._alignment(boid, neighbors)
-            # b = self._bound_position(boid)
+            if boid.getPredation():
+                e = self._avoid_p_direction(boid, predators) * self._escapeCoef
+                boid.setDesiredAcceleration(e)
+                boid.setEvasion(True)
+            else:
+                boid.setEvasion(False)
 
-            e = self._avoid_p_direction(boid, predators)
+                s = self._separation(boid, neighbors)
+                c = self._cohesion(boid, neighbors)
+                a = self._alignment(boid, neighbors)
+                # b = self._bound_position(boid)
 
-            boid.setDesiredAcceleration(s + c + a + e)
+                boid.setDesiredAcceleration(s + c + a)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:

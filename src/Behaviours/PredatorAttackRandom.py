@@ -1,8 +1,9 @@
-from typing import Optional
 from Behaviours.Behaviour import Behaviour
 from Boid import Boid
 from pygame import Vector2, Surface, draw
 from Camera import Camera
+import Torus
+from Predator import Predator, HuntingState
 import Constants
 from math import radians
 import random
@@ -14,11 +15,13 @@ class PredatorAttackRandom(Behaviour):
         perceptionRadius: float = Constants.PREDATOR_PERCEPTION_RADIUS,
         separationDistance: float = Constants.PREDATOR_SEPARATION_DISTANCE,
         angleOfView: float = Constants.PREDATOR_FOV,
+        confusionRadius: float = Constants.PREDATOR_CONFUSION_RADIUS,
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
         self._separationDistance: float = separationDistance
         self._angleOfView: float = angleOfView
+        self._confusionRadius: float = confusionRadius
 
     def get_neighbor_prey(self, predator: Boid, prey: list[Boid]):
         neigh_prey: list[Boid] = []
@@ -63,25 +66,54 @@ class PredatorAttackRandom(Behaviour):
 
         return direction * 10
 
-    def find_random_prey(self, predator: Boid, others: list[Boid]) -> Vector2:
-        if self.selectedPrey is None and len(others) > 0:
-            self.selectedPrey = random.choice(others)
+    def find_random_prey(self, prey: list[Boid]) -> Boid:
+        if len(prey) == 0:
+            return Vector2(0, 0)
 
-        if self.selectedPrey:
-            return self.selectedPrey.getPosition() - predator.getPosition()
+        return random.choice(prey)
 
-        return Vector2()
+    def predator_behavior(self, predator: Predator, prey: list[Boid], dt: float):
+        prey = self.get_neighbor_prey(predator, prey)
+        predator.setNumPreyInConfusionDist(
+            sum(
+                1
+                for _ in filter(
+                    lambda p: predator.distance_sq_to(p) <= self._confusionRadius**2,
+                    prey,
+                )
+            )
+        )
+
+        match predator.huntingState:
+            case HuntingState.SCOUT:
+                random_prey = self.find_random_prey(prey)
+                predator.setSelectedPrey(random_prey)
+                predator.setDesiredAcceleration(
+                    Torus.ofs(
+                        predator.getPosition(), predator.getSelectedPrey().getPosition()
+                    )
+                )
+
+                predator.setPredation(len(prey) > 0)
+                if predator.getPredation():
+                    predator.huntingState = HuntingState.ATTACK
+            case HuntingState.ATTACK:
+                targetDir = Torus.ofs(
+                    predator.getPosition(), predator.getSelectedPrey().getPosition()
+                )
+                predator.setDesiredAcceleration(targetDir)
+
+                # NOTE: Switching to REST state is handeled in Predator
+            case HuntingState.REST:
+                predator.setDesiredAcceleration(Vector2(0, 0))
+
+                predator.decreaseRestPeriod(dt)
+                if predator.getRestPeriod() < 0:
+                    predator.huntingState = HuntingState.SCOUT
 
     def update(self, friendlies: list[Boid], prey: list[Boid], dt: float) -> None:
         for predator in friendlies:
-            neigh_prey = self.get_neighbor_prey(predator, prey)
-            predator.setPredation(len(neigh_prey) > 0)
-
-            c = self.find_random_prey(predator, neigh_prey)
-            # b = self._bound_position(predator)
-
-            direction = c
-            predator.setDesiredAcceleration(direction)
+            self.predator_behavior(predator, prey, dt)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:

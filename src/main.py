@@ -4,6 +4,7 @@ import random
 from Constants import *
 from SimEngine import SimEngine
 from Boid import *
+from Predator import Predator
 from Behaviours.HoPePreyAvoidPosition import HoPePreyAvoidPosition
 from Behaviours.HoPePreyAvoidDirection import HoPePreyAvoidDirection
 from Behaviours.HoPePreyAvoidTurnTime import HoPePreyAvoidTurnTime
@@ -12,6 +13,7 @@ from Behaviours.HoPePreyAvoidTurnGamma import HoPePreyAvoidTurnGamma
 from Behaviours.HoPePreyAvoidZigZag import HoPePreyAvoidZigZag
 from Behaviours.HoPePreyBehaviour import HoPePreyBehaviour
 from Behaviours.PredatorAttackCentroid import PredatorAttackCentroid
+from Behaviours.PredatorAttackNearest import PredatorAttackNearest
 from Behaviours.PredatorAttackRandom import PredatorAttackRandom
 import Camera
 
@@ -25,7 +27,7 @@ FPS = 60
 DT = 1 / FPS
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidTurnTime(), PredatorAttackCentroid(), toroidalCoords=True
+    HoPePreyAvoidTurnTime(), PredatorAttackNearest(), toroidalCoords=True
 )
 
 
@@ -71,8 +73,8 @@ def add_predators(n_predators):
             / random_velocity.length()
         )
         simEngine.addPredator(
-            Boid(
-                100000+i,
+            Predator(
+                -i - 1,
                 size=(20, 12),
                 color=(255, 0, 0),
                 position=Vector2(WIDTH / 2, 4 * HEIGHT / 5),
@@ -86,39 +88,12 @@ def add_predators(n_predators):
         )
 
 
-def init():
+def add_boids():
     add_prey(N_PREY)
     add_predators(N_PREDATORS)
-    # simEngine.addPrey(
-    #     Boid(
-    #         size=(10, 6),
-    #         color=(0, 0, 255),
-    #         position=Vector2(0, 800),
-    #         velocity=Vector2(0, -1),
-    #         cruise_velocity=PREY_CRUISE_VELOCITY,
-    #         max_velocity=PREY_MAX_VELOCITY,
-    #         max_acceleration=PREY_MAX_ACCELERATION,
-    #         base_acceleration=PREY_BASE_ACCELERATION,
-    #         max_rotation_angle=PREY_MAX_ROTATION_ANGLE,
-    #     )
-    # )
-
-    # simEngine.addPredator(
-    #     Boid(
-    #         size=(20, 12),
-    #         color=(255, 0, 0),
-    #         position=Vector2(0, 0),
-    #         velocity=Vector2(0, 1),
-    #         cruise_velocity=PREDATOR_CRUISE_VELOCITY,
-    #         max_velocity=PREDATOR_MAX_VELOCITY,
-    #         max_acceleration=PREDATOR_MAX_ACCELERATION,
-    #         base_acceleration=PREDATOR_BASE_ACCELERATION,
-    #         max_rotation_angle=PREDATOR_MAX_ROTATION_ANGLE,
-    #     )
-    # )
 
 
-init()
+add_boids()
 
 running: bool = True
 debug_draw: bool = False
@@ -146,7 +121,7 @@ while running:
                 debug_draw = not debug_draw
             elif event.key == pg.K_r:
                 simEngine.clear()
-                init()
+                add_boids()
                 steps = 0
             elif event.key == pg.K_SPACE:
                 is_update_on = not is_update_on

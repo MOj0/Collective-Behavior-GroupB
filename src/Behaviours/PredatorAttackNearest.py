@@ -8,7 +8,7 @@ from math import radians
 import Torus
 
 
-class PredatorAttackCentroid(Behaviour):
+class PredatorAttackNearest(Behaviour):
     def __init__(
         self,
         perceptionRadius: float = Constants.PREDATOR_PERCEPTION_RADIUS,
@@ -65,18 +65,15 @@ class PredatorAttackCentroid(Behaviour):
 
         return direction * 10
 
-    def find_centroid(self, prey: list[Boid]) -> Vector2:
+    def find_nearest(self, predator: Predator, prey: list[Boid]) -> Boid:
         if len(prey) == 0:
             return Vector2(0, 0)
 
-        centroid = Vector2()
-        for p in prey:
-            centroid += p.getPosition()
-        centroid /= len(prey)
-
-        return Vector2(
-            Torus.ofs_coor(0, centroid.x) % Constants.WH,
-            Torus.ofs_coor(0, centroid.y) % Constants.WH,
+        return min(
+            prey,
+            key=lambda p: Torus.ofs(
+                predator.getPosition(), p.getPosition()
+            ).length_squared(),
         )
 
     def predator_behavior(self, predator: Predator, prey: list[Boid], dt: float):
@@ -93,23 +90,25 @@ class PredatorAttackCentroid(Behaviour):
 
         match predator.huntingState:
             case HuntingState.SCOUT:
-                center = self.find_centroid(prey)
-                predator.setTarget(center)
+                nearest_prey = self.find_nearest(predator, prey)
+                predator.setSelectedPrey(nearest_prey)
                 predator.setDesiredAcceleration(
-                    Torus.ofs(predator.getPosition(), predator.getTarget())
+                    Torus.ofs(
+                        predator.getPosition(), predator.getSelectedPrey().getPosition()
+                    )
                 )
 
                 predator.setPredation(len(prey) > 0)
                 if predator.getPredation():
                     predator.huntingState = HuntingState.ATTACK
             case HuntingState.ATTACK:
-                # Accelerates towards the target/centroid and tries to collide with it
-                targetDir = Torus.ofs(predator.getPosition(), predator.getTarget())
+                targetDir = Torus.ofs(
+                    predator.getPosition(), predator.getSelectedPrey().getPosition()
+                )
                 predator.setDesiredAcceleration(targetDir)
 
                 # NOTE: Switching to REST state is handeled in Predator
             case HuntingState.REST:
-                # After attack was successfull (or not), simply goes forward
                 predator.setDesiredAcceleration(Vector2(0, 0))
 
                 predator.decreaseRestPeriod(dt)

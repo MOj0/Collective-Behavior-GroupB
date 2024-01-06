@@ -20,8 +20,8 @@ class HoPePreyAvoidTurnRandom(Behaviour):
         escapeCoef: float = Constants.PREY_ESCAPE_COEFFICIENT,
         escapeTurnMin: float = radians(5),
         escapeTurnMax: float = radians(30),
-        escapeTimeMin: float = 10, # sec
-        escapeTimeMax: float = 100, # sec
+        escapeTimeMin: float = 10,  # sec
+        escapeTimeMax: float = 100,  # sec
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
@@ -101,13 +101,15 @@ class HoPePreyAvoidTurnRandom(Behaviour):
 
         return direction * 10
 
-    def _random_t_turn_pred(self, curBoid: Boid, predators: list[Boid], dt: float) -> Vector2:
+    def _random_t_turn_pred(
+        self, curBoid: Boid, predators: list[Boid], dt: float
+    ) -> Vector2:
         direction = Vector2()
 
         for predator in predators:
-
-            angularVelocity = random.uniform(self._escapeTurnMin, self._escapeTurnMax) \
-                            / random.uniform(self._escapeTimeMin, self._escapeTimeMax)
+            angularVelocity = random.uniform(
+                self._escapeTurnMin, self._escapeTurnMax
+            ) / random.uniform(self._escapeTimeMin, self._escapeTimeMax)
             radius = curBoid.getVelocity().magnitude() / angularVelocity
 
             dirAway = predator.dirTo(curBoid)
@@ -126,16 +128,19 @@ class HoPePreyAvoidTurnRandom(Behaviour):
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
 
-            s = self._separation(boid, neighbors)
-            c = self._cohesion(boid, neighbors)
-            a = self._alignment(boid, neighbors)
-            # b = self._bound_position(boid)
+            if boid.getPredation():
+                e = self._random_t_turn_pred(boid, predators)
+                boid.setDesiredAcceleration(e)
+                boid.setEvasion(True)
+            else:
+                boid.setEvasion(False)
 
-            e = self._random_t_turn_pred(
-                boid, predators
-            )
+                s = self._separation(boid, neighbors)
+                c = self._cohesion(boid, neighbors)
+                a = self._alignment(boid, neighbors)
+                # b = self._bound_position(boid)
 
-            boid.setDesiredAcceleration(s + c + a + e)
+                boid.setDesiredAcceleration(s + c + a)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:

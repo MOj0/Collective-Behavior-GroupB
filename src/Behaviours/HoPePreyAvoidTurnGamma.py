@@ -20,8 +20,8 @@ class HoPePreyAvoidTurnGamma(Behaviour):
         escapeCoef: float = Constants.PREY_ESCAPE_COEFFICIENT,
         escapeTurnMean: float = radians(30),
         escapeTurnSD: float = radians(20),
-        escapeTimeMean: float = 2, # sec
-        escapeTimeSD: float = 1, # sec
+        escapeTimeMean: float = 2,  # sec
+        escapeTimeSD: float = 1,  # sec
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
@@ -35,10 +35,10 @@ class HoPePreyAvoidTurnGamma(Behaviour):
         self._escapeCoef: float = escapeCoef
 
         self._turnAlpha: float = (escapeTurnMean / escapeTurnSD) ** 2
-        self._turnBeta: float = (escapeTurnSD ** 2) / escapeTurnMean
+        self._turnBeta: float = (escapeTurnSD**2) / escapeTurnMean
 
         self._timeAlpha: float = (escapeTimeMean / escapeTimeSD) ** 2
-        self._timeBeta: float = (escapeTimeSD ** 2) / escapeTimeMean
+        self._timeBeta: float = (escapeTimeSD**2) / escapeTimeMean
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
@@ -106,7 +106,6 @@ class HoPePreyAvoidTurnGamma(Behaviour):
         direction = Vector2()
 
         for predator in predators:
-
             turnTime = 0
             turnAmount = 0
 
@@ -133,16 +132,19 @@ class HoPePreyAvoidTurnGamma(Behaviour):
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
 
-            s = self._separation(boid, neighbors)
-            c = self._cohesion(boid, neighbors)
-            a = self._alignment(boid, neighbors)
-            # b = self._bound_position(boid)
+            if boid.getPredation():
+                e = self._gamma_t_turn_pred(boid, predators)
+                boid.setDesiredAcceleration(e)
+                boid.setEvasion(True)
+            else:
+                boid.setEvasion(False)
 
-            e = self._gamma_t_turn_pred(
-                boid, predators
-            )
+                s = self._separation(boid, neighbors)
+                c = self._cohesion(boid, neighbors)
+                a = self._alignment(boid, neighbors)
+                # b = self._bound_position(boid)
 
-            boid.setDesiredAcceleration(s + c + a + e)
+                boid.setDesiredAcceleration(s + c + a)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:

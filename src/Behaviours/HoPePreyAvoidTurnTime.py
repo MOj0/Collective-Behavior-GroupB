@@ -121,16 +121,21 @@ class HoPePreyAvoidTurnTime(Behaviour):
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
 
-            s = self._separation(boid, neighbors)
-            c = self._cohesion(boid, neighbors)
-            a = self._alignment(boid, neighbors)
-            # b = self._bound_position(boid)
+            if boid.getPredation():
+                # NOTE: This makes the prey turn too fast for some reason...
+                e = self._t_turn_pred(boid, predators)
 
-            e = self._t_turn_pred(
-                boid, predators
-            )  # NOTE: This makes the prey turn too fast for some reason...
+                boid.setDesiredAcceleration(e)
+                boid.setEvasion(True)
+            else:
+                boid.setEvasion(False)
 
-            boid.setDesiredAcceleration(s + c + a + e)
+                s = self._separation(boid, neighbors)
+                c = self._cohesion(boid, neighbors)
+                a = self._alignment(boid, neighbors)
+                # b = self._bound_position(boid)
+
+                boid.setDesiredAcceleration(s + c + a)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:
