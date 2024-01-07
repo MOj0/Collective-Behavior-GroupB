@@ -155,7 +155,7 @@ while running:
             elif event.key == pg.K_s:
                 pg.image.save(screen, f"boids_step_{steps-1}.jpg")
             elif event.key == pg.K_a:
-                simEngine.plot()
+                simEngine.plot(steps)
             elif event.key == pg.K_p:
                 follow_predator = not follow_predator
         elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:

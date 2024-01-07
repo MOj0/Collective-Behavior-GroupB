@@ -3,7 +3,7 @@ from Behaviours.Behaviour import Behaviour
 from Camera import Camera
 from pygame import Surface, draw, Vector2, Rect
 from Constants import WIDTH, HEIGHT
-from Telemetry import Telemetry
+from Statistics import Statistics
 
 class SimEngine:
     def __init__(
@@ -17,7 +17,7 @@ class SimEngine:
         self._prey: list[Boid] = []
         self._predators: list[Boid] = []
         self.toroidalCoords: bool = toroidalCoords
-        self._telemetry: Telemetry = Telemetry()
+        self._telemetry: Statistics = Statistics()
 
     def addPrey(self, object: Boid) -> None:
         self._prey.append(object)
@@ -76,5 +76,5 @@ class SimEngine:
             self._preyBehaviour.debug_draw(camera, surface, self._prey)
             self._predatorBehaviour.debug_draw(camera, surface, self._predators)
     
-    def plot(self):
-        self._telemetry.plotResults()
+    def plot(self, stepNo: int):
+        self._telemetry.plotResults(stepNo)
