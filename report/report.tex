@@ -263,30 +263,7 @@ and the third selects the most isolated prey.
 In the last strategy, the predator simply attacks a random target.
 \section*{Results}
 
-In Figure \ref{fig:sim_split}, we demonstrate the functionality of our application
-where the emergence of a split pattern can be observed in the simulation.
-\begin{figure}[h]
-    \centering
-    \begin{subfigure}[t]{0.3\linewidth}
-        \includegraphics[width=\linewidth]{boids_step_146.jpg}
-        \caption{Predator chasing a group of boids (step $146$).}
-    \end{subfigure}%
-    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
-    \begin{subfigure}[t]{0.3\linewidth}
-        \includegraphics[width=\linewidth]{boids_step_233.jpg}
-        \caption{Start of split pattern (step $233$).}
-    \end{subfigure}%
-    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
-    \begin{subfigure}[t]{0.3\linewidth}
-        \includegraphics[width=\linewidth]{boids_step_261.jpg}
-        \caption{Predator caught a prey, split continues (step $261$).}
-    \end{subfigure}
-    \caption{A demonstration of the split pattern. Predator and prey positions
-	are shown at various steps of a simulation.}
-	\label{fig:sim_split}
-\end{figure}
-Next, we've compared how different attack strategies stack up against prey escape tactics. The
-results are presented in Figure \ref{fig:sim_results_01}. Plots suggest that
+Wresults are presented in Figure \ref{fig:sim_results_01}. Plots suggest that
 direction-based escape maneuver is inferior to position-based tactics, indicated by larger prey
 capture count.
 \begin{figure}[h]
