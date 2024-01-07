@@ -3,7 +3,7 @@ from Predator import Predator
 from Behaviours.Behaviour import Behaviour
 from Camera import Camera
 from pygame import Surface, draw, Vector2, Rect
-from Constants import WIDTH, HEIGHT
+from Constants import WIDTH, HEIGHT, DT
 from Statistics import Statistics
 
 
@@ -20,6 +20,7 @@ class SimEngine:
         self._predators: list[Predator] = []
         self.toroidalCoords: bool = toroidalCoords
         self._telemetry: Statistics = Statistics()
+        self._step: int = 0
 
     def addPrey(self, object: Boid) -> None:
         self._prey.append(object)
@@ -27,7 +28,8 @@ class SimEngine:
     def addPredator(self, predator: Predator) -> None:
         self._predators.append(predator)
 
-    def clear(self) -> None:
+    def reset(self) -> None:
+        self._step = 0
         self.clearPrey()
         self.clearPredators()
 
@@ -37,11 +39,16 @@ class SimEngine:
     def clearPredators(self) -> None:
         self._predators.clear()
 
+    def getSteps(self) -> int:
+        return self._step
+
+    def getTime(self) -> int:
+        return self._step * DT
+
     def update(self, dt: float):
         remove_prey_indices = set()
         for predator in self._predators:
-            prey_indx = predator.attack_prey(self._prey)
-            remove_prey_indices.update(prey_indx)
+            remove_prey_indices.update(predator.attack_prey(self._prey))
 
         for remove_prey_idx in sorted(remove_prey_indices, reverse=True):
             del self._prey[remove_prey_idx]
@@ -49,7 +56,9 @@ class SimEngine:
         self._preyBehaviour.update(self._prey, self._predators, dt)
         self._predatorBehaviour.update(self._predators, self._prey, dt)
 
-        self._telemetry.update(self._prey, self._predators, dt)
+        self._telemetry.update(
+            self._step, self._prey, self._predators, len(remove_prey_indices), dt
+        )
 
         for p in self._prey:
             p.update(dt)
@@ -61,6 +70,8 @@ class SimEngine:
             p.rolloverAcc()
             if self.toroidalCoords:
                 p.rolloverCoords()
+
+        self._step += 1
 
     def _draw_bounds(self, camera: Camera, surface: Surface):
         bounds = (camera.apply(Vector2(0, 0)), camera.apply(Vector2(WIDTH, HEIGHT)))
@@ -76,6 +87,5 @@ class SimEngine:
             self._preyBehaviour.debug_draw(camera, surface, self._prey)
             self._predatorBehaviour.debug_draw(camera, surface, self._predators)
 
-    def plot(self, stepNo: int):
-        self._telemetry.plotResults(stepNo)
-
+    def plot(self):
+        self._telemetry.plotResults(self._step)

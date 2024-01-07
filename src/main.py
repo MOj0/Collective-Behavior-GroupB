@@ -24,8 +24,6 @@ screen = pg.display.set_mode([WIDTH, HEIGHT], pg.DOUBLEBUF)
 clock = pg.time.Clock()
 font = pg.font.SysFont("monospace", 22)
 
-FPS = 60
-DT = 1 / FPS
 
 simEngine: SimEngine = SimEngine(
     HoPePreyAvoidTurnTime(), PredatorAttackMostPeripheral(), toroidalCoords=True
@@ -102,7 +100,6 @@ debug_draw: bool = False
 is_update_on: bool = True
 do_single_update: bool = True
 follow_predator: bool = False
-steps = 0
 camera_zoom = math.sqrt(2)
 camera_view = Vector2(WIDTH * camera_zoom, HEIGHT * camera_zoom)
 camera_center = Vector2(WIDTH / 2, HEIGHT / 2)
@@ -122,17 +119,16 @@ while running:
             elif event.key == pg.K_d:
                 debug_draw = not debug_draw
             elif event.key == pg.K_r:
-                simEngine.clear()
+                simEngine.reset()
                 add_boids()
-                steps = 0
             elif event.key == pg.K_SPACE:
                 is_update_on = not is_update_on
             elif event.key == pg.K_RIGHT:
                 do_single_update = True
             elif event.key == pg.K_s:
-                pg.image.save(screen, f"boids_step_{steps-1}.jpg")
+                pg.image.save(screen, f"boids_step_{simEngine.getSteps()-1}.jpg")
             elif event.key == pg.K_a:
-                simEngine.plot(steps)
+                simEngine.plot()
             elif event.key == pg.K_p:
                 follow_predator = not follow_predator
         elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
@@ -149,7 +145,6 @@ while running:
     if is_update_on or do_single_update:
         simEngine.update(DT)
         do_single_update = False
-        steps += 1
 
     screen.fill((0, 0, 0))
 
@@ -164,7 +159,9 @@ while running:
         screen.blit(
             font.render(f"FPS: {int(clock.get_fps())}", 1, (0, 255, 255)), (20, 20)
         )
-        screen.blit(font.render(f"steps: {steps-1}", 1, (0, 255, 255)), (20, 50))
+        screen.blit(
+            font.render(f"steps: {simEngine.getSteps()-1}", 1, (0, 255, 255)), (20, 50)
+        )
 
     pg.display.flip()
     clock.tick(FPS)
