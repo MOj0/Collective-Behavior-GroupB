@@ -62,7 +62,7 @@
 \begin{abstract}
 The collective behaviors observed in nature, such as flocking, herding, or schooling, often serve as adaptive strategies that enhance the survival chances of individuals within a group.
 Understanding these natural behaviors serves as inspiration for designing autonomous agents capable of sophisticated interactions within a simulated environment.
-Our goal is to simulate prey and predator with different predator tactics (attack center, attack nearest, attack isolated, attacks from various directions, constant bearing hunting), escape maneuvers (split, hourglass, herd, vacuole, flash expansion, fountain) and parameters (perception radius, moving speed, turning speed) in order to conclude how different escape maneuvers affect predator's success.
+Our goal is to simulate prey and predator with different predator tactics (attack center, attack nearest, attack isolated, attacks from various directions), escape maneuvers (split, hourglass, herd, vacuole, flash expansion, fountain) and parameters (perception radius, moving speed, turning speed) in order to conclude how different escape maneuvers affect predator's success.
 
 \nocite{papadopoulou2022emergence}
 \end{abstract}
@@ -195,7 +195,7 @@ Modifying the base Boids model with the \textbf{field of vision} is an improveme
 Additionally inspired by \cite{JDemsar_predator_attacks} is \textbf{occlusion}.
 This effectively disregards boids that remain hidden from the view of a specific boid, as closer
 boids obstruct their visibility (see Figure \ref{fig:occlusion}). Given a list of potential neighboring boids,
-we must determine which are occluded and in turn take only the nearest (non-occluded) boids as neighbours. 
+we must determine which are occluded and in turn take only the nearest (non-occluded) boids as neighbours.
 This is done by iterating through the list of neighboring boids of boid $B$ and computing the angle between all
 neighbor pairs $(B_i, B_j)$. If the angle is below a threshold, boids $B_i$ and $B_j$ are considered occluded.
 Then we just have to determine which neighbor is closer (which one blocks the other). This is done by computing
@@ -206,17 +206,17 @@ checks to the predator in our model.
     \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
         % Draw a semi-transparent blue circle with a dark border
         \draw[fill=blue!20, draw=blue!80] (0,0) circle (3);
-		% Reference
+        % Reference
         \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (boid1) at (0,0) {};
         % Occluded
         \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,gray] (boid2) at (-1.5,1.5) {};
-		% Neighbors
+        % Neighbors
         \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid3) at (-.75,.75) {};
         \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid4) at (0,-1.5) {};
-		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid5) at (1,1.5) {};
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid5) at (1,1.5) {};
     \end{tikzpicture}
-	\caption{Neighbors (blue) of the observed boid (green). Occluded boid is marked gray.}
-	\label{fig:occlusion}
+    \caption{Neighbors (blue) of the observed boid (green). Occluded boid is marked gray.}
+    \label{fig:occlusion}
 \end{figure}
 
 In order to add even more realism, the \textbf{turn speed} of a boid is limited.
@@ -224,74 +224,119 @@ Whenever the acceleration of a boid is computed, the angle between the accelerat
 If it exceeds a threshold, the old heading is rotated by the maximum amount in the given direction and scaled by the magnitude of the acceleration.
 Therefore boids have a maximum value in which they can turn at each step of the simulation.
 
+Lastly, \textbf{predator confusion factor} and \textbf{prey's reaction time} were implemented, which further enhances the realism.
+
 \subsection*{Escape maneuvers}
 
-In the HoPE model, which was proposed in \cite{papadopoulou2022emergence} and that we have tried to
-reproduce, discrete escape maneuvers are introduced. These maneuvers involve individual turns away from
-the predator's heading, with turning angles and durations drawn from gamma distributions tailored to empirical
-data. Each flock member's likelihood of maneuvering is determined by a unique baseline escape tendency and
-proximity to the predator. During maneuvers, coordination with neighbors is absent. Additionally, basic Boids
-rules guide prey away from the predator, while in non-maneuvering states.
+In the HoPE model, which was proposed in \cite{papadopoulou2022emergence}, discrete escape maneuvers are introduced, which we reproduced.
+These maneuvers involve individual turns away from the predator's heading either based on its position, direction or with turning angles and durations drawn from gamma distributions tailored to empirical data.
+During maneuvers, coordination with neighbors is absent.
+Each flock member's likelihood of maneuvering is determined by a unique baseline escape tendency and proximity to the predator.
 
-We have implemented three escape maneuvers: \textbf{position-based}, \textbf{direction-based}, and \textbf{zig-zag}
-escape maneuvers. Due to \textit{separation} embedded in our model, in the position-based escape maneuver, prey moves
-away from the predator once it gets too close. In the direction-based escape behavior, we simply compute the angle
-between the heading of the predator and prey. We take the sign of this angle and rotate the heading of the prey by
-$+$ or $-$ 90°, depending on the sign. The zig-zag escape maneuver simply alternates the prey direction in fixed
-time intervals. Some of these maneuvers result in patterns shown in Figure \ref{fig:escape_maneuvers}.
+In our implementation however, maneuvering of flock members is not based on chance, but on whether prey sees the predator or not.
+This is the only difference between our implementation and the original (aside from additional realistic factors), since using randomness in this situation did not seem logical to us.
+
+We have implemented three escape maneuvers: \textbf{position based}, \textbf{direction based}, and \textbf{zig-zag} escape maneuvers.
+The position based escape manuever works the same way as \textit{separation} in the Boids model.
+In the direction based escape behavior, we simply compute the angle between the heading of the predator and prey.
+We take the sign of this angle and rotate the heading of the prey by $+$ or $-$ 90°, depending on the sign.
+The zig-zag escape maneuver simply alternates the prey direction in fixed time intervals.
+Some of these maneuvers result in patterns shown in Figure \ref{fig:escape_maneuvers}.
 \begin{figure}[h]
-	\centering
-	\begin{subfigure}[t]{.45\textwidth}
-		\centering
-		\includegraphics[width=0.6\linewidth]{article_split.png}
-	\end{subfigure}%
-	\hspace{.5cm} % Adjust this value to increase or decrease the space
-	\begin{subfigure}[t]{.45\textwidth}
-		\centering
-		\includegraphics[width=0.6\linewidth]{article_herd.png}
-	\end{subfigure}
-	\caption{The patterns emerging from position-based (left picture) and direction-based (right picture) escape maneuvers.}
-	\label{fig:escape_maneuvers}
+    \centering
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.6\linewidth]{article_split.png}
+    \end{subfigure}%
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.6\linewidth]{article_herd.png}
+    \end{subfigure}
+    \caption{The patterns emerging from position-based (left picture) and direction-based (right picture) escape maneuvers.}
+    \label{fig:escape_maneuvers}
 \end{figure}
 
 \subsection*{Predators}
 
-We have implemented four predator attack strategies, with three detailed and simulated in \cite{JDemsar_predator_attacks}.
-The first targets the flock's center,
-the second goes for the closest prey,
-and the third selects the most isolated prey.
+We have implemented four predator attack strategies, with three presented and simulated in \cite{JDemsar_predator_attacks}.
+The first targets the flock's center, the second goes for the closest prey, and the third selects the most isolated prey.
 In the last strategy, the predator simply attacks a random target.
+
 \section*{Results}
 
-We have compared how different attack strategies stack up against prey escape tactics. The
-results are presented in Figure \ref{fig:sim_results_01}. Plots suggest that
-direction-based escape maneuver is inferior to position-based tactics, indicated by larger prey
-capture count.
+We will first compare the results from the original research \cite{papadopoulou2022emergence} with our own.
+Specifically, we will compare our simulated data with the empirial data obtained from the original research, as shown in figure \ref{fig:empirial_comparison}.
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{empirical_turn_angle.png}
+    \end{subfigure}%
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=1.02\linewidth]{avoid_direction_attack_peripheral/turn_angle_freq_2008.pdf}
+    \end{subfigure}
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{empirical_turn_freq.png}
+    \end{subfigure}
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=1.02\linewidth]{avoid_direction_attack_peripheral/turn_angle_freq_2008.pdf}
+    \end{subfigure}
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{empirical_turn_dur.png}
+    \end{subfigure}
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=1.02\linewidth]{avoid_direction_attack_peripheral/turn_angle_dur_2008.pdf}
+    \end{subfigure}
+    \caption{Graphs obtained from empirical data (left) and graphs obtained in our Boids simulation using the \textit{avoid direction} escape manuever (right)}
+    \label{fig:empirial_comparison}
+\end{figure}
+
+We can see that the resulting graphs are quite similar, except graphs obtained from our simulation are more sparse.
+This is most likely because we only ran the simulation up to 2000 steps (about 30 seconds), while the empirical data was most likely gathered throughout a longer period.
+We can therefore be confident that our simulation works as expected.
+
+Lastly, we will compare how different attack strategies perform against different prey escape tactics.
+Although we have implemented 6 escape manuever tactics and 4 attack tactics, we will 2 of each.
 \begin{figure}[h]
     \centering
     \begin{subfigure}[t]{0.4\linewidth}
         \includegraphics[width=\linewidth]{avoid_position_attack_peripheral/predator_success_cumulative_2003.pdf}
-        \caption{Position-based escape maneuver, attack most isolated attack strategy.}
+        \caption{Position-based escape maneuver, most isolated attack strategy.}
     \end{subfigure}%
     \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
     \begin{subfigure}[t]{0.4\linewidth}
         \includegraphics[width=\linewidth]{avoid_position_attack_nearest/predator_success_cumulative_2003.pdf}
-        \caption{Position-based escape maneuver, attack nearest attack strategy.}
+        \caption{Position-based escape maneuver, nearest attack strategy.}
     \end{subfigure}
     \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
     \begin{subfigure}[t]{0.4\linewidth}
         \includegraphics[width=\linewidth]{avoid_direction_attack_peripheral/predator_success_cumulative_2008.pdf}
-        \caption{Direction-based escape maneuver, attack most isolated attack strategy.}
+        \caption{Direction-based escape maneuver, most isolated attack strategy.}
     \end{subfigure}%
     \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
     \begin{subfigure}[t]{0.4\linewidth}
         \includegraphics[width=\linewidth]{avoid_direction_attack_nearest/predator_success_cumulative_2001.pdf}
-        \caption{Direction-based escape maneuver, attack nearest attack strategy.}
+        \caption{Direction-based escape maneuver, nearest attack strategy.}
     \end{subfigure}
-    \caption{Comparison of varios predator attack strategies and prey evasion maneuvers.}
-	\label{fig:sim_results_01}
+    \caption{Comparison of various predator attack strategies and prey evasion maneuvers.}
+    \label{fig:sim_results_01}
 \end{figure}
 
+Note that graphs in figure \ref{fig:sim_results_01} are cumulative, since it makes it easier to see the effect.
+Plots suggest that direction based escape maneuver is inferior to position based tactics, indicated by larger prey capture count.
+By inspecting the first row, we can also see that attacking the nearest prey outperforms the most-isolated strategy.
 
 \pagebreak
 
