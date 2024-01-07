@@ -263,7 +263,8 @@ and the third selects the most isolated prey.
 In the last strategy, the predator simply attacks a random target.
 \section*{Results}
 
-In Figure \ref{fig:sim_split}, we demonstrate the split escape maneuver modeled by our simulation.
+In Figure \ref{fig:sim_split}, we demonstrate the functionality of our application
+where the emergence of a split pattern can be observed in the simulation.
 \begin{figure}[h]
     \centering
     \begin{subfigure}[t]{0.3\linewidth}
@@ -280,9 +281,38 @@ In Figure \ref{fig:sim_split}, we demonstrate the split escape maneuver modeled 
         \includegraphics[width=\linewidth]{boids_step_261.jpg}
         \caption{Predator caught a prey, split continues (step $261$).}
     \end{subfigure}
-    \caption{A demonstration of the split escape maneuver. Predator and prey positions
+    \caption{A demonstration of the split pattern. Predator and prey positions
 	are shown at various steps of a simulation.}
 	\label{fig:sim_split}
+\end{figure}
+Next, we've compared how different attack strategies stack up against prey escape tactics. The
+results are presented in Figure \ref{fig:sim_results_01}. Plots suggest that
+direction-based escape maneuver is inferior to position-based tactics, indicated by larger prey
+capture count.
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[t]{0.4\linewidth}
+        \includegraphics[width=\linewidth]{avoid_position_attack_peripheral/predator_success_cumulative_2003.pdf}
+        \caption{Position-based escape maneuver, attack most isolated attack strategy.}
+    \end{subfigure}%
+    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{0.4\linewidth}
+        \includegraphics[width=\linewidth]{avoid_position_attack_nearest/predator_success_cumulative_2003.pdf}
+        \caption{Position-based escape maneuver, attack nearest attack strategy.}
+    \end{subfigure}
+    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{0.4\linewidth}
+        \includegraphics[width=\linewidth]{avoid_direction_attack_peripheral/predator_success_cumulative_2008.pdf}
+        \caption{Direction-based escape maneuver, attack most isolated attack strategy.}
+    \end{subfigure}%
+    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{0.4\linewidth}
+        \includegraphics[width=\linewidth]{avoid_direction_attack_nearest/predator_success_cumulative_2001.pdf}
+        \caption{Direction-based escape maneuver, attack nearest attack strategy.}
+    \end{subfigure}
+    \caption{A demonstration of the split pattern. Predator and prey positions
+	are shown at various steps of a simulation.}
+	\label{fig:sim_results_01}
 \end{figure}
 
 
