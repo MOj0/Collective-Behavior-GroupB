@@ -226,28 +226,33 @@ Therefore boids have a maximum value in which they can turn at each step of the 
 
 \subsection*{Escape maneuvers}
 
-Two collective escape patterns that are described in \cite{papadopoulou2022emergence} have been implemented: \textbf{split}
-and \textbf{herd} as shown in Figure \ref{fig:escape_maneuvers}.
+In the HoPE model, which was proposed in \cite{papadopoulou2022emergence} and that we have tried to
+reproduce, discrete escape maneuvers are introduced. These maneuvers involve individual turns away from
+the predator's heading, with turning angles and durations drawn from gamma distributions tailored to empirical
+data. Each flock member's likelihood of maneuvering is determined by a unique baseline escape tendency and
+proximity to the predator. During maneuvers, coordination with neighbors is absent. Additionally, basic Boids
+rules guide prey away from the predator, while in non-maneuvering states.
+
+We have implemented three escape maneuvers: \textbf{position-based}, \textbf{direction-based}, and \textbf{zig-zag}
+escape maneuvers. Due to \textit{separation} embedded in our model, in the position-based escape maneuver, prey moves
+away from the predator once it gets too close. In the direction-based escape behavior, we simply compute the angle
+between the heading of the predator and prey. We take the sign of this angle and rotate the heading of the prey by
+$+$ or $-$ 90°, depending on the sign. The zig-zag escape maneuver simply alternates the prey direction in fixed
+time intervals. Some of these maneuvers result in patterns shown in Figure \ref{fig:escape_maneuvers}.
 \begin{figure}[h]
-    \centering
+	\centering
 	\begin{subfigure}[t]{.45\textwidth}
-        \centering
+		\centering
 		\includegraphics[width=0.6\linewidth]{article_split.png}
-    \end{subfigure}%
-    \hspace{.5cm} % Adjust this value to increase or decrease the space
-    \begin{subfigure}[t]{.45\textwidth}
-        \centering
+	\end{subfigure}%
+	\hspace{.5cm} % Adjust this value to increase or decrease the space
+	\begin{subfigure}[t]{.45\textwidth}
+		\centering
 		\includegraphics[width=0.6\linewidth]{article_herd.png}
-    \end{subfigure}
-    \caption{The basic two escape maneuvers from \cite{papadopoulou2022emergence} that we have implemented.}
+	\end{subfigure}
+	\caption{The patterns emerging from position-based (left picture) and direction-based (right picture) escape maneuvers.}
 	\label{fig:escape_maneuvers}
 \end{figure}
-
-Split is based on predator position. Because of \textit{separation} embedded in our model, prey moves away from the
-predator once it gets too close.
-
-Herd is based on predator heading. We simply compute the angle between the heading of predator and prey.
-We take the sign of this angle and rotate the heading of the prey by $+$ or $-$ 90°, depending on sign.
 
 \subsection*{Predators}
 
