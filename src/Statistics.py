@@ -3,8 +3,7 @@ from copy import deepcopy
 from numpy import sign
 import matplotlib.pyplot as plt
 
-class Telemetry:
-
+class Statistics:
     def __init__(self) -> None:
         self.turnSigma: float = 0.1
         self.minTurnDur: float = 0.1 #sec
@@ -28,7 +27,7 @@ class Telemetry:
     def _addTurn(self, boid: Boid):
         ID = boid.getId()
         self.turnDurLst.append(self._turnDurMap[ID])
-        self.turnAngleLst.append(self._turnAngleMap[ID])
+        self.turnAngleLst.append(abs(self._turnAngleMap[ID]))
 
     def _detectTurn(self, boid: Boid, dt: float):
         ID = boid.getId()
@@ -52,24 +51,31 @@ class Telemetry:
             self._initVars(f)
             self._detectTurn(f, dt)
 
-    def _plotTurnDurFreq(self):
+    def _plotTurnDurFreq(self, stepNo: int):
         fig, axs = plt.subplots(1, 1, tight_layout=True)
-        axs.hist(self.turnDurLst)
+        axs.hist(self.turnDurLst, bins=100)
         axs.set_xlabel('Turn duration (s)')
         axs.set_ylabel('Frequency')
-        fig.show()
+        fig.savefig(f'turn_dur_freq_{stepNo}.pdf')
 
-    def _plotTurnAngleFreq(self):
+    def _plotTurnAngleFreq(self, stepNo: int):
         fig, axs = plt.subplots(1, 1, tight_layout=True)
-        axs.hist(self.turnAngleLst)
+        axs.hist(self.turnAngleLst, bins=100)
         axs.set_xlabel('Turn angle (deg)')
         axs.set_ylabel('Frequency')
-        fig.show()
+        fig.savefig(f'turn_angle_freq_{stepNo}.pdf')
 
+    def _plotTurnAngleDur(self, stepNo: int):
+        fig, axs = plt.subplots(1, 1, tight_layout=True)
+        axs.scatter(self.turnDurLst, self.turnAngleLst)
+        axs.set_xlabel('Turn duration (s)')
+        axs.set_ylabel('Turn angle (deg)')
+        fig.savefig(f'turn_angle_dur_{stepNo}.pdf')
 
-    def plotResults(self):
-        self._plotTurnDurFreq()
-        self._plotTurnAngleFreq()
+    def plotResults(self, stepNo: int):
+        self._plotTurnDurFreq(stepNo)
+        self._plotTurnAngleFreq(stepNo)
+        self._plotTurnAngleDur(stepNo)
 
 
 
