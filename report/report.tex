@@ -196,7 +196,7 @@ Additionally inspired by \cite{JDemsar_predator_attacks} is \textbf{occlusion}.
 This effectively disregards boids that remain hidden from the view of a specific boid, as closer
 boids obstruct their visibility (see Figure \ref{fig:occlusion}). Given a list of potential neighboring boids,
 we must determine which are occluded and in turn take only the nearest (non-occluded) boids as neighbours. 
-is done by iterating through the list of neighboring boids of boid $B$ and computing the angle between all
+This is done by iterating through the list of neighboring boids of boid $B$ and computing the angle between all
 neighbor pairs $(B_i, B_j)$. If the angle is below a threshold, boids $B_i$ and $B_j$ are considered occluded.
 Then we just have to determine which neighbor is closer (which one blocks the other). This is done by computing
 the minimum distance: $min(d(B, B_i), d(B, B_j))$. It is worth noting that we have only added occlusion
