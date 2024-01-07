@@ -226,35 +226,57 @@ Therefore boids have a maximum value in which they can turn at each step of the 
 
 \subsection*{Escape maneuvers}
 
-The 2 simplest escape maneuvers are implemented: escape based on position and based on velocity (direction) of the predator.
+Two collective escape patterns that are described in \cite{papadopoulou2022emergence} have been implemented: \textbf{split}
+and \textbf{herd} as shown in Figure \ref{fig:escape_maneuvers}.
+\begin{figure}[h]
+    \centering
+	\begin{subfigure}[t]{.45\textwidth}
+        \centering
+		\includegraphics[width=0.6\linewidth]{article_split.png}
+    \end{subfigure}%
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+		\includegraphics[width=0.6\linewidth]{article_herd.png}
+    \end{subfigure}
+    \caption{The basic two escape maneuvers from \cite{papadopoulou2022emergence} that we have implemented.}
+	\label{fig:escape_maneuvers}
+\end{figure}
 
-The position based escape maneuver works exactly the same way as separation, except the position of predator is taken into account.
+Split is based on predator position. Because of \textit{separation} embedded in our model, prey moves away from the
+predator once it gets too close.
 
-The direction based escape maneuver works such that it determines on which side of prey lies the predator, and going into a perpendicular direction in the opposite side.
+Herd is based on predator heading. We simply compute the angle between the heading of predator and prey.
+We take the sign of this angle and rotate the heading of the prey by $+$ or $-$ 90°, depending on sign.
 
 \subsection*{Predators}
 
-2 simple predator behaviors (strategies) are implemented: attack centroid, attack random prey.
+We have implemented two simple predator attack strategies. In the first one, the predator
+attacks the center of the flock. This behavior has also been simulated in \cite{JDemsar_predator_attacks}.
+In the second strategy, the predator simply attacks a random target.
 
 \section*{Results}
 
-By combining all the features adding upon realism and the escape maneuvers, we can obtain a realstic patter \textbf{split}.
-This pattern is obtain by using the \textbf{position} based escape manuever and any predator tactic.
-
+In Figure \ref{fig:sim_split}, we demonstrate the split escape maneuver modeled by our simulation.
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\linewidth]{boids_step_146.jpg}
-    \caption{Predator chasing a group of boids (step $146$)}
-\end{figure}
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.6\linewidth]{boids_step_233.jpg}
-    \caption{Start of split pattern (step $233$)}
-\end{figure}
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.7\linewidth]{boids_step_261.jpg}
-    \caption{Predator caught a prey, split continues (step $261$)}
+    \begin{subfigure}[t]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{boids_step_146.jpg}
+        \caption{Predator chasing a group of boids (step $146$).}
+    \end{subfigure}%
+    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{boids_step_233.jpg}
+        \caption{Start of split pattern (step $233$).}
+    \end{subfigure}%
+    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{boids_step_261.jpg}
+        \caption{Predator caught a prey, split continues (step $261$).}
+    \end{subfigure}
+    \caption{A demonstration of the split escape maneuver. Predator and prey positions
+	are shown at various steps of a simulation.}
+	\label{fig:sim_split}
 \end{figure}
 
 
