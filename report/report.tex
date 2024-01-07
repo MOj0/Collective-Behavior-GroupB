@@ -251,10 +251,11 @@ We take the sign of this angle and rotate the heading of the prey by $+$ or $-$ 
 
 \subsection*{Predators}
 
-We have implemented two simple predator attack strategies. In the first one, the predator
-attacks the center of the flock. This behavior has also been simulated in \cite{JDemsar_predator_attacks}.
-In the second strategy, the predator simply attacks a random target.
-
+We have implemented four predator attack strategies, with three detailed and simulated in \cite{JDemsar_predator_attacks}.
+The first targets the flock's center,
+the second goes for the closest prey,
+and the third selects the most isolated prey.
+In the last strategy, the predator simply attacks a random target.
 \section*{Results}
 
 In Figure \ref{fig:sim_split}, we demonstrate the split escape maneuver modeled by our simulation.
