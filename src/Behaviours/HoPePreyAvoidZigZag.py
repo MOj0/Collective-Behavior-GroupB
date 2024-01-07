@@ -169,8 +169,8 @@ class HoPePreyAvoidZigZag(Behaviour):
                 (150, 150, 150),
                 (
                     *arcCenter,
-                    2 * self._perceptionRadius,
-                    2 * self._perceptionRadius,
+                    camera.apply(2 * self._perceptionRadius),
+                    camera.apply(2 * self._perceptionRadius),
                 ),
                 -heading - radians(self._angleOfView),
                 -heading + radians(self._angleOfView),
@@ -179,6 +179,6 @@ class HoPePreyAvoidZigZag(Behaviour):
                 surface,
                 (255, 100, 100),
                 camera.apply(boid.getPosition()),
-                self._separationDistance,
+                camera.apply(self._separationDistance),
                 width=1,
             )

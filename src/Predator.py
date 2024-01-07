@@ -94,6 +94,7 @@ class Predator(Boid):
             self.huntingState = HuntingState.REST
             self.setRestPeriod(5)
             self.setTarget(None)
+            self.setSelectedPrey(None)
             self.setPredation(False)
         if len(collision_indices) > len(out):
             print("missed prey")
