@@ -17,6 +17,7 @@ class Boid(ABC):
         max_acceleration: float,
         base_acceleration: float,
         max_rotation_angle: float,
+        escape_reaction_time: float,
         size=(10, 6),
         color=(0, 0, 255),
         position=Vector2(0, 0),
@@ -28,6 +29,7 @@ class Boid(ABC):
         self._id: int = id
         self._width, self._height = size
         self._boid_shape: Surface = Surface(size, SRCALPHA)
+        self._color = color
         draw.polygon(
             self._boid_shape,
             color,
@@ -52,11 +54,15 @@ class Boid(ABC):
         self.max_velocity = max_velocity
         self.max_acceleration = max_acceleration
         self.base_acceleration = base_acceleration
-
         self.max_rotation_angle = max_rotation_angle
+
+        self._escape_reaction_time = escape_reaction_time
+        self._curr_escape_time = escape_reaction_time
 
         # True if under predation (prey) or hunting (predator), False otherwise
         self._predation = predation
+
+        self._evasion = False
 
     def getId(self) -> int:
         return self._id
@@ -79,11 +85,26 @@ class Boid(ABC):
     def setPredation(self, predation):
         self._predation = predation
 
+    def getEvasion(self) -> bool:
+        return self._evasion
+
+    def setEvasion(self, evasion: bool):
+        self._evasion = evasion
+
     def getCollisionRadius(self) -> float:
         return self._r
 
     def distance_sq_to(self, other: "Boid") -> float:
         return Torus.ofs(self.getPosition(), other.getPosition()).length_squared()
+
+    def get_curr_escape_reaction_time(self):
+        return self._curr_escape_time
+
+    def decrease_curr_escape_reaction_time(self, amount: float):
+        self._curr_escape_time -= amount
+
+    def reset_curr_escape_reaction_time(self):
+        self._curr_escape_time = self._escape_reaction_time
 
     def angle_between(self, other: "Boid") -> float:
         diff = self.dirTo(other)
@@ -126,7 +147,9 @@ class Boid(ABC):
             if self.distance_sq_to(boid) <= (boid.getCollisionRadius() + self._r) ** 2
         ]
 
-    def setDesiredAcceleration(self, new_acc: Vector2) -> None:
+    def setDesiredAcceleration(self, acc: Vector2) -> None:
+        new_acc = Vector2(acc.x, acc.y)  # deepcopy, otherwise changes refernced `acc`!
+
         if new_acc.length_squared() == 0:
             self._acc = (self._acc[0], new_acc)
             return
@@ -188,6 +211,19 @@ class Boid(ABC):
     def draw(self, camera: Camera, surface: Surface, debug_draw: bool) -> None:
         _, heading = self._vel.as_polar()
         shape_rotated = transform.rotate(self._boid_shape, -heading)
+
+        if self._evasion:
+            draw.polygon(
+                self._boid_shape,
+                (0, 255, 255),
+                [(self._width, self._height / 2), (0, 0), (0, self._height)],
+            )
+        else:
+            draw.polygon(
+                self._boid_shape,
+                self._color,
+                [(self._width, self._height / 2), (0, 0), (0, self._height)],
+            )
 
         surface.blit(
             shape_rotated,

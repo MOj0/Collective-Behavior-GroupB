@@ -3,8 +3,9 @@ from Boid import Boid
 from pygame import Vector2, Surface, draw
 import Constants
 from Camera import Camera
-from math import radians, copysign
+from math import radians, copysign, sqrt
 import utils
+import random
 
 
 class HoPePreyAvoidDirection(Behaviour):
@@ -108,15 +109,31 @@ class HoPePreyAvoidDirection(Behaviour):
             neighbors = self._get_neighbors(boid, friendlies)
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
+            if not boid.getPredation():
+                boid.setEvasion(False)
 
-            s = self._separation(boid, neighbors)
-            c = self._cohesion(boid, neighbors)
-            a = self._alignment(boid, neighbors)
-            # b = self._bound_position(boid)
+            if (
+                boid.getEvasion()
+                or boid.getPredation()
+                and boid.get_curr_escape_reaction_time() <= 0
+            ):
+                e = self._avoid_p_direction(boid, predators) * self._escapeCoef
+                boid.setDesiredAcceleration(e)
+                boid.setEvasion(True)
 
-            e = self._avoid_p_direction(boid, predators)
+                boid.reset_curr_escape_reaction_time()
+            else:
+                boid.setEvasion(False)
 
-            boid.setDesiredAcceleration(s + c + a + e)
+                s = self._separation(boid, neighbors)
+                c = self._cohesion(boid, neighbors)
+                a = self._alignment(boid, neighbors)
+                # b = self._bound_position(boid)
+
+                boid.setDesiredAcceleration(s + c + a)
+
+                if boid.getPredation():
+                    boid.decrease_curr_escape_reaction_time(dt)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:
@@ -133,8 +150,8 @@ class HoPePreyAvoidDirection(Behaviour):
                 (150, 150, 150),
                 (
                     *arcCenter,
-                    2 * self._perceptionRadius,
-                    2 * self._perceptionRadius,
+                    camera.apply(2 * self._perceptionRadius),
+                    camera.apply(2 * self._perceptionRadius),
                 ),
                 -heading - radians(self._angleOfView),
                 -heading + radians(self._angleOfView),
@@ -143,6 +160,6 @@ class HoPePreyAvoidDirection(Behaviour):
                 surface,
                 (255, 100, 100),
                 camera.apply(boid.getPosition()),
-                self._separationDistance,
+                camera.apply(self._separationDistance),
                 width=1,
             )

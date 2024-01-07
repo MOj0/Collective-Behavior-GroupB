@@ -4,6 +4,7 @@ from pygame import Vector2, Surface, draw
 import Constants
 from Camera import Camera
 from math import radians
+import random
 
 
 class HoPePreyAvoidPosition(Behaviour):
@@ -100,15 +101,53 @@ class HoPePreyAvoidPosition(Behaviour):
             neighbors = self._get_neighbors(boid, friendlies)
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
+            if not boid.getPredation():
+                boid.setEvasion(False)
 
-            s = self._separation(boid, neighbors)
-            c = self._cohesion(boid, neighbors)
-            a = self._alignment(boid, neighbors)
-            # b = self._bound_position(boid)
+            # # NOTE: With randomness
+            # if boid.getPredation():
+            #     min_dist = min(map(boid.distance_sq_to, predators))
+            #     min_dist_m = min_dist * 0.0002645833  # Convert px -> m
 
-            e = self._avoid_p_position(boid, predators) * self._escapeCoef
+            #     if boid.getEvasion() or random.random() <= self.manuever_chance(
+            #         min_dist_m
+            #     ):
+            #         e = self._avoid_p_position(boid, predators) * self._escapeCoef
+            #         boid.setDesiredAcceleration(e)
+            #         boid.setEvasion(True)
+            # else:
+            #     boid.setEvasion(False)
 
-            boid.setDesiredAcceleration(s + c + a + e)
+            #     s = self._separation(boid, neighbors)
+            #     c = self._cohesion(boid, neighbors)
+            #     a = self._alignment(boid, neighbors)
+            #     # b = self._bound_position(boid)
+
+            #     boid.setDesiredAcceleration(s + c + a)
+
+            # NOTE: No randomness
+            if (
+                boid.getEvasion()
+                or boid.getPredation()
+                and boid.get_curr_escape_reaction_time() <= 0
+            ):
+                e = self._avoid_p_position(boid, predators) * self._escapeCoef
+                boid.setDesiredAcceleration(e)
+                boid.setEvasion(True)
+
+                boid.reset_curr_escape_reaction_time()
+            else:
+                boid.setEvasion(False)
+
+                s = self._separation(boid, neighbors)
+                c = self._cohesion(boid, neighbors)
+                a = self._alignment(boid, neighbors)
+                # b = self._bound_position(boid)
+
+                boid.setDesiredAcceleration(s + c + a)
+
+                if boid.getPredation():
+                    boid.decrease_curr_escape_reaction_time(dt)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:
@@ -125,8 +164,8 @@ class HoPePreyAvoidPosition(Behaviour):
                 (150, 150, 150),
                 (
                     *arcCenter,
-                    2 * self._perceptionRadius,
-                    2 * self._perceptionRadius,
+                    camera.apply(2 * self._perceptionRadius),
+                    camera.apply(2 * self._perceptionRadius),
                 ),
                 -heading - radians(self._angleOfView),
                 -heading + radians(self._angleOfView),
@@ -135,6 +174,6 @@ class HoPePreyAvoidPosition(Behaviour):
                 surface,
                 (255, 100, 100),
                 camera.apply(boid.getPosition()),
-                self._separationDistance,
+                camera.apply(self._separationDistance),
                 width=1,
             )

@@ -20,8 +20,8 @@ class HoPePreyAvoidTurnRandom(Behaviour):
         escapeCoef: float = Constants.PREY_ESCAPE_COEFFICIENT,
         escapeTurnMin: float = radians(5),
         escapeTurnMax: float = radians(30),
-        escapeTimeMin: float = 10, # sec
-        escapeTimeMax: float = 100, # sec
+        escapeTimeMin: float = 10,  # sec
+        escapeTimeMax: float = 100,  # sec
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
@@ -101,13 +101,15 @@ class HoPePreyAvoidTurnRandom(Behaviour):
 
         return direction * 10
 
-    def _random_t_turn_pred(self, curBoid: Boid, predators: list[Boid], dt: float) -> Vector2:
+    def _random_t_turn_pred(
+        self, curBoid: Boid, predators: list[Boid], dt: float
+    ) -> Vector2:
         direction = Vector2()
 
         for predator in predators:
-
-            angularVelocity = random.uniform(self._escapeTurnMin, self._escapeTurnMax) \
-                            / random.uniform(self._escapeTimeMin, self._escapeTimeMax)
+            angularVelocity = random.uniform(
+                self._escapeTurnMin, self._escapeTurnMax
+            ) / random.uniform(self._escapeTimeMin, self._escapeTimeMax)
             radius = curBoid.getVelocity().magnitude() / angularVelocity
 
             dirAway = predator.dirTo(curBoid)
@@ -120,22 +122,36 @@ class HoPePreyAvoidTurnRandom(Behaviour):
 
         return direction
 
-    def update(self, friendlies: list[Boid], enemies: list[Boid]) -> None:
+    def update(self, friendlies: list[Boid], enemies: list[Boid], dt: float) -> None:
         for boid in friendlies:
             neighbors = self._get_neighbors(boid, friendlies)
             predators = self._get_neighbors(boid, enemies)
             boid.setPredation(len(predators) > 0)
+            if not boid.getPredation():
+                boid.setEvasion(False)
 
-            s = self._separation(boid, neighbors)
-            c = self._cohesion(boid, neighbors)
-            a = self._alignment(boid, neighbors)
-            # b = self._bound_position(boid)
+            if (
+                boid.getEvasion()
+                or boid.getPredation()
+                and boid.get_curr_escape_reaction_time() <= 0
+            ):
+                e = self._random_t_turn_pred(boid, predators)
+                boid.setDesiredAcceleration(e)
+                boid.setEvasion(True)
 
-            e = self._random_t_turn_pred(
-                boid, predators
-            )
+                boid.reset_curr_escape_reaction_time()
+            else:
+                boid.setEvasion(False)
 
-            boid.setDesiredAcceleration(s + c + a + e)
+                s = self._separation(boid, neighbors)
+                c = self._cohesion(boid, neighbors)
+                a = self._alignment(boid, neighbors)
+                # b = self._bound_position(boid)
+
+                boid.setDesiredAcceleration(s + c + a)
+
+                if boid.getPredation():
+                    boid.decrease_curr_escape_reaction_time(dt)
 
     def debug_draw(self, camera: Camera, surface: Surface, boids: list[Boid]):
         for boid in boids:
@@ -152,8 +168,8 @@ class HoPePreyAvoidTurnRandom(Behaviour):
                 (150, 150, 150),
                 (
                     *arcCenter,
-                    2 * self._perceptionRadius,
-                    2 * self._perceptionRadius,
+                    camera.apply(2 * self._perceptionRadius),
+                    camera.apply(2 * self._perceptionRadius),
                 ),
                 -heading - radians(self._angleOfView),
                 -heading + radians(self._angleOfView),
@@ -162,6 +178,6 @@ class HoPePreyAvoidTurnRandom(Behaviour):
                 surface,
                 (255, 100, 100),
                 camera.apply(boid.getPosition()),
-                self._separationDistance,
+                camera.apply(self._separationDistance),
                 width=1,
             )

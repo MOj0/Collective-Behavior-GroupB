@@ -1,9 +1,11 @@
 from Boid import Boid
+from Predator import Predator
 from Behaviours.Behaviour import Behaviour
 from Camera import Camera
 from pygame import Surface, draw, Vector2, Rect
 from Constants import WIDTH, HEIGHT
 from Statistics import Statistics
+
 
 class SimEngine:
     def __init__(
@@ -15,20 +17,19 @@ class SimEngine:
         self._preyBehaviour: Behaviour = preyBehaviour
         self._predatorBehaviour: Behaviour = predatorBehaviour
         self._prey: list[Boid] = []
-        self._predators: list[Boid] = []
+        self._predators: list[Predator] = []
         self.toroidalCoords: bool = toroidalCoords
         self._telemetry: Statistics = Statistics()
 
     def addPrey(self, object: Boid) -> None:
         self._prey.append(object)
 
-    def addPredator(self, object: Boid) -> None:
-        self._predators.append(object)
+    def addPredator(self, predator: Predator) -> None:
+        self._predators.append(predator)
 
     def clear(self) -> None:
         self.clearPrey()
         self.clearPredators()
-        self._predatorBehaviour.selectedPrey = None
 
     def clearPrey(self) -> None:
         self._prey.clear()
@@ -39,12 +40,11 @@ class SimEngine:
     def update(self, dt: float):
         remove_prey_indices = set()
         for predator in self._predators:
-            remove_prey_indices.update(predator.collide_with_others(self._prey))
+            prey_indx = predator.attack_prey(self._prey)
+            remove_prey_indices.update(prey_indx)
+
         for remove_prey_idx in sorted(remove_prey_indices, reverse=True):
             del self._prey[remove_prey_idx]
-
-        if len(remove_prey_indices) > 0:
-            self._predatorBehaviour.selectedPrey = None
 
         self._preyBehaviour.update(self._prey, self._predators, dt)
         self._predatorBehaviour.update(self._predators, self._prey, dt)
@@ -75,6 +75,7 @@ class SimEngine:
         if debug_draw:
             self._preyBehaviour.debug_draw(camera, surface, self._prey)
             self._predatorBehaviour.debug_draw(camera, surface, self._predators)
-    
+
     def plot(self, stepNo: int):
         self._telemetry.plotResults(stepNo)
+
