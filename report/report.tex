@@ -8,6 +8,8 @@
 
 % Custom added packages
 \usetikzlibrary{shapes.geometric}
+\usepackage{subcaption}
+
 
 \templatetype{pnasresearcharticle} % Choose template 
 % {pnasresearcharticle} = Template for a two-column research article
@@ -36,7 +38,7 @@
 \author{Marko Adžaga}
 \author{Janez Kuhar}
 
-\affil{Collective behaviour course research seminar report}
+\affil{Collective behavior course research seminar report}
 
 % Please give the surname of the lead author for the running footer
 \leadauthor{Ojo} 
@@ -44,7 +46,7 @@
 \selectlanguage{english}
 
 % Please add here a significance statement to explain the relevance of your work
-\significancestatement{Collective behaviour course research seminar report}{Predator-prey interactions is of significant importance in biology and nature itself. The insights gleaned from this research can offer more than a theoretical understanding; they pave the way for the design and optimization of autonomous agents capable of adaptive and context-aware behaviors. The applications range from research in biology to simulations of large amounts of boids found in computer graphics.}{Collective Behaviour | Boids | Simulation | Prey-Predator | Escape patterns}
+\significancestatement{Collective behavior course research seminar report}{Predator-prey interactions is of significant importance in biology and nature itself. The insights gleaned from this research can offer more than a theoretical understanding; they pave the way for the design and optimization of autonomous agents capable of adaptive and context-aware behaviors. The applications range from research in biology to simulations of large amounts of boids found in computer graphics.}{Collective behavior | Boids | Simulation | Prey-Predator | Escape patterns}
 
 \selectlanguage{english}
 
@@ -55,15 +57,13 @@
 %\correspondingauthor{\textsuperscript{2}To whom correspondence should be addressed. E-mail: author.two\@email.com}
 
 % Keywords are not mandatory, but authors are strongly encouraged to provide them. If provided, please include two to five keywords, separated by the pipe symbol, e.g:
-\keywords{Collective Behaviour | Boids | Simulation | Prey-Predator | Escape patterns } 
+\keywords{Collective behavior | Boids | Simulation | Prey-Predator | Escape patterns } 
 
 \begin{abstract}
-The collective behaviours observed in nature, such as flocking, herding, or schooling, often serve as adaptive strategies that enhance the survival chances of individuals within a group.
+The collective behaviors observed in nature, such as flocking, herding, or schooling, often serve as adaptive strategies that enhance the survival chances of individuals within a group.
 Understanding these natural behaviors serves as inspiration for designing autonomous agents capable of sophisticated interactions within a simulated environment.
-Our goal is to simulate prey and predator with different predator tactics (attack center, attack nearest, attack isolated, attacks from various directions, constant bearing hunting), escape maneuvers (split, hourglass, herd, vacuole, flash expansion, fountain) and parameters (perception radius, moving speed, turning speed) in order to conclude how different escape maneuvers affect predator's success.
+Our goal is to simulate prey and predator with different predator tactics (attack center, attack nearest, attack isolated, attacks from various directions), escape maneuvers (split, hourglass, herd, vacuole, flash expansion, fountain) and parameters (perception radius, moving speed, turning speed) in order to conclude how different escape maneuvers affect predator's success.
 
-This research paper however, will only focus on the basic boid (bird-oid object) simulation.
-This simulation will serve as a foundation for the more complex simulations in the future.
 \nocite{papadopoulou2022emergence}
 \end{abstract}
 
@@ -88,226 +88,271 @@ This simulation will serve as a foundation for the more complex simulations in t
 % If your first paragraph (i.e. with the \dropcap) contains a list environment (quote, quotation, theorem, definition, enumerate, itemize...), the line after the list may have some extra indentation. If this is the case, add \parshape=0 to the end of the list environment.
 \dropcap{O}ne of the most striking patterns in biology is the formation of animal aggregations.
 Classically, aggregation has been viewed as an evolutionarily advantageous state, in which members derive the benefits of protection, mate choice, and centralized information, balanced by the costs of limiting resources \cite{complexity_pattern}.
-We will presume the most common hypotheses, which is that flocking evolved in order to provide defense against predators, and conclude with which flocking behaviour is the most effective for prey and predator.
-Our research is based on Emergence of splits and collective turns in pigeon flocks under predation \cite{papadopoulou2022emergence}, which we will extend by providing concrete results in the predator and prey simulation.
-This research is similar to Jure Demšar and Iztok Lebar Bajec's Comparison of (predator) tactics \cite{JDemsar_predator_attacks}.
-The main difference between the mentioned research and ours is the use of boids algorithm instead of fuzzy logic.
+We would like to experimentally determine which flocking behaviors help the prey best defend itself against a predator.
 
-The flocking behaviour can be simulated in different ways.
-For example Heppner and Grenader \cite{Heppner_nonlinear_model} were modeling bird's behaviour with stohastic nonlinear differential equations.
-Oweis, Ganesan and Cheok \cite{centralized_flocking} took a different approach and modeled birds with a centralized logic (as in the server-client architecture).
+The flocking behavior can be simulated in different ways.
+For example, Heppner and Grenader \cite{Heppner_nonlinear_model} were modeling birds behavior with stochastic nonlinear differential equations.
+Oweis, Ganesan, and Cheok \cite{centralized_flocking} took a different approach and modeled birds with a centralized logic (as in the server-client architecture).
 In 1987, Reynolds \cite{reynolds1987flocks} proposed a simple algorithm, which was groundbreaking at the time, to model the
 flocking behavior of birds, herding of sheep, and similar phenomena, known as the Boids (Bird-oid objects) model.
 In contrast to controlling the interactions of the entire flock, the Boids simulation focuses on
 dictating the behavior of each individual boid. Despite consisting of a few simple rules, this
 algorithm produces complex and lifelike behaviors similar to those observed in nature.
 
-Our paper centers on the implementation of a predator-prey behavior utilizing a Boids simulation.
+Our research is based on a paper by Papadopoulou and others \cite{papadopoulou2022emergence}, which we will extend with the results of our predator and prey simulation.
+Although we are not using fuzzy logic to set the direction and speed of our boids, which makes the movement less natural, we have taken some elements for our model from
+\cite{JDemsar_predator_attacks}. Specifically, we've set the field of vision for our boids to 300° and implemented occlusion for the predator.
 
 \section*{Methods}
-A boids model is implemented, along with some additional checks to add more realism.
-Boids model has 3 rules:
-\begin{enumerate}
-	\item Avoid collisions.
-	      \begin{center}
-		      \begin{tikzpicture}
-			      % Draw a semi-transparent blue circle with a dark border
-			      \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			      % Define a triangle shape
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t1) at (0,0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
-			      % Outside,rotated
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, draw, rotate=30] (rotated) at (2.5,0) {};
+The Boids model is the foundation of our flocking model. Every object in such a model adheres to the three simple
+rules as shown in Figure \ref{fig:boids}.
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[t]{.28\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
+            % Draw a semi-transparent blue circle with a dark border
+            \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+            % Draw bounding box
+            \draw (-2.5,-2.5) rectangle (3.5,2.5);
+            % Define a triangle shape
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t1) at (0,0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
 
-			      \draw[green,thick] (t1) -- (t2);
-			      \draw[green,thick] (t1) -- (t3);
+            % Outside, rotated
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, draw, rotate=30] (rotated) at (2.5,0) {};
 
-			      \draw[red,thick,->] (t1) -- (-.125,-.75);
-		      \end{tikzpicture}
-	      \end{center}
-	\item Maintain the same heading and speed as the neighboring boids.
-	      \begin{center}
-		      \begin{tikzpicture}
-			      % Draw a semi-transparent blue circle with a dark border
-			      \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			      % Define a triangle shape
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green,rotate=-30] (t1) at (0,0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t2) at (-1.5, 0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t3) at (1.5, 0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t4) at (0, -1.5) {};
+            \draw[gray,thick] (t1) -- (t2);
+            \draw[gray,thick] (t1) -- (t3);
 
-			      \draw[green,thick,->] (t1) -- ++(.5, 1);
-			      \draw[black,thick,->] (t2) -- ++(.5, 1);
-			      \draw[black,thick,->] (t3) -- ++(.5, 1);
-			      \draw[black,thick,->] (t4) -- ++(.5, 1);
-		      \end{tikzpicture}
-	      \end{center}
-	\item Gravitate toward the center of the flock.
-	      \begin{center}
-		      \begin{tikzpicture}
-			      % Draw a semi-transparent blue circle with a dark border
-			      \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-			      % Define a triangle shape
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t1) at (0,0) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
+            \draw[red,thick,->] (t1) -- (-.125,-.75);
+        \end{tikzpicture}
+        \caption{{\bf Collision avoidance (separation)}.}
+    \end{subfigure}%
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.28\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
+            % Draw a semi-transparent blue circle with a dark border
+            \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+            % Draw bounding box
+            \draw (-2.5,-2.5) rectangle (2.5,2.5);
+            % Define a triangle shape
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t1) at (0,0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t2) at (.5, 1) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (t3) at (-.75, .5) {};
 
-			      \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t4) at (1.2, -1.1) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (t4) at (1.2, -1.1) {};
 
-			      \draw[green, thick] (t1) -- (-.125,.75);
-			      \fill[green, thick] (-.125,.75) circle (2pt);
-			      \draw[green,thick] (t2) -- (t3);
+            \draw[gray, thick] (t1) -- (-.125,.75);
+            \fill[gray, thick] (-.125,.75) circle (2pt);
+            \draw[gray,thick] (t2) -- (t3);
 
-			      \draw[red,thick,->] (t4) -- (.75,-.3);
-		      \end{tikzpicture}
-	      \end{center}
-\end{enumerate}
+            \draw[red,thick,->] (t4) -- (.75,-.3);
+        \end{tikzpicture}
+        \caption{{\bf Cohesion}: gravitate toward the center of the flock.}
+    \end{subfigure}%
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.28\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
+            % Draw a semi-transparent blue circle with a dark border
+            \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
+            % Draw bounding box
+            \draw (-2.5,-2.5) rectangle (2.5,2.5);
+            % Define a triangle shape
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green,rotate=-30] (t1) at (0,0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t2) at (-1.5, 0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t3) at (1.5, 0) {};
+            \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue,rotate=-30] (t4) at (0, -1.5) {};
 
-\subsection*{Boids implementation}
+            \draw[green,thick,->] (t1) -- ++(.5, 1);
+            \draw[black,thick,->] (t2) -- ++(.5, 1);
+            \draw[black,thick,->] (t3) -- ++(.5, 1);
+            \draw[black,thick,->] (t4) -- ++(.5, 1);
+        \end{tikzpicture}
+        \caption{{\bf Alignment}: maintain the same heading and speed.}
+    \end{subfigure}
+    \caption{The basic three rules of the Boids model. We show how the rules apply to a particular boid, marked
+        green, and its neighbors, marked blue. Red arrows indicate the direction in which the observed boid has
+        the tendency to move.}
+    \label{fig:boids}
+\end{figure}
 
-Each boid $B$ has the following properties:
-\begin{enumerate}
-	\item position - a vector in $ \mathbb{R}^2 $, denoted by $position(B)$,
-	\item velocity - a vector in $ \mathbb{R}^2 $, denoted by $velocity(B)$,
-	\item acceleration - a vector in $\mathbb{R}^2$; used exclusively
-	      for the internal \\ computation of the boid's velocity and not for behavioral logic.
-\end{enumerate}
+\subsection*{Boids model implementation overview}
 
-\noindent With regards to behavioral logic, we also assign the following
-attributes to all boids:
-\begin{enumerate}
-	\item perception radius (denoted by $r_P$)
-	\item separation radius (denoted by $r_S$, also note that $ r_S < r_P $)
-	\item perception angle (denoted by $fov$)
-\end{enumerate}
+Each boid $B$ possesses three basic properties: position, velocity, and acceleration. Behavioral attributes include perception radius ($r_P$), separation radius ($r_S$), and perception angle ($fov$). The Euclidean distance, given by $d(p, q)^2 = (p_1-q_1)^2 + (p_2 - q_2)^2$, is utilized for distance computations.
 
-\noindent The {\em Euclidean distance} (\ref{eq:eucl_dst}) is used for computing the distance between boids.
-\begin{equation} \label{eq:eucl_dst}
-	d(p, q) = \sqrt{(p_1-q_1)^2 + (p_2 - q_2)^2};\  p, q \in \mathbb{R}^2
-\end{equation}
-To avoid the computation of the costly square root of a real number, we utilize an equivalent formula
-(\ref{eq:eucl_dst_sq}):
-\begin{equation} \label{eq:eucl_dst_sq}
-	d(p, q)^2 = (p_1-q_1)^2 + (p_2 - q_2)^2;\  p, q \in \mathbb{R}^2
-\end{equation}
+The simulation loop updates boid directions based on three rules: \textbf{collision avoidance} (or \textbf{separation}), \textbf{alignment}, and \textbf{cohesion}. The avoidance direction is determined by summing the vector differences between the boid $B$ and its neighbors $B_i$ when their distance is within $r_S$. The cohesion direction is obtained by averaging the vector differences between the positions of boid $B$ and its neighbors $B_i$. The alignment direction is computed as the average velocity of neighboring boids $B_i$, subtracted from the velocity of the boid $B$, considering neighbors within a perception radius $r_P$.
 
-Each step of the simulation loop updates the direction of a boid, which is then applied to its acceleration,
-determining the actual velocity for all boids.
-
-Before applying the 3 mentioned rules, the neighbours of a boid.
-Neighbours (\ref{eq:neighbor_predicate}) of boid $ B $ are all $B_i$ for which the following formula holds:
-
+The neighbors (all $B_i$) of a boid $B$ are determined using distance and angle conditions:
 \begin{equation} \label{eq:neighbor_predicate}
-	d(B, B_i)^2 < r_P^2 \land angle\ between(B, B_i) <= fov
+    d(B, B_i)^2 < {r_P}^2 \, \land \, \text{AngleBetween}(B, B_i) \leq fov
 \end{equation}
+Modifying the base Boids model with the \textbf{field of vision} is an improvement inspired by \cite{JDemsar_predator_attacks}.
 
-Taking perception angle ($fov$) into account adds more realism, especially when interacting with predators.
-
-The direction for collision avoidance, also known as {\em separation}, for boid $B$ is computed by the
-following formula (\ref{eq:sum_dir_vectors}):
-\begin{equation} \label{eq:sum_dir_vectors}
-	direction = \sum_{i=1}^{n} position(B) - position(B_i)
-\end{equation}
-where $i$-th boid $B_i$ is a neighbor of $B$ and: $ d(position(B), position(B_i))^2 < r_S^2 $.
-This effectively means that boid $B$ will move away (in the opposite direction) from the boids which are too near (closer than the specified $r_S$).
-
-The direction for {\em alignment} for boid $B$ is computed as (\ref{eq:sum_align}):
-\begin{equation} \label{eq:sum_align}
-	direction = \frac{\sum_{i=1}^{n} velocity(B_i)}{n} - velocity(B)
-\end{equation}
-where $i$-th boid $B_i$ is a boid such that: $ d(position(B), position(B_i)^2 < r_P^2) $ (i.e., $B_i$ is $B$'s neighbour).
-
-The direction for {\em cohesion} for boid $B$ is computed like so (\ref{eq:sum_coh}):
-\begin{equation} \label{eq:sum_coh}
-	direction =  \frac{\sum_{i=1}^{n} \left(position(B_i) - position(B)\right)}{n}
-\end{equation}
-
-\subsection*{Occlusion algorithm}
-
-In order to add more realism, the occlusion algorithm was implemented.
-Because the algorithm is quite long with some edge cases, we will only explain the idea of the algorithm, which is quite simple.
-Given a list of potential neighboring boids, we must determine which are occluded and in turn take only the nearest (non-occluded) boids as neighbours.
-This is done by iterating through the list of neighboring boids (of boid $B$) and computing the angle between i-th ($B_i$) boid and all the others (in j-th step $B_j$).
-If the angle difference is below a threshold, boids $B_i$ and $B_j$ are considered occluded.
-To determine which boid occludes the other (is the actual neighbor), minimum distance is computed: $ min(d(B, B_i), d(B, B_j)) $.
-
-\begin{center}
-	\begin{tikzpicture}
-		% Draw a semi-transparent blue circle with a dark border
-		\draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-
-		% Define a triangle shape for the top boid
-		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (boid1) at (0,1.5) {};
-
-		% Define a triangle shape for the middle boid
-		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid2) at (0,0) {};
-
-		% Define a triangle shape for the bottom boid
-		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,red] (boid3) at (0,-1.5) {};
-
-		% Draw arrows indicating occlusion
-		\draw[green,thick,<-] (boid2) -- (boid1);
-		\draw[blue,thick,->] (boid2) -- (boid3);
-
-		% Label for occlusion
-		\node[blue, below] at (0, -0.5) {Occlusion};
-	\end{tikzpicture}
-\end{center}
-
-\subsection*{Turn speed}
+Additionally inspired by \cite{JDemsar_predator_attacks} is \textbf{occlusion}.
+This effectively disregards boids that remain hidden from the view of a specific boid, as closer
+boids obstruct their visibility (see Figure \ref{fig:occlusion}). Given a list of potential neighboring boids,
+we must determine which are occluded and in turn take only the nearest (non-occluded) boids as neighbours.
+This is done by iterating through the list of neighboring boids of boid $B$ and computing the angle between all
+neighbor pairs $(B_i, B_j)$. If the angle is below a threshold, boids $B_i$ and $B_j$ are considered occluded.
+Then we just have to determine which neighbor is closer (which one blocks the other). This is done by computing
+the minimum distance: $min(d(B, B_i), d(B, B_j))$. It is worth noting that we have only added occlusion
+checks to the predator in our model.
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
+        % Draw a semi-transparent blue circle with a dark border
+        \draw[fill=blue!20, draw=blue!80] (0,0) circle (3);
+        % Reference
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (boid1) at (0,0) {};
+        % Occluded
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,gray] (boid2) at (-1.5,1.5) {};
+        % Neighbors
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid3) at (-.75,.75) {};
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid4) at (0,-1.5) {};
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid5) at (1,1.5) {};
+    \end{tikzpicture}
+    \caption{Neighbors (blue) of the observed boid (green). Occluded boid is marked gray.}
+    \label{fig:occlusion}
+\end{figure}
 
 In order to add even more realism, the \textbf{turn speed} of a boid is limited.
 Whenever the acceleration of a boid is computed, the angle between the acceleration vector and the current heading vector is checked.
-If it exceedes a threshold, the old heading is rotated by the maximum amount in the given direction and scaled by the magnitude of the acceleration.
+If it exceeds a threshold, the old heading is rotated by the maximum amount in the given direction and scaled by the magnitude of the acceleration.
 Therefore boids have a maximum value in which they can turn at each step of the simulation.
+
+Lastly, \textbf{predator confusion factor} and \textbf{prey's reaction time} were implemented, which further enhances the realism.
 
 \subsection*{Escape maneuvers}
 
-The 2 simplest escape maneuvers are implemented: escape based on position and based on velocity (direction) of the predator.
+In the HoPE model, which was proposed in \cite{papadopoulou2022emergence}, discrete escape maneuvers are introduced, which we reproduced.
+These maneuvers involve individual turns away from the predator's heading either based on its position, direction or with turning angles and durations drawn from gamma distributions tailored to empirical data.
+During maneuvers, coordination with neighbors is absent.
+Each flock member's likelihood of maneuvering is determined by a unique baseline escape tendency and proximity to the predator.
 
-The position based escape maneuver works exactly the same way as separation, except the position of predator is taken into account.
+In our implementation however, maneuvering of flock members is not based on chance, but on whether prey sees the predator or not.
+This is the only difference between our implementation and the original (aside from additional realistic factors), since using randomness in this situation did not seem logical to us.
 
-The direction based escape maneuver works such that it determines on which side of prey lies the predator, and going into a perpendicular direction in the opposite side.
+We have implemented three escape maneuvers: \textbf{position based}, \textbf{direction based}, and \textbf{zig-zag} escape maneuvers.
+The position based escape manuever works the same way as \textit{separation} in the Boids model.
+In the direction based escape behavior, we simply compute the angle between the heading of the predator and prey.
+We take the sign of this angle and rotate the heading of the prey by $+$ or $-$ 90°, depending on the sign.
+The zig-zag escape maneuver simply alternates the prey direction in fixed time intervals.
+Some of these maneuvers result in patterns shown in Figure \ref{fig:escape_maneuvers}.
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.6\linewidth]{article_split.png}
+    \end{subfigure}%
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.6\linewidth]{article_herd.png}
+    \end{subfigure}
+    \caption{The patterns emerging from position-based (left picture) and direction-based (right picture) escape maneuvers.}
+    \label{fig:escape_maneuvers}
+\end{figure}
 
 \subsection*{Predators}
 
-2 simple predator behaviours (strategies) are implemented: attack centroid, attack random prey.
+We have implemented four predator attack strategies, with three presented and simulated in \cite{JDemsar_predator_attacks}.
+The first targets the flock's center, the second goes for the closest prey, and the third selects the most isolated prey.
+In the last strategy, the predator simply attacks a random target.
 
 \section*{Results}
 
-By combining all the features adding upon realism and the escape maneuvers, we can obtain a realstic patter \textbf{split}.
-This pattern is obtain by using the \textbf{position} based escape manuever and any predator tactic.
+We will first compare the results from the original research \cite{papadopoulou2022emergence} with our own.
+Specifically, we will compare our simulated data with the empirial data obtained from the original research, as shown in figure \ref{fig:empirial_comparison}.
 
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.6\linewidth]{boids_step_146.jpg}
-	\caption{Predator chasing a group of boids (step $146$)}
-\end{figure}
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.6\linewidth]{boids_step_233.jpg}
-	\caption{Start of split pattern (step $233$)}
-\end{figure}
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.7\linewidth]{boids_step_261.jpg}
-	\caption{Predator caught a prey, split continues (step $261$)}
+    \centering
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{empirical_turn_angle.png}
+    \end{subfigure}%
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=1.02\linewidth]{avoid_direction_attack_peripheral/turn_angle_freq_2008.pdf}
+    \end{subfigure}
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{empirical_turn_freq.png}
+    \end{subfigure}
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=1.02\linewidth]{avoid_direction_attack_peripheral/turn_angle_freq_2008.pdf}
+    \end{subfigure}
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{empirical_turn_dur.png}
+    \end{subfigure}
+    \hspace{.5cm} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=1.02\linewidth]{avoid_direction_attack_peripheral/turn_angle_dur_2008.pdf}
+    \end{subfigure}
+    \caption{Graphs obtained from empirical data (left) and graphs obtained in our Boids simulation using the \textit{avoid direction} escape manuever (right)}
+    \label{fig:empirial_comparison}
 \end{figure}
 
+We can see that the resulting graphs are quite similar, except graphs obtained from our simulation are more sparse.
+This is most likely because we only ran the simulation up to 2000 steps (about 30 seconds), while the empirical data was most likely gathered throughout a longer period.
+We can therefore be confident that our simulation works as expected.
+
+Lastly, we will compare how different attack strategies perform against different prey escape tactics.
+Although we have implemented 6 escape manuever tactics and 4 attack tactics, we will 2 of each.
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[t]{0.4\linewidth}
+        \includegraphics[width=\linewidth]{avoid_position_attack_peripheral/predator_success_cumulative_2003.pdf}
+        \caption{Position-based escape maneuver, most isolated attack strategy.}
+    \end{subfigure}%
+    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{0.4\linewidth}
+        \includegraphics[width=\linewidth]{avoid_position_attack_nearest/predator_success_cumulative_2003.pdf}
+        \caption{Position-based escape maneuver, nearest attack strategy.}
+    \end{subfigure}
+    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{0.4\linewidth}
+        \includegraphics[width=\linewidth]{avoid_direction_attack_peripheral/predator_success_cumulative_2008.pdf}
+        \caption{Direction-based escape maneuver, most isolated attack strategy.}
+    \end{subfigure}%
+    \hspace{0.02\linewidth} % Adjust this value to increase or decrease the space
+    \begin{subfigure}[t]{0.4\linewidth}
+        \includegraphics[width=\linewidth]{avoid_direction_attack_nearest/predator_success_cumulative_2001.pdf}
+        \caption{Direction-based escape maneuver, nearest attack strategy.}
+    \end{subfigure}
+    \caption{Comparison of various predator attack strategies and prey evasion maneuvers.}
+    \label{fig:sim_results_01}
+\end{figure}
+
+Note that graphs in figure \ref{fig:sim_results_01} are cumulative, since it makes it easier to see the effect.
+Plots suggest that direction based escape maneuver is inferior to position based tactics, indicated by larger prey capture count.
+By inspecting the first row, we can also see that attacking the nearest prey outperforms the most-isolated strategy.
 
 \pagebreak
 
 \section*{Discussion}
 
-This concludes boids implementation with additional realsitic features.
-The simulation itself was heavily parameterized aswell, making tweakings easiser and more reproducible.
+We have successfully implemented a basic Boids model with selected modifications and took elements from
+the HoPE model to implement escape maneuvers. As part of the project, a Python app that simulates
+predator-prey behavior has been developed.
 
-There is still room for improvement in the visualization of the simulation (add traces, add predators target, ...).
+Potential improvements might include a nicer visualization of the simulation and additional features (such as
+traces of movement for a particular boid, marked predator targets, \ldots). Additional escape maneuvers
+and attack strategies could be incorporated into the model. We could extend the simulation by introducing multiple predators
+and implement constant-bearing hunting. In order to speed up the simulation, the application could be re-written
+to run on a GPU.
 
-The most important aspect which remains is the implementation of different escape manuevers and predator tactics and the comparisons of the latter.
-
-\acknow{Matija Ojo: Add realistic features, fix escape manuevers, report, Miha Krajnc: Escape manuevers, Janez Kuhar: report, Marko Adžaga: Researching sources and report}
+\acknow{Matija Ojo: Added realistic features, fixed escape manuevers, report, Miha Krajnc: Escape manuevers, Janez Kuhar: report, Marko Adžaga: Researching sources and report}
 
 \showacknow % Display the acknowledgments section
 
@@ -317,9 +362,9 @@ The most important aspect which remains is the implementation of different escap
 %\pnasbreak
 
 \begin{multicols}{2}
-	\section*{\bibname}
-	% Bibliography
-	\bibliography{bibliography}
+    \section*{\bibname}
+    % Bibliography
+    \bibliography{bibliography}
 \end{multicols}
 
 \end{document}

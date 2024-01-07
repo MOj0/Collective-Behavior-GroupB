@@ -22,3 +22,16 @@ We do not plan to use machine learning.
 - 20.11: Basic boid simulation
 - 18.12: Accurate boid simulation with predator(s), different types of models, escape maneuvers
 - 8.1: Generalized to a simulation with tweakable parameters, large amounts of boids
+
+## How to run
+
+``pip install pygame``
+
+``python src/main.py``
+
+## Screenshots
+
+![ScreenShot](/report/fig/boids_step_233.jpg)
+
+![ScreenShot](/report/fig/boids_step_261.jpg)
+
