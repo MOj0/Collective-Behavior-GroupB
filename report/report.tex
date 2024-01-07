@@ -190,46 +190,38 @@ The neighbors (all $B_i$) of a boid $B$ are determined using distance and angle 
 \begin{equation} \label{eq:neighbor_predicate}
     d(B, B_i)^2 < {r_P}^2 \, \land \, \text{AngleBetween}(B, B_i) \leq fov
 \end{equation}
-Modifying the base Boids model with the field of vision is an improvement inspired by \cite{JDemsar_predator_attacks}.
+Modifying the base Boids model with the \textbf{field of vision} is an improvement inspired by \cite{JDemsar_predator_attacks}.
 
-
-\subsection*{Occlusion algorithm}
-
-In order to add more realism, the occlusion algorithm was implemented.
-Because the algorithm is quite long with some edge cases, we will only explain the idea of the algorithm, which is quite simple.
-Given a list of potential neighboring boids, we must determine which are occluded and in turn take only the nearest (non-occluded) boids as neighbours.
-This is done by iterating through the list of neighboring boids (of boid $B$) and computing the angle between i-th ($B_i$) boid and all the others (in j-th step $B_j$).
-If the angle difference is below a threshold, boids $B_i$ and $B_j$ are considered occluded.
-To determine which boid occludes the other (is the actual neighbor), minimum distance is computed: $ min(d(B, B_i), d(B, B_j)) $.
-
-\begin{center}
-    \begin{tikzpicture}
+Additionally inspired by \cite{JDemsar_predator_attacks} is \textbf{occlusion}.
+This effectively disregards boids that remain hidden from the view of a specific boid, as closer
+boids obstruct their visibility (see Figure \ref{fig:occlusion}). Given a list of potential neighboring boids,
+we must determine which are occluded and in turn take only the nearest (non-occluded) boids as neighbours. 
+is done by iterating through the list of neighboring boids of boid $B$ and computing the angle between all
+neighbor pairs $(B_i, B_j)$. If the angle is below a threshold, boids $B_i$ and $B_j$ are considered occluded.
+Then we just have to determine which neighbor is closer (which one blocks the other). This is done by computing
+the minimum distance: $min(d(B, B_i), d(B, B_j))$. It is worth noting that we have only added occlusion
+checks to the predator in our model.
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=0.6] % Adjust the scale as needed
         % Draw a semi-transparent blue circle with a dark border
-        \draw[fill=blue!20, draw=blue!80] (0,0) circle (2);
-
-        % Define a triangle shape for the top boid
-        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (boid1) at (0,1.5) {};
-
-        % Define a triangle shape for the middle boid
-        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid2) at (0,0) {};
-
-        % Define a triangle shape for the bottom boid
-        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,red] (boid3) at (0,-1.5) {};
-
-        % Draw arrows indicating occlusion
-        \draw[green,thick,<-] (boid2) -- (boid1);
-        \draw[blue,thick,->] (boid2) -- (boid3);
-
-        % Label for occlusion
-        \node[blue, below] at (0, -0.5) {Occlusion};
+        \draw[fill=blue!20, draw=blue!80] (0,0) circle (3);
+		% Reference
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,green] (boid1) at (0,0) {};
+        % Occluded
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,gray] (boid2) at (-1.5,1.5) {};
+		% Neighbors
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid3) at (-.75,.75) {};
+        \node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid4) at (0,-1.5) {};
+		\node[regular polygon, regular polygon sides=3, minimum size=.5cm, fill,blue] (boid5) at (1,1.5) {};
     \end{tikzpicture}
-\end{center}
-
-\subsection*{Turn speed}
+	\caption{Neighbors (blue) of the observed boid (green). Occluded boid is marked gray.}
+	\label{fig:occlusion}
+\end{figure}
 
 In order to add even more realism, the \textbf{turn speed} of a boid is limited.
 Whenever the acceleration of a boid is computed, the angle between the acceleration vector and the current heading vector is checked.
-If it exceedes a threshold, the old heading is rotated by the maximum amount in the given direction and scaled by the magnitude of the acceleration.
+If it exceeds a threshold, the old heading is rotated by the maximum amount in the given direction and scaled by the magnitude of the acceleration.
 Therefore boids have a maximum value in which they can turn at each step of the simulation.
 
 \subsection*{Escape maneuvers}
