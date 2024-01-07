@@ -1,3 +1,7 @@
+FPS = 60
+DT = 1 / FPS
+
+
 WH = 900
 HEIGHT, WIDTH = (WH, WH)
 
