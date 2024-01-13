@@ -2,7 +2,7 @@ from Boid import Boid
 from Predator import Predator
 from Behaviours.Behaviour import Behaviour
 from Camera import Camera
-from pygame import Surface, draw, Vector2, Rect
+from pygame import Surface, draw, Vector2, Rect, font
 from Constants import WIDTH, HEIGHT, DT
 from Statistics import Statistics
 
@@ -32,6 +32,7 @@ class SimEngine:
         self._step = 0
         self.clearPrey()
         self.clearPredators()
+        self._telemetry.reset()
 
     def clearPrey(self) -> None:
         self._prey.clear()
@@ -63,6 +64,7 @@ class SimEngine:
         for p in self._prey:
             p.update(dt)
             p.rolloverAcc()
+            p.is_targeted = False
             if self.toroidalCoords:
                 p.rolloverCoords()
         for p in self._predators:
@@ -70,7 +72,11 @@ class SimEngine:
             p.rolloverAcc()
             if self.toroidalCoords:
                 p.rolloverCoords()
-
+            
+            selected_prey = p.getSelectedPrey()
+            if selected_prey is not None:
+                selected_prey.is_targeted = True
+        
         self._step += 1
 
     def _draw_bounds(self, camera: Camera, surface: Surface):
@@ -86,6 +92,14 @@ class SimEngine:
         if debug_draw:
             self._preyBehaviour.debug_draw(camera, surface, self._prey)
             self._predatorBehaviour.debug_draw(camera, surface, self._predators)
+
+        f = font.SysFont("monospace", 32)
+        surface.blit(
+            f.render(f"Prey: {self._preyBehaviour}", 1, (255, 255, 255)), (20, 30)
+        )
+        surface.blit(
+            f.render(f"Predator: {self._predatorBehaviour}", 1, (255, 255, 255)), (20, 70)
+        )
 
     def plot(self):
         self._telemetry.plotResults(self._step)

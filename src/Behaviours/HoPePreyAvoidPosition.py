@@ -29,6 +29,11 @@ class HoPePreyAvoidPosition(Behaviour):
 
         self._escapeCoef: float = escapeCoef
 
+
+    def __str__(self) -> str:
+        return "HoPePreyAvoidPosition"
+    
+
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
         for boid in boids:

@@ -39,6 +39,10 @@ class HoPePreyAvoidTurnRandom(Behaviour):
         self._escapeTimeMin: float = escapeTimeMin
         self._escapeTimeMax: float = escapeTimeMax
 
+    def __str__(self) -> str:
+        return "HoPePreyAvoidTurnRandom"
+
+
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
         for boid in boids:
@@ -135,7 +139,7 @@ class HoPePreyAvoidTurnRandom(Behaviour):
                 or boid.getPredation()
                 and boid.get_curr_escape_reaction_time() <= 0
             ):
-                e = self._random_t_turn_pred(boid, predators)
+                e = self._random_t_turn_pred(boid, predators, dt)
                 boid.setDesiredAcceleration(e)
                 boid.setEvasion(True)
 

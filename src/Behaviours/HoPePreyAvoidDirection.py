@@ -30,6 +30,10 @@ class HoPePreyAvoidDirection(Behaviour):
 
         self._escapeCoef: float = escapeCoef
 
+    def __str__(self) -> str:
+        return "HoPePreyAvoidDirection"
+
+
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
         for boid in boids:

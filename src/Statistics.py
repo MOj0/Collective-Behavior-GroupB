@@ -18,6 +18,19 @@ class Statistics:
 
         self.caughtPrey: dict[int, int] = {}
 
+    def reset(self):
+        self.turnSigma: float = 0.1
+        self.minTurnDur: float = 0.1  # sec
+
+        self._prevVel: dict[int, float] = {}
+        self._turnAngleMap: dict[int, float] = {}
+        self._turnDurMap: dict[int, float] = {}
+
+        self.turnAngleLst: list[float] = []
+        self.turnDurLst: list[float] = []
+
+        self.caughtPrey: dict[int, int] = {}
+
     def _initVars(self, boid: Boid):
         ID = boid.getId()
         if ID not in self._prevVel:
@@ -71,21 +84,24 @@ class Statistics:
         axs.hist(self.turnDurLst, bins=100)
         axs.set_xlabel("Turn duration (s)")
         axs.set_ylabel("Frequency")
-        fig.savefig(f"turn_dur_freq_{stepNo}.pdf")
+        # fig.savefig(f"turn_dur_freq_{stepNo}.pdf")
+        fig.show()
 
     def _plotTurnAngleFreq(self, stepNo: int):
         fig, axs = plt.subplots(1, 1, tight_layout=True)
         axs.hist(self.turnAngleLst, bins=100)
         axs.set_xlabel("Turn angle (deg)")
         axs.set_ylabel("Frequency")
-        fig.savefig(f"turn_angle_freq_{stepNo}.pdf")
+        # fig.savefig(f"turn_angle_freq_{stepNo}.pdf")
+        fig.show()
 
     def _plotTurnAngleDur(self, stepNo: int):
         fig, axs = plt.subplots(1, 1, tight_layout=True)
         axs.scatter(self.turnDurLst, self.turnAngleLst)
         axs.set_xlabel("Turn duration (s)")
         axs.set_ylabel("Turn angle (deg)")
-        fig.savefig(f"turn_angle_dur_{stepNo}.pdf")
+        # fig.savefig(f"turn_angle_dur_{stepNo}.pdf")
+        fig.show()
 
     def _plotPredatorAttackSuccess(self, stepNo: int):
         fig, axs = plt.subplots(1, 1, tight_layout=True)
@@ -97,7 +113,7 @@ class Statistics:
         )
         axs.set_xlabel("Simulation step")
         axs.set_ylabel("Caught prey (cumulative)")
-        fig.savefig(f"predator_success_cumulative_{stepNo}.pdf")
+        fig.show()
 
     def plotResults(self, stepNo: int):
         self._plotTurnDurFreq(stepNo)

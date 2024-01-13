@@ -33,6 +33,9 @@ class HoPePreyAvoidTurnTime(Behaviour):
 
         self._escapeTurn = escapeTurn
         self._escapeTime = escapeTime
+    
+    def __str__(self) -> str:
+        return "HoPePreyAvoidTurnTime"
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []

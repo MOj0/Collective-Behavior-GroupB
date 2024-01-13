@@ -26,7 +26,7 @@ font = pg.font.SysFont("monospace", 22)
 
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidTurnTime(), PredatorAttackMostPeripheral(), toroidalCoords=True
+    HoPePreyAvoidTurnRandom(), PredatorAttackMostPeripheral(), toroidalCoords=True
 )
 
 
@@ -41,7 +41,7 @@ def add_prey(n_prey):
         simEngine.addPrey(
             Boid(
                 i,
-                size=(10, 6),
+                size=(10 * 2, 6 * 2),
                 color=(255, 255, 255),
                 position=Vector2(
                     random.uniform(WIDTH / 4, 3 * WIDTH / 4),
@@ -75,7 +75,7 @@ def add_predators(n_predators):
         simEngine.addPredator(
             Predator(
                 -i - 1,
-                size=(20, 12),
+                size=(20 * 2, 12 * 2),
                 color=(255, 0, 0),
                 position=Vector2(WIDTH / 2, 4 * HEIGHT / 5),
                 velocity=start_velocity,
@@ -100,7 +100,7 @@ debug_draw: bool = False
 is_update_on: bool = True
 do_single_update: bool = True
 follow_predator: bool = False
-camera_zoom = math.sqrt(2)
+camera_zoom = 1
 camera_view = Vector2(WIDTH * camera_zoom, HEIGHT * camera_zoom)
 camera_center = Vector2(WIDTH / 2, HEIGHT / 2)
 mouse_drag = False
