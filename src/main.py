@@ -26,7 +26,7 @@ font = pg.font.SysFont("monospace", 22)
 
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidTurnRandom(), PredatorAttackMostPeripheral(), toroidalCoords=True
+    HoPePreyAvoidPosition(), PredatorAttackRandom(), toroidalCoords=True
 )
 
 
@@ -38,15 +38,19 @@ def add_prey(n_prey):
         #     random.uniform(-1, 1),
         # )
         # start_velocity = PREY_CRUISE_VELOCITY * random_velocity.normalize()
+
+        y = random.uniform(HEIGHT / 5, HEIGHT / 4)
+        if i < n_prey // 2:
+            x = random.uniform(0, WIDTH / 4)
+        else:
+            x = random.uniform(3 * WIDTH / 4, WIDTH)
+
         simEngine.addPrey(
             Boid(
                 i,
                 size=(10 * 2, 6 * 2),
                 color=(255, 255, 255),
-                position=Vector2(
-                    random.uniform(WIDTH / 4, 3 * WIDTH / 4),
-                    random.uniform(HEIGHT / 4, HEIGHT / 2),
-                ),
+                position=Vector2(random.uniform(0, WIDTH), y),
                 velocity=Vector2(0, -1),
                 cruise_velocity=PREY_CRUISE_VELOCITY,
                 max_velocity=PREY_MAX_VELOCITY,
@@ -77,7 +81,7 @@ def add_predators(n_predators):
                 -i - 1,
                 size=(20 * 2, 12 * 2),
                 color=(255, 0, 0),
-                position=Vector2(WIDTH / 2, 4 * HEIGHT / 5),
+                position=Vector2(random.uniform(0, WIDTH), 4 * HEIGHT / 5),
                 velocity=start_velocity,
                 cruise_velocity=PREDATOR_CRUISE_VELOCITY,
                 max_velocity=PREDATOR_MAX_VELOCITY,

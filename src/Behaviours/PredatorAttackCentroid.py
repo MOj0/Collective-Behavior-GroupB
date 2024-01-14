@@ -79,8 +79,8 @@ class PredatorAttackCentroid(Behaviour):
         centroid /= len(prey)
 
         return Vector2(
-            Torus.ofs_coor(0, centroid.x) % Constants.WIDTH,
-            Torus.ofs_coor(0, centroid.y) % Constants.HEIGHT,
+            Torus.ofs_coor(0, centroid.x, Constants.WIDTH) % Constants.WIDTH,
+            Torus.ofs_coor(0, centroid.y, Constants.HEIGHT) % Constants.HEIGHT,
         )
 
     def predator_behavior(self, predator: Predator, prey: list[Boid], dt: float):
@@ -110,6 +110,11 @@ class PredatorAttackCentroid(Behaviour):
                 if predator.getPredation():
                     predator.huntingState = HuntingState.ATTACK
             case HuntingState.ATTACK:
+                center = self.find_centroid(prey)
+                if center is None:
+                    return
+                predator.setTarget(center)
+
                 # Accelerates towards the target/centroid and tries to collide with it
                 targetDir = Torus.ofs(predator.getPosition(), predator.getTarget())
                 predator.setDesiredAcceleration(targetDir)

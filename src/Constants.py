@@ -3,8 +3,8 @@ DT = 1 / FPS
 
 WIDTH, HEIGHT  = (1920, 1080)
 
-N_PREY = 10
-N_PREDATORS = 1
+N_PREY = 20
+N_PREDATORS = 2
 
 
 # 1 meter = 0.038 pixels

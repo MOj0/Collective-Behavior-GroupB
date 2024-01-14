@@ -92,7 +92,7 @@ class Predator(Boid):
         # Handle hunting state
         if len(out) > 0:
             self.huntingState = HuntingState.REST
-            self.setRestPeriod(5)
+            self.setRestPeriod(1)
             self.setTarget(None)
             self.setSelectedPrey(None)
             self.setPredation(False)
