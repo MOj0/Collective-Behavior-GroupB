@@ -34,6 +34,9 @@ class SimEngine:
         self.clearPredators()
         self._telemetry.reset()
 
+    def getCaughtPrey(self, upToStep: int) -> int:
+        return sum(self._telemetry.caughtPrey[s] for s in self._telemetry.caughtPrey if s <= upToStep)
+
     def clearPrey(self) -> None:
         self._prey.clear()
 

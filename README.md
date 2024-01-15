@@ -1,5 +1,8 @@
 # Collective-Behavior-GroupB
 
+![demoGIF](/demo.gif)
+
+
 ## Team
 
 - Matija Ojo - [MOj0](https://github.com/MOj0)
