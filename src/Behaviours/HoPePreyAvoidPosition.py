@@ -29,6 +29,11 @@ class HoPePreyAvoidPosition(Behaviour):
 
         self._escapeCoef: float = escapeCoef
 
+
+    def __str__(self) -> str:
+        return "HoPePreyAvoidPosition"
+    
+
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
         for boid in boids:
@@ -142,9 +147,9 @@ class HoPePreyAvoidPosition(Behaviour):
                 s = self._separation(boid, neighbors)
                 c = self._cohesion(boid, neighbors)
                 a = self._alignment(boid, neighbors)
-                # b = self._bound_position(boid)
+                b = self._bound_position(boid)
 
-                boid.setDesiredAcceleration(s + c + a)
+                boid.setDesiredAcceleration(s + c + a + b)
 
                 if boid.getPredation():
                     boid.decrease_curr_escape_reaction_time(dt)
@@ -170,10 +175,10 @@ class HoPePreyAvoidPosition(Behaviour):
                 -heading - radians(self._angleOfView),
                 -heading + radians(self._angleOfView),
             )
-            draw.circle(
-                surface,
-                (255, 100, 100),
-                camera.apply(boid.getPosition()),
-                camera.apply(self._separationDistance),
-                width=1,
-            )
+            # draw.circle(
+            #     surface,
+            #     (255, 100, 100),
+            #     camera.apply(boid.getPosition()),
+            #     camera.apply(self._separationDistance),
+            #     width=1,
+            # )

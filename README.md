@@ -1,5 +1,8 @@
 # Collective-Behavior-GroupB
 
+![demoGIF](/demo.gif)
+
+
 ## Team
 
 - Matija Ojo - [MOj0](https://github.com/MOj0)
@@ -25,7 +28,7 @@ We do not plan to use machine learning.
 
 ## How to run
 
-``pip install pygame``
+``pip install pygame matplotlib numpy``
 
 ``python src/main.py``
 

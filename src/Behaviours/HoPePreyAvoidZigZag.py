@@ -18,7 +18,7 @@ class HoPePreyAvoidZigZag(Behaviour):
         alignmentCoef: float = Constants.PREY_ALIGNMENT_COEFFICIENT,
         escapeCoef: float = Constants.PREY_ESCAPE_COEFFICIENT,
         escapeTurn: float = radians(30),
-        zigZagTime: float = 0.5,  # sec
+        zigZagTime: float = 0.7,  # sec
     ) -> None:
         super().__init__()
         self._perceptionRadius: float = perceptionRadius
@@ -34,6 +34,9 @@ class HoPePreyAvoidZigZag(Behaviour):
         self._escapeTurn: float = escapeTurn
         self._zigZagTime: float = zigZagTime
         self._zigTimer: float = 0
+
+    def __str__(self) -> str:
+        return "HoPePreyAvoidZigZag" 
 
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
@@ -149,7 +152,7 @@ class HoPePreyAvoidZigZag(Behaviour):
                 if boid.getPredation():
                     boid.decrease_curr_escape_reaction_time(dt)
 
-        if self._zigTimer > self._zigZagTime:
+        if self._zigTimer > 2 * self._zigZagTime:
             self._zigTimer = 0
         else:
             self._zigTimer += dt

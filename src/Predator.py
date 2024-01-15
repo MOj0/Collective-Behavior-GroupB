@@ -92,7 +92,7 @@ class Predator(Boid):
         # Handle hunting state
         if len(out) > 0:
             self.huntingState = HuntingState.REST
-            self.setRestPeriod(5)
+            self.setRestPeriod(1.5)
             self.setTarget(None)
             self.setSelectedPrey(None)
             self.setPredation(False)
@@ -102,14 +102,18 @@ class Predator(Boid):
         return out
 
     def draw(self, camera: Camera, surface: Surface, debug_draw: bool) -> None:
+        self._color = (255, 255, 0) if self.huntingState == HuntingState.REST else (255, 0, 0)
         super().draw(camera, surface, debug_draw)
+
+        if self._predation and len(self._trail) > 1:
+            draw.lines(surface, (128, 128, 128), False, list(map(camera.apply, self._trail)))
 
         if self.getSelectedPrey() is not None:
             draw.circle(
                 surface,
                 (255, 0, 0),
                 camera.apply(self.getSelectedPrey().getPosition()),
-                10,
+                10 * 2,
                 width=2,
             )
         if self.getTarget() is not None:
@@ -117,6 +121,6 @@ class Predator(Boid):
                 surface,
                 (255, 0, 0),
                 camera.apply(self.getTarget()),
-                10,
+                10 * 2,
                 width=2,
             )

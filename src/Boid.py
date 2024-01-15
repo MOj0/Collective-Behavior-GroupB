@@ -64,6 +64,9 @@ class Boid(ABC):
 
         self._evasion = False
 
+        self._trail: list[Vector2] = []
+        self.is_targeted: bool = False
+
     def getId(self) -> int:
         return self._id
 
@@ -208,6 +211,11 @@ class Boid(ABC):
 
         self._pos += initialVelocity * dt + (self._acc[1] * dt**2) / 2
 
+        if not self.is_targeted and (len(self._trail) > 100 or len(self._trail) > 1 and (self._trail[-1] - self._pos).length_squared() > 600**2):
+            self._trail.clear()
+
+        self._trail.append(self._pos + Vector2(self._width//2, self._height//2))
+
     def draw(self, camera: Camera, surface: Surface, debug_draw: bool) -> None:
         _, heading = self._vel.as_polar()
         shape_rotated = transform.rotate(self._boid_shape, -heading)
@@ -232,16 +240,19 @@ class Boid(ABC):
             ),
         )
 
-        if debug_draw:
-            draw.line(
-                surface,
-                (0, 255, 0),
-                camera.apply(self.getPosition()),
-                camera.apply(self.getPosition() + self.getVelocity() / 10),
-            )
-            draw.line(
-                surface,
-                (255, 0, 0),
-                camera.apply(self.getPosition()),
-                camera.apply(self.getPosition() + self.getAcceleration() / 10),
-            )
+        if self.is_targeted and len(self._trail) > 1:
+            draw.lines(surface, (128, 128, 128), False, list(map(camera.apply ,self._trail)))
+
+        # if debug_draw:
+        #     draw.line(
+        #         surface,
+        #         (0, 255, 0),
+        #         camera.apply(self.getPosition()),
+        #         camera.apply(self.getPosition() + self.getVelocity() / 10),
+        #     )
+        #     draw.line(
+        #         surface,
+        #         (255, 0, 0),
+        #         camera.apply(self.getPosition()),
+        #         camera.apply(self.getPosition() + self.getAcceleration() / 10),
+        #     )

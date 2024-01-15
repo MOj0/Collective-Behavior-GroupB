@@ -8,8 +8,8 @@ from Camera import Camera
 class Behaviour(ABC):
     def __init__(
         self,
-        minBounds: Vector2 = Vector2(WIDTH * 0.05, HEIGHT * 0.05),
-        maxBounds: Vector2 = Vector2(WIDTH * 0.95, HEIGHT * 0.95),
+        minBounds: Vector2 = Vector2(-BOUNDARY_WIDTH * 0.95, -BOUNDARY_HEIGHT * 0.95),
+        maxBounds: Vector2 = Vector2(BOUNDARY_WIDTH * 0.95, BOUNDARY_HEIGHT * 0.95),
     ) -> None:
         super().__init__()
         self._minBounds: Vector2 = minBounds

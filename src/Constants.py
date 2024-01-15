@@ -1,11 +1,13 @@
 FPS = 60
 DT = 1 / FPS
 
+USE_TOROIDAL_COORD = True
 
-WH = 900
-HEIGHT, WIDTH = (WH, WH)
+WIDTH, HEIGHT  = (1920, 1080)
 
-N_PREY = 10
+BOUNDARY_WIDTH, BOUNDARY_HEIGHT = (WIDTH, HEIGHT)
+
+N_PREY = 20
 N_PREDATORS = 1
 
 
@@ -26,7 +28,7 @@ PREY_PERCEPTION_RADIUS = 500
 PREY_SEPARATION_DISTANCE = 25
 # NOTE: FOV has to be halved, because we have FOV/2 on each of the 2 sides
 PREY_FOV = 300 // 2
-PREY_ESCAPE_REACTION_TIME = 0.3  # sec
+PREY_ESCAPE_REACTION_TIME = 0.0  # sec
 
 # Behaviour parameters
 PREY_SEPARATION_COEFFICIENT = 1
@@ -45,39 +47,3 @@ PREDATOR_SEPARATION_DISTANCE = 50
 # NOTE: Has to be halved, because we have FOV/2 on each of the 2 sides
 PREDATOR_FOV = 300 // 2
 PREDATOR_CONFUSION_RADIUS = PREDATOR_SEPARATION_DISTANCE
-
-
-### Case where predator loops around prey...
-
-# HEIGHT, WIDTH = (900, 1200)
-
-# N_PREY = 50
-# N_PREDATORS = 1
-
-# # Boid parameters
-# PREY_CRUISE_VELOCITY = 200.0  # Effectively mininmum velocity
-# PREY_MAX_VELOCITY = 300.0
-# PREY_BASE_ACCELERATION = 1200.0
-# PREY_MAX_ACCELERATION = 1400.0
-# PREY_MAX_ROTATION_ANGLE = 120  # NOTE: This parameter depends on the acceleration...
-# PREY_PERCEPTION_RADIUS = 300
-# PREY_SEPARATION_DISTANCE = 25
-# # NOTE: FOV has to be halved, because we have FOV/2 on each of the 2 sides
-# PREY_FOV = 300 // 2
-
-# # Behaviour parameters
-# PREY_SEPARATION_COEFFICIENT = 1
-# PREY_COHESION_COEFFICIENT = 0.01
-# PREY_ALIGNMENT_COEFFICIENT = 0.12
-# PREY_ESCAPE_COEFFICIENT = 3
-
-
-# PREDATOR_CRUISE_VELOCITY = 500.0  # Effectively minimum velocity
-# PREDATOR_MAX_VELOCITY = 700.0
-# PREDATOR_BASE_ACCELERATION = 1600.0
-# PREDATOR_MAX_ACCELERATION = 2500.0
-# PREDATOR_MAX_ROTATION_ANGLE = 240  # NOTE: This parameter depends on the acceleration...
-# PREDATOR_PERCEPTION_RADIUS = 1200
-# PREDATOR_SEPARATION_DISTANCE = 50
-# # NOTE: Has to be halved, because we have FOV/2 on each of the 2 sides
-# PREDATOR_FOV = 300 // 2

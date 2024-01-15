@@ -40,6 +40,9 @@ class HoPePreyAvoidTurnGamma(Behaviour):
         self._timeAlpha: float = (escapeTimeMean / escapeTimeSD) ** 2
         self._timeBeta: float = (escapeTimeSD**2) / escapeTimeMean
 
+    def __str__(self) -> str:
+        return "HoPePreyAvoidTurnGamma"
+
     def _get_neighbors(self, curBoid: Boid, boids: list[Boid]) -> list[Boid]:
         neighbors: list[Boid] = []
         for boid in boids:

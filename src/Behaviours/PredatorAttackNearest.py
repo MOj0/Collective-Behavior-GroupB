@@ -23,6 +23,9 @@ class PredatorAttackNearest(Behaviour):
         self._angleOfView: float = angleOfView
         self._confusionRadius: float = confusionRadius
 
+    def __str__(self) -> str:
+        return "PredatorAttackNearest"
+
     def get_neighbor_prey(self, predator: Predator, prey: list[Boid]):
         neigh_prey: list[Boid] = []
         for p in prey:

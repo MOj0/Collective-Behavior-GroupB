@@ -26,7 +26,7 @@ font = pg.font.SysFont("monospace", 22)
 
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidTurnTime(), PredatorAttackMostPeripheral(), toroidalCoords=True
+    HoPePreyAvoidPosition(), PredatorAttackRandom(), toroidalCoords=USE_TOROIDAL_COORD
 )
 
 
@@ -38,14 +38,22 @@ def add_prey(n_prey):
         #     random.uniform(-1, 1),
         # )
         # start_velocity = PREY_CRUISE_VELOCITY * random_velocity.normalize()
+
+        y = random.uniform(3 * HEIGHT / 4, HEIGHT)
+        if i < n_prey//2:
+            x= random.uniform(0, WIDTH/4)
+        else:
+            x= random.uniform(3 * WIDTH / 4, WIDTH)
+
+
         simEngine.addPrey(
             Boid(
                 i,
-                size=(10, 6),
+                size=(10 * 2, 6 * 2),
                 color=(255, 255, 255),
                 position=Vector2(
-                    random.uniform(WIDTH / 4, 3 * WIDTH / 4),
-                    random.uniform(HEIGHT / 4, HEIGHT / 2),
+                    random.uniform(0, WIDTH),
+                    random.uniform(HEIGHT / 5, HEIGHT / 4),
                 ),
                 velocity=Vector2(0, -1),
                 cruise_velocity=PREY_CRUISE_VELOCITY,
@@ -75,9 +83,9 @@ def add_predators(n_predators):
         simEngine.addPredator(
             Predator(
                 -i - 1,
-                size=(20, 12),
+                size=(20 * 2, 12 * 2),
                 color=(255, 0, 0),
-                position=Vector2(WIDTH / 2, 4 * HEIGHT / 5),
+                position=Vector2(random.uniform(0, WIDTH), 4 * HEIGHT / 5),
                 velocity=start_velocity,
                 cruise_velocity=PREDATOR_CRUISE_VELOCITY,
                 max_velocity=PREDATOR_MAX_VELOCITY,
@@ -100,7 +108,7 @@ debug_draw: bool = False
 is_update_on: bool = True
 do_single_update: bool = True
 follow_predator: bool = False
-camera_zoom = math.sqrt(2)
+camera_zoom = 1
 camera_view = Vector2(WIDTH * camera_zoom, HEIGHT * camera_zoom)
 camera_center = Vector2(WIDTH / 2, HEIGHT / 2)
 mouse_drag = False
@@ -156,12 +164,13 @@ while running:
 
     simEngine.draw(camera, screen, debug_draw)
     if debug_draw:
-        screen.blit(
-            font.render(f"FPS: {int(clock.get_fps())}", 1, (0, 255, 255)), (20, 20)
-        )
-        screen.blit(
-            font.render(f"steps: {simEngine.getSteps()-1}", 1, (0, 255, 255)), (20, 50)
-        )
+        pass
+        # screen.blit(
+        #     font.render(f"FPS: {int(clock.get_fps())}", 1, (0, 255, 255)), (20, 20)
+        # )
+        # screen.blit(
+        #     font.render(f"steps: {simEngine.getSteps()-1}", 1, (0, 255, 255)), (20, 50)
+        # )
 
     pg.display.flip()
     clock.tick(FPS)

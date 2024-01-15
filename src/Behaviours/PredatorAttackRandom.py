@@ -24,6 +24,9 @@ class PredatorAttackRandom(Behaviour):
         self._angleOfView: float = angleOfView
         self._confusionRadius: float = confusionRadius
 
+    def __str__(self) -> str:
+        return "PredatorAttackRandom"
+
     def get_neighbor_prey(self, predator: Boid, prey: list[Boid]):
         neigh_prey: list[Boid] = []
         for p in prey:
@@ -92,11 +95,9 @@ class PredatorAttackRandom(Behaviour):
                     return
 
                 predator.setSelectedPrey(random_prey)
-                predator.setDesiredAcceleration(
-                    Torus.ofs(
-                        predator.getPosition(), predator.getSelectedPrey().getPosition()
-                    )
-                )
+                d = Torus.ofs( predator.getPosition(), predator.getSelectedPrey().getPosition())
+                b = self._bound_position(predator)
+                predator.setDesiredAcceleration(b + d)
 
                 predator.setPredation(len(prey) > 0)
                 if predator.getPredation():
@@ -109,6 +110,7 @@ class PredatorAttackRandom(Behaviour):
 
                 # NOTE: Switching to REST state is handeled in Predator
             case HuntingState.REST:
+                predator.setDesiredAcceleration( self._bound_position(predator))
                 predator.decreaseRestPeriod(dt)
                 if predator.getRestPeriod() < 0:
                     predator.huntingState = HuntingState.SCOUT
@@ -138,10 +140,10 @@ class PredatorAttackRandom(Behaviour):
                 -heading - radians(self._angleOfView),
                 -heading + radians(self._angleOfView),
             )
-            draw.circle(
-                surface,
-                (255, 100, 100),
-                camera.apply(boid.getPosition()),
-                camera.apply(self._separationDistance),
-                width=1,
-            )
+            # draw.circle(
+            #     surface,
+            #     (255, 100, 100),
+            #     camera.apply(boid.getPosition()),
+            #     camera.apply(self._separationDistance),
+            #     width=1,
+            # )
