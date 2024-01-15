@@ -26,7 +26,7 @@ font = pg.font.SysFont("monospace", 22)
 
 
 simEngine: SimEngine = SimEngine(
-    HoPePreyAvoidPosition(), PredatorAttackRandom(), toroidalCoords=True
+    HoPePreyAvoidPosition(), PredatorAttackRandom(), toroidalCoords=USE_TOROIDAL_COORD
 )
 
 
@@ -39,18 +39,22 @@ def add_prey(n_prey):
         # )
         # start_velocity = PREY_CRUISE_VELOCITY * random_velocity.normalize()
 
-        y = random.uniform(HEIGHT / 5, HEIGHT / 4)
-        if i < n_prey // 2:
-            x = random.uniform(0, WIDTH / 4)
+        y = random.uniform(3 * HEIGHT / 4, HEIGHT)
+        if i < n_prey//2:
+            x= random.uniform(0, WIDTH/4)
         else:
-            x = random.uniform(3 * WIDTH / 4, WIDTH)
+            x= random.uniform(3 * WIDTH / 4, WIDTH)
+
 
         simEngine.addPrey(
             Boid(
                 i,
                 size=(10 * 2, 6 * 2),
                 color=(255, 255, 255),
-                position=Vector2(random.uniform(0, WIDTH), y),
+                position=Vector2(
+                    random.uniform(0, WIDTH),
+                    random.uniform(HEIGHT / 5, HEIGHT / 4),
+                ),
                 velocity=Vector2(0, -1),
                 cruise_velocity=PREY_CRUISE_VELOCITY,
                 max_velocity=PREY_MAX_VELOCITY,
@@ -160,12 +164,13 @@ while running:
 
     simEngine.draw(camera, screen, debug_draw)
     if debug_draw:
-        screen.blit(
-            font.render(f"FPS: {int(clock.get_fps())}", 1, (0, 255, 255)), (20, 20)
-        )
-        screen.blit(
-            font.render(f"steps: {simEngine.getSteps()-1}", 1, (0, 255, 255)), (20, 50)
-        )
+        pass
+        # screen.blit(
+        #     font.render(f"FPS: {int(clock.get_fps())}", 1, (0, 255, 255)), (20, 20)
+        # )
+        # screen.blit(
+        #     font.render(f"steps: {simEngine.getSteps()-1}", 1, (0, 255, 255)), (20, 50)
+        # )
 
     pg.display.flip()
     clock.tick(FPS)

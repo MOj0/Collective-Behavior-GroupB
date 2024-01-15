@@ -28,7 +28,7 @@ We do not plan to use machine learning.
 
 ## How to run
 
-``pip install pygame``
+``pip install pygame matplotlib numpy``
 
 ``python src/main.py``
 

@@ -3,7 +3,7 @@ from Predator import Predator
 from Behaviours.Behaviour import Behaviour
 from Camera import Camera
 from pygame import Surface, draw, Vector2, Rect, font
-from Constants import WIDTH, HEIGHT, DT
+from Constants import WIDTH, HEIGHT, DT, BOUNDARY_HEIGHT, BOUNDARY_WIDTH
 from Statistics import Statistics
 
 
@@ -83,8 +83,13 @@ class SimEngine:
         self._step += 1
 
     def _draw_bounds(self, camera: Camera, surface: Surface):
-        bounds = (camera.apply(Vector2(0, 0)), camera.apply(Vector2(WIDTH, HEIGHT)))
-        draw.rect(surface, (255, 255, 255), Rect(bounds[0], bounds[1] - bounds[0]), 1)
+        if self.toroidalCoords:
+            bounds = (camera.apply(Vector2(0, 0)), camera.apply(Vector2(WIDTH, HEIGHT)))
+            draw.rect(surface, (255, 255, 255), Rect(bounds[0], bounds[1] - bounds[0]), 1)
+        else:
+            bounds = (camera.apply(Vector2(-BOUNDARY_WIDTH,-BOUNDARY_HEIGHT)), camera.apply(Vector2(BOUNDARY_WIDTH, BOUNDARY_HEIGHT)))
+            draw.rect(surface, (255, 255, 255), Rect(bounds[0], bounds[1] - bounds[0]), 1)
+
 
     def draw(self, camera: Camera, surface: Surface, debug_draw: bool):
         self._draw_bounds(camera, surface)

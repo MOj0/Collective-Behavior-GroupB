@@ -80,7 +80,7 @@ class PredatorAttackCentroid(Behaviour):
 
         return Vector2(
             Torus.ofs_coor(0, centroid.x, Constants.WIDTH) % Constants.WIDTH,
-            Torus.ofs_coor(0, centroid.y, Constants.HEIGHT) % Constants.HEIGHT,
+            Torus.ofs_coor(0, centroid.y, Constants.HEIGHT) % Constants.HEIGHT
         )
 
     def predator_behavior(self, predator: Predator, prey: list[Boid], dt: float):
